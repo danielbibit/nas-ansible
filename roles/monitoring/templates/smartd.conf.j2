@@ -1,0 +1,32 @@
+# -a monitor all attributes
+# -o on enable automatic offline data collection
+# -S on enable automatic attribute autosave
+# -n standby,q do not check if disk is in standby, and suppress log message to that effect so as not to cause a write to disk
+# -s ... schedule short and long self-tests
+# -W ... monitor temperature
+# -m ... mail alerts
+
+# T/MM/DD/d/HH
+# Teste curto todo dia 3h, teste longo todo mes, dia 01 as 3h
+# -s (S/../.././01|L/../01/./03)
+
+# ADD -M exec /usr/local/bin/smartdnotify.sh to custom script
+
+# ZFS DRIVES
+# Make sure to NOT run extended self test on the same mirror on the same week !!!!
+
+## Storage
+### mirror-0
+/dev/disk/by-id/ata-ST4000VN008-2DR166_ZDHBVCKS -m {{ email_report_to }} -a -o on -s (S/../.././01|L/../02/./03)
+/dev/disk/by-id/ata-ST4000DM004-2CV104_ZFN0T8Z9 -m {{ email_report_to }} -a -o on -s (S/../.././01|L/../17/./03)
+
+### mirror-1
+/dev/disk/by-id/ata-WDC_WD42PURZ-85B4YY0_WD-WX62D12JZ0FH -m {{ email_report_to }} -a -o on -s (S/../.././01|L/../02/./03)
+/dev/disk/by-id/ata-ST4000DM004-2CV104_ZFN0TAPK -m {{ email_report_to }} -a -o on -s (S/../.././01|L/../17/./03)
+
+### mirror-2
+/dev/disk/by-id/ata-WDC_WD40EFAX-68JH4N1_WD-WX32D81DELPC -m {{ email_report_to }} -a -o on -s (S/../.././01|L/../02/./03)
+/dev/disk/by-id/ata-WDC_WD40EZRZ-22GXCB0_WD-WCC7K4JJ13U4 -m {{ email_report_to }} -a -o on -s (S/../.././01|L/../17/./03)
+
+## Users
+/dev/disk/by-id/ata-WDC_WD10PURZ-85U8XY0_WD-WCC4J4YR7ATX -m {{ email_report_to }} -a -o on -s S/../.././01

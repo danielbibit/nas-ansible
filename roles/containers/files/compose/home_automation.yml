@@ -1,0 +1,14 @@
+version: "3"
+
+services:
+    zigbee2mqtt_edicula:
+        image: koenkk/zigbee2mqtt
+        container_name: zigbee2mqtt_edicula
+        environment:
+            - TZ=America/Sao_Paulo
+        ports:
+            - 8083:8080
+        volumes:
+            - "/srv/Users/docker/zigbee2mqtt_edicula:/app/data"
+            - "/run/udev:/run/udev:ro"
+        restart: unless-stopped

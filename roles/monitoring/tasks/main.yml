@@ -1,0 +1,48 @@
+# Setup monitoring packages
+- name: Install monitoring packages
+  ansible.builtin.apt:
+    pkg:
+    - smartmontools
+    - zfs-zed
+
+# Setup ZFS monitoring
+- name: Copy zed.rc with owner and permissions
+  ansible.builtin.template:
+    src: ../templates/zed.rc
+    dest: /etc/zfs/zed.d/zed.rc
+    owner: root
+    group: root
+    mode: '0600'
+
+- name: Enable service zfs-zed  and ensure it is not masked
+  ansible.builtin.systemd:
+    name: zfs-zed
+    enabled: yes
+
+# Setup S.M.A.R.T monitoring
+- name: Template smartd.conf config
+  ansible.builtin.template:
+    src: ../templates/smartd.conf.j2
+    dest: /etc/smartd.conf
+    owner: root
+    group: root
+    mode: '0644'
+
+
+# TODO: Run tests if above tasks changed
+# HOW TO TEST smartd
+# sudo echo /dev/sdh -m danielbibit@gmail.com -M test | sudo smartd -c - -q onecheck
+# systemctl status smartd.service
+
+
+## HOW TO TEST ZED
+# systemctl status zfs-zed.service
+
+# SET NOTIFY VERBOSE ON zed.rc
+# cd /tmp
+# dd if=/dev/zero of=sparse_file bs=1 count=0 seek=512M
+# sudo zpool create test /tmp/sparse_file
+# sudo zpool scrub test
+
+# sudo zpool export test
+# rm sparse_file

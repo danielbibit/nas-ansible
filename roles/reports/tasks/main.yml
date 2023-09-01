@@ -1,0 +1,16 @@
+- name: Template S.M.A.R.T script
+  ansible.builtin.template:
+    src: ../templates/full_smart_report.sh
+    dest: "/home/{{ nas_admin }}/reports/"
+    owner: "{{ nas_admin }}"
+    # group: root
+    mode: '0775'
+
+- name: Creates cron for S.M.A.R.T report
+  ansible.builtin.cron:
+    name: monthly_smart_report
+    weekday: "0"
+    hour: "20"
+    minute: "30"
+    user: root
+    job: '[ $(date +\%d) -le 07 ] && bash /home/{{ nas_admin }}/reports/full_smart_report.sh'

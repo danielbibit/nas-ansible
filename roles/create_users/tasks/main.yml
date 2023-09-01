@@ -1,0 +1,20 @@
+
+#TODO Add nas to libvirt and KVM
+#TODO prometheus ???
+
+# Create Groups
+- name: Create groups
+  ansible.builtin.group:
+    name: "{{ item.name }}"
+    gid: "{{ item.gid }}"
+    state: present
+  with_items: "{{ system_groups }}"
+
+# Create users
+- name: Create Users
+  ansible.builtin.user:
+    name: "{{ item.name }}"
+    uid: "{{ item.uid }}"
+    groups: "{{ item.group }}"
+    state: present
+  with_items: "{{ system_users }}"

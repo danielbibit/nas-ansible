@@ -1,0 +1,6 @@
+nas_test:
+  hosts:
+    nas:
+      ansible_user: user
+      ansible_password: senha
+      ansible_become_password: senha

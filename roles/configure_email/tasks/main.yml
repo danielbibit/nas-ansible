@@ -1,0 +1,43 @@
+- name: Install system packages
+  ansible.builtin.apt:
+    pkg:
+    - msmtp
+    - msmtp-mta
+    - bsd-mailx
+
+- name: Template msmtp config
+  ansible.builtin.template:
+    src: ../templates/msmtprc.j2
+    dest: /etc/msmtprc
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Template aliases
+  ansible.builtin.template:
+    src: ../templates/aliases.j2
+    dest: /etc/aliases
+    owner: root
+    group: root
+    mode: '0644'
+
+# TODO fix me
+- name: Create log file if it don't exist
+  copy:
+    content: ""
+    dest: /var/log/msmtp
+    force: no
+    owner: msmtp
+    group: msmtp
+    mode: 660
+
+- name: Template mail.rc config
+  ansible.builtin.template:
+    src: ../templates/mail.rc.j2
+    dest: /etc/mail.rc
+    owner: root
+    group: root
+    mode: '0644'
+
+# echo "Email test msmtp!!!" | msmtp -a default danielbibit@gmail.com
+# echo "Email test with mailx !!!" | mail -s "sample mail subject" danielbibit@gmail.com

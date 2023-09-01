@@ -1,0 +1,20 @@
+- name: Install monitoring packages
+  ansible.builtin.apt:
+    pkg:
+    - samba
+
+- name: Copy samba conf with owner and permissions
+  ansible.builtin.copy:
+    src: ../templates/smb.conf
+    dest: /etc/samba/smb.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: restart_samba
+
+- community.general.ufw:
+    rule: allow
+    name: samba
+
+
+# TODO SETUP PASSWORDS

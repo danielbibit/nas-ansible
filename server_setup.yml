@@ -1,0 +1,38 @@
+---
+- hosts: nas_test
+  become: true
+
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+
+  vars_files:
+    - secrets.yml
+    - users.yml
+
+  pre_tasks:
+    - name: Ensure apt cache is up to date.
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+      when:
+        - ansible_facts.os_family == "Debian"
+
+    - name: Disable cron mailing to root
+      cronvar:
+        name: MAILTO
+        value: "\"\""
+        # value: "danielbibit@gmail.com"
+        user: root
+
+  roles:
+    - role: install_packages
+    # - role: create_users
+    - role: setup_cron
+    - role: samba
+    - role: configure_email
+    - role: monitoring
+    - role: reports
+    - role: automated_backups
+
+    - role: containers
+      tags: docker

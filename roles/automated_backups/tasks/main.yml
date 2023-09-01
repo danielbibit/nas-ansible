@@ -1,0 +1,15 @@
+# BACKUP DOCKER CONTAINERS FILES
+# TODO LOG cron run
+- name: Daily docker sync
+  ansible.builtin.cron:
+    name: "daily_sync_docker_mounts"
+    hour: "04"
+    minute: "00"
+    user: root
+    job: "rsync -a /srv/Users/docker/ /srv/Storage/Backups/NAS/docker"
+
+# BACKUP PHOTOS
+# TODO
+
+# BACKUP HOME ASSISTANT
+# TODO
