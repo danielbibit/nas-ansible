@@ -20,6 +20,7 @@
   ansible.builtin.shell: docker-compose --project-name {{ item | basename }} -f /home/nas/compose/{{ item | basename }} up -d
   with_fileglob:
     - ../files/compose/*
+    - ../files/compose/private/*
 
 - name: Copy upgrade script
   ansible.builtin.copy:
