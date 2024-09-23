@@ -13,4 +13,5 @@
     hour: "20"
     minute: "30"
     user: root
+    # once a month, every first sunday
     job: '[ $(date +\%d) -le 07 ] && bash /home/{{ nas_admin }}/reports/full_smart_report.sh'
