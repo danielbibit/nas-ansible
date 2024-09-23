@@ -1,38 +1,46 @@
 version: '2'
 
-volumes:
-  nextcloud:
-  db:
-
 services:
-  db:
-    container_name: nextcloud_mariadb
-    image: mariadb:10.5
-    restart: unless-stopped
-    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
-    volumes:
-      - /srv/Users/docker/nextcloud_mariadb:/var/lib/mysql
+  immich:
+    image: ghcr.io/imagegenius/immich:latest
+    container_name: immich
     environment:
-      - MYSQL_ROOT_PASSWORD={{ nextcloud_sql_root_password }}
-      - MYSQL_PASSWORD={{ nextcloud_sql_password }}
-      - MYSQL_DATABASE=nextcloud
-      - MYSQL_USER=nextcloud
-
-  next_cloud:
-    container_name: nextcloud_app
-    image: nextcloud
-    restart: unless-stopped
+      - PUID=1001
+      - PGID=1000
+      - TZ=Etc/UTC
+      - DB_HOSTNAME=immich_postgres
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=postgres
+      - DB_DATABASE_NAME=immich
+      - REDIS_HOSTNAME=immich_redis
+      - MACHINE_LEARNING_HOST=0.0.0.0 #optional
+      - MACHINE_LEARNING_PORT=3003 #optional
+      - MACHINE_LEARNING_WORKERS=1 #optional
+      - MACHINE_LEARNING_WORKER_TIMEOUT=120 #optional
+    volumes:
+      - /srv/Users/docker/immich:/config
+      - /srv/Storage/Library/Pictures/immich:/photos
+      - /srv/Storage/Library/Pictures:/libraries
     ports:
-      - 8182:80
-    links:
-      - db
-    volumes:
-      - /srv/Users/docker/nextcloud:/var/www/html
+      - 8089:8080
+    restart: unless-stopped
+
+  immich_redis:
+    container_name: immich_redis
+    image: redis
+    ports:
+      - 6379:6379
+    restart: unless-stopped
+
+  immich_postgres:
+    container_name: immich_postgres
+    image: tensorchord/pgvecto-rs:pg14-v0.2.0
+    ports:
+      - 5432:5432
     environment:
-      - NEXTCLOUD_TRUSTED_DOMAINS={{ nextcloud_trusted_domains }}
-      - MYSQL_PASSWORD={{ nextcloud_sql_password }}
-      - MYSQL_DATABASE=nextcloud
-      - MYSQL_USER=nextcloud
-      - MYSQL_HOST=db
-      - APACHE_DISABLE_REWRITE_IP=1
-      - TRUSTED_PROXIES=192.168.1.11
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: immich
+    volumes:
+      - /srv/Users/docker/immich_postgres:/var/lib/postgresql/data
+    restart: unless-stopped
