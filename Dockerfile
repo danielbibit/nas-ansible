@@ -1,4 +1,4 @@
-FROM python:3.10
+FROM python:3.12
 
 RUN apt update
 
@@ -12,6 +12,6 @@ RUN poetry config virtualenvs.create false
 
 COPY . ./
 
-RUN poetry install
+RUN poetry install --no-root
 
 RUN export ANSIBLE_HOST_KEY_CHECKING=False
