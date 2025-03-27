@@ -1,5 +1,0 @@
-system_groups:
-  - { name: users, gid: 4242 }
-
-system_users:
-  - { name: docker, uid: 4243, group: users }
