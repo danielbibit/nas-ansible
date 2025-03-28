@@ -1,0 +1,5 @@
+---
+loki_enabled: false
+
+loki_port: 3100
+loki_volume_path: '{{ nas_docker_directory }}/loki'

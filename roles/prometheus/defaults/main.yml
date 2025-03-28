@@ -1,0 +1,5 @@
+---
+prometheus_enabled: false
+
+prometheus_data_dir: "{{ nas_docker_directory }}/prometheus/config"
+prometheus_port: 9090

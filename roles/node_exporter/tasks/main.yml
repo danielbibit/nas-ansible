@@ -1,0 +1,23 @@
+---
+- name: Start node_exporter
+  when: node_exporter_enabled is true
+  block:
+    - name: Ensure node_exporter container is running
+      community.docker.docker_container:
+        name: node_exporter
+        image: quay.io/prometheus/node-exporter:latest
+        command: "--path.rootfs=/host"
+        network_mode: host
+        ports:
+          - "{{ node_exporter_port }}:9100"
+        restart_policy: unless-stopped
+        volumes:
+          - "/:/host:ro"
+
+- name: Stop node_exporter
+  when: node_exporter_enabled is false
+  block:
+    - name: Ensure node_exporter container is stopped
+      community.docker.docker_container:
+        name: node_exporter
+        state: absent

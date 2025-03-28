@@ -1,0 +1,5 @@
+---
+promtail_enabled: false
+
+promtail_port: 9080
+promtail_dir: "{{ nas_docker_directory }}/promtail"

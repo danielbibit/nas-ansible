@@ -5,4 +5,5 @@
     "gitlens.currentLine.enabled": true,
     "gitlens.plusFeatures.enabled": true,
     "cSpell.enabled": true,
+    "ansible.python.interpreterPath": "/usr/local/bin/python",
 }

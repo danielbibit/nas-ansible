@@ -1,0 +1,3 @@
+---
+cadvisor_enabled: false
+cadvisor_port: 8080

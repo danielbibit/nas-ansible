@@ -77,10 +77,16 @@ to access the whole server online, I strongly recommend setting up a VPN (Wiregu
 ### Hardware
 
 ## Configuration
-Make a copy of the example files, rename it and fill with your desired config
+Make a copy of the example invetory, and change the values in
+inventories/your_inventory/inventory.yml to match your server configuration.
 ```sh
-cp example.secrets.yml secrets.yml
+cp -r invetories/example invetories/your_inventory
 ```
+All the default configuration are stored inside the roles (role_name/defaults/main.yml)
+and in the group_vars directory (group_vars/all.yml).
+
+You can override any of these values in your inventory file, just add the desired
+variable with the new value to your inventories/your_inventory/group_vars/all.yml
 
 ## Running
 ### Setting up
@@ -96,19 +102,21 @@ or setup the project manually using Poetry.
 
 ### Running ansible
 ```sh
-ansible-playbook server_setup.yml -i inventory.yml --diff --ask-pass --ask-become-pass --check
-ansible-playbook server_setup.yml -i inventory.yml --diff --check
+ansible-playbook server_setup.yml -i inventories/nas/inventory.yml --diff --ask-pass --ask-become-pass --check
+ansible-playbook server_setup.yml -i inventories/nas/inventory.yml --diff --check
 ```
 
 To run a tag:
 ```sh
-ansible-playbook server_setup.yml -i inventory.yml --diff --tags docker --check
+ansible-playbook server_setup.yml -i inventories/nas/inventory.yml --diff --tags docker --check
 ```
 
 ## TODO
 * Setup local backup
 * Setup cloud backup
+* Setup tdarr
 * Implement grafana alerts
+* Refactor containers network
 
 ## Encryption
 ```sh

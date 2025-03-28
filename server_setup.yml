@@ -1,13 +1,9 @@
 ---
-- hosts: nas_test
-  become: true
+- name: Nas setup
+  hosts: all
 
-  vars:
-    ansible_python_interpreter: /usr/bin/python3
-
-  vars_files:
-    - secrets.yml
-    - users.yml
+  # vars:
+  #   ansible_python_interpreter: /usr/bin/python3
 
   pre_tasks:
     - name: Ensure apt cache is up to date.
@@ -18,7 +14,7 @@
         - ansible_facts.os_family == "Debian"
 
     - name: Disable cron mailing to root
-      cronvar:
+      community.general.cronvar:
         name: MAILTO
         value: "\"\""
         # value: "danielbibit@gmail.com"
@@ -26,13 +22,81 @@
 
   roles:
     - role: install_packages
-    # - role: create_users
-    - role: setup_cron
-    - role: samba
-    - role: configure_email
-    - role: monitoring
-    - role: reports
-    - role: automated_backups
+      tags:
+        - system
 
-    - role: containers
-      tags: docker
+    # - role: create_users
+    #   tags:
+    #     - system
+
+    - role: setup_cron
+      tags:
+        - system
+
+    - role: samba
+      tags:
+        - samba
+        - system
+
+    - role: configure_email
+      tags:
+        - email
+        - system
+        - monitoring
+
+    - role: monitoring
+      tags:
+        - monitoring
+        - system
+
+    - role: reports
+      tags:
+        - reports
+        - system
+
+    - role: automated_backups
+      tags:
+        - backups
+        - system
+
+    - role: glances
+      tags:
+        - glances
+        - monitoring
+        - docker
+
+    - role: grafana
+      tags:
+        - grafana
+        - monitoring
+        - docker
+
+    - role: node_exporter
+      tags:
+        - node_exporter
+        - monitoring
+        - docker
+
+    - role: prometheus
+      tags:
+        - prometheus
+        - monitoring
+        - docker
+
+    - role: cadvisor
+      tags:
+        - cadvisor
+        - monitoring
+        - docker
+
+    - role: promtail
+      tags:
+        - promtail
+        - monitoring
+        - docker
+
+    - role: loki
+      tags:
+        - loki
+        - monitoring
+        - docker

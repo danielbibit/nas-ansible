@@ -1,0 +1,4 @@
+nas_admin: admin_override_example
+
+nas_email_report_to: example1@email.com
+nas_email_send_from: example2@email.com

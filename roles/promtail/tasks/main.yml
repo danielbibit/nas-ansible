@@ -1,0 +1,32 @@
+---
+- name: Copy promtail config
+  ansible.builtin.template:
+    src: promtail-config.yml
+    owner: "{{ nas_docker_gid }}"
+    group: "{{ nas_docker_gid }}"
+    mode: "0775"
+    dest: "{{ promtail_dir }}/promtail-config.yml"
+
+- name: Manage promtail container
+  when: promtail_enabled is true
+  block:
+    - name: Ensure promtail container is running
+      community.docker.docker_container:
+        name: promtail
+        image: grafana/promtail
+        ports:
+          - "{{ promtail_port }}:9080"
+        volumes:
+          - "{{ promtail_dir }}/promtail-config.yml:/etc/promtail/config.yml"
+          - /var/run/docker.sock:/var/run/docker.sock
+          - /var/lib/docker/containers:/var/lib/docker/containers
+          - /var/log:/var/log
+        restart_policy: always
+
+- name: Stop promtail
+  when: promtail_enabled is false
+  block:
+    - name: Ensure promtail container is stopped
+      community.docker.docker_container:
+        name: promtail
+        state: absent

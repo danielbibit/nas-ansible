@@ -1,0 +1,29 @@
+---
+- name: Start cadvisor
+  when: cadvisor_enabled is true
+  block:
+    - name: Ensure cadvisor container is running
+      community.docker.docker_container:
+        name: cadvisor
+        image: gcr.io/cadvisor/cadvisor:latest
+        privileged: true
+        ports:
+          - "{{ cadvisor_port }}:8080"
+        volumes:
+          - /:/rootfs:ro
+          - /var/run:/var/run:ro
+          - /sys:/sys:ro
+          - /var/lib/docker/:/var/lib/docker:ro
+          - /dev/disk/:/dev/disk:ro
+        command:
+          - '-housekeeping_interval=10s'
+          # - '-docker_only=true'
+        restart_policy: always
+
+- name: Stop cadvisor
+  when: cadvisor_enabled is false
+  block:
+    - name: Ensure cadvisor container is stopped
+      community.docker.docker_container:
+        name: cadvisor
+        state: absent

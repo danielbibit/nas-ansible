@@ -18,7 +18,7 @@
 - name: Install kvm packages
   ansible.builtin.apt:
     pkg:
-    - qemu-kvm
+    - qemu-system-x86
     - libvirt-daemon-system
     - libvirt-clients
     - bridge-utils

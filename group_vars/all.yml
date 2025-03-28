@@ -1,0 +1,30 @@
+# Shared variables for all hosts
+nas_admin: nas
+
+nas_email_report_to: example-receiver@email.com
+nas_email_send_from: example-sender@email.com
+nas_docker_uid: 1001
+nas_docker_gid: 1001
+nas_docker_directory: /srv/Users/docker
+
+nas_movie_directory: /srv/Storage/Library/Videos/Movies
+nas_tv_directory: /srv/Storage/Library/Videos/Series
+nas_music_directory: /srv/Storage/Library/Music
+
+grafana_enabled: true
+glances_enabled: false
+node_exporter_enabled: true
+prometheus_enabled: true
+cadvisor_enabled: true
+promtail_enabled: true
+loki_enabled: true
+
+system_groups:
+  - { name: users, gid: 4200 }
+  - { name: docker, gid: 4201 }
+
+system_users:
+  - { name: docker, uid: 1300, group: users }
+  - { name: daniel, uid: 2311, group: users }
+  - { name: valdedi, uid: 5136, group: users }
+  - { name: barbara, uid: 6997, group: users }

@@ -1,4 +1,4 @@
-secrets.yml
-inventory.yml
-users.yml
+.ansible
 roles/containers/files/compose/private
+inventories/*
+!inventories/example/
