@@ -6,6 +6,13 @@ RUN apt install -y \
     ansible-lint \
     sshpass
 
+RUN apt remove --purge -y \
+    ansible \
+    ansible-lint \
+    ansible-core
+
+RUN apt autoremove -y
+
 RUN pip install poetry
 
 RUN poetry config virtualenvs.create false

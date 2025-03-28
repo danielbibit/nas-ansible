@@ -1,0 +1,55 @@
+---
+- name: Setup grafana files
+  block:
+    - name: Copy provisioning directory
+      ansible.builtin.copy:
+        src: "{{ role_path }}/files/provisioning"
+        dest: '{{ grafana_data_directory }}'
+        force: true
+        owner: '{{ nas_docker_uid }}'
+        group: '{{ nas_docker_gid }}'
+        mode: "0775"
+      register: copy_grafana
+
+    - name: Copy all dashboards
+      ansible.builtin.copy:
+        src: "{{ role_path }}/files/dashboards"
+        dest: '{{ grafana_data_directory }}'
+        force: true
+        owner: '{{ nas_docker_uid }}'
+        group: '{{ nas_docker_gid }}'
+        mode: "0775"
+
+- name: Start grafana
+  when: grafana_enabled is true
+  block:
+    - name: Remove container if modified
+      community.docker.docker_container:
+        name: grafana
+        state: absent
+      when: copy_grafana.changed
+
+    - name: Ensure grafana container is running
+      community.docker.docker_container:
+        name: grafana
+        image: grafana/grafana-enterprise
+        user: '{{ nas_docker_uid }}'
+        pid_mode: host
+        env:
+          GF_AUTH_ANONYMOUS_ENABLED: "true"
+        network_mode: host
+        ports:
+          - '{{ grafana_port }}:3000'
+        volumes:
+          - '{{ grafana_data_directory }}:/var/lib/grafana'
+          - '{{ grafana_data_directory }}/provisioning:/etc/grafana/provisioning'
+          - '{{ grafana_data_directory }}/dashboards:/var/lib/grafana/dashboards'
+        restart_policy: unless-stopped
+
+- name: Stop grafana
+  when: grafana_enabled is false
+  block:
+    - name: Ensure grafana container is stopped
+      community.docker.docker_container:
+        name: grafana
+        state: absent

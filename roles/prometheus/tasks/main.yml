@@ -1,0 +1,29 @@
+---
+- name: Start prometheus
+  when: prometheus_enabled is true
+  block:
+    - name: Ensure prometheus container is running
+      community.docker.docker_container:
+        name: prometheus
+        image: prom/prometheus
+        command:
+          - "--config.file=/etc/prometheus/prometheus.yml"
+          - "--storage.tsdb.path=/prometheus"
+          - "--web.console.libraries=/usr/share/prometheus/console_libraries"
+          - "--web.console.templates=/usr/share/prometheus/consoles"
+        pid_mode: host
+        network_mode: host
+        ports:
+          - "{{ prometheus_port }}:9090"
+        volumes:
+          - "{{ prometheus_data_dir }}:/etc/prometheus"
+          - /var/run/docker.sock:/var/run/docker.sock
+        restart_policy: unless-stopped
+
+- name: Stop prometheus
+  when: prometheus_enabled is false
+  block:
+    - name: Ensure prometheus container is stopped
+      community.docker.docker_container:
+        name: prometheus
+        state: absent

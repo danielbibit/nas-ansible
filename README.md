@@ -114,7 +114,9 @@ ansible-playbook server_setup.yml -i inventories/nas/inventory.yml --diff --tags
 ## TODO
 * Setup local backup
 * Setup cloud backup
+* Setup tdarr
 * Implement grafana alerts
+* Refactor containers network
 
 ## Encryption
 ```sh

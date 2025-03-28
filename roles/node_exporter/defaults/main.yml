@@ -1,0 +1,4 @@
+---
+node_exporter_enabled: false
+
+node_exporter_port: 9100

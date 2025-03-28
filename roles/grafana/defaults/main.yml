@@ -1,0 +1,5 @@
+---
+grafana_enabled: false
+
+grafana_data_directory: '{{ nas_docker_directory }}/grafana'
+grafana_port: 3000
