@@ -1,13 +1,13 @@
 - name: Install system packages
   ansible.builtin.apt:
     pkg:
-    - msmtp
-    - msmtp-mta
-    - bsd-mailx
+      - msmtp
+      - msmtp-mta
+      - bsd-mailx
 
 - name: Template msmtp config
   ansible.builtin.template:
-    src: ../templates/msmtprc.j2
+    src: "{{ role_path }}/templates/msmtprc.j2"
     dest: /etc/msmtprc
     owner: root
     group: root
@@ -15,7 +15,7 @@
 
 - name: Template aliases
   ansible.builtin.template:
-    src: ../templates/aliases.j2
+    src: "{{ role_path }}/templates/aliases.j2"
     dest: /etc/aliases
     owner: root
     group: root
@@ -23,17 +23,17 @@
 
 # TODO fix me
 - name: Create log file if it don't exist
-  copy:
+  ansible.builtin.copy:
     content: ""
     dest: /var/log/msmtp
-    force: no
+    force: false
     owner: msmtp
     group: msmtp
-    mode: 660
+    mode: "660"
 
 - name: Template mail.rc config
   ansible.builtin.template:
-    src: ../templates/mail.rc.j2
+    src: "{{ role_path }}/templates/mail.rc.j2"
     dest: /etc/mail.rc
     owner: root
     group: root

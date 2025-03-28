@@ -1,6 +1,6 @@
 - name: Template S.M.A.R.T script
   ansible.builtin.template:
-    src: ../templates/full_smart_report.sh
+    src: "{{ role_path }}/templates/full_smart_report.sh"
     dest: "/home/{{ nas_admin }}/reports/"
     owner: "{{ nas_admin }}"
     # group: root
