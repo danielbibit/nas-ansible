@@ -3,3 +3,7 @@ apiVersion: 1
 datasources:
   - name: TestData
     type: testdata
+
+# deleteDatasources:
+#   - name: TestData provisioning
+#     orgId: 1

@@ -100,3 +100,8 @@
         - loki
         - monitoring
         - docker
+
+    - role: immich
+      tags:
+        - immich
+        - docker

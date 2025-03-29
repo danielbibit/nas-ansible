@@ -10,7 +10,9 @@ nas_docker_directory: /srv/Users/docker
 nas_movie_directory: /srv/Storage/Library/Videos/Movies
 nas_tv_directory: /srv/Storage/Library/Videos/Series
 nas_music_directory: /srv/Storage/Library/Music
+nas_photos_dir: /srv/Storage/Library/Pictures
 
+immich_enabled: true
 grafana_enabled: true
 glances_enabled: false
 node_exporter_enabled: true
