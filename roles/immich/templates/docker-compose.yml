@@ -1,0 +1,45 @@
+services:
+  immich:
+    image: ghcr.io/imagegenius/immich:latest
+    container_name: immich
+    environment:
+      - PUID={{ immich_puid }}
+      - PGID={{ immich_pgid }}
+      - TZ={{ immich_timezone }}
+      - DB_HOSTNAME=immich-postgres
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=postgres
+      - DB_DATABASE_NAME=immich
+      - REDIS_HOSTNAME=immich-redis
+      - MACHINE_LEARNING_HOST=0.0.0.0 #optional
+      - MACHINE_LEARNING_PORT=3003 #optional
+      - MACHINE_LEARNING_WORKERS=1 #optional
+      - MACHINE_LEARNING_WORKER_TIMEOUT=120 #optional
+    volumes:
+      - '{{ immich_config_dir }}:/config'
+      - '{{ immich_photos_dir }}:/photos'
+      - '{{ immich_libraries_dir }}:/libraries'
+    ports:
+      - '{{ immich_port }}:8080'
+    restart: unless-stopped
+
+  immich_redis:
+    container_name: immich-redis
+    image: redis
+    restart: unless-stopped
+
+  immich_postgres:
+    container_name: immich-postgres
+    image: tensorchord/pgvecto-rs:pg14-v0.2.0
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: immich
+    volumes:
+      - '{{ immich_postgres_data_dir }}:/var/lib/postgresql/data'
+    restart: unless-stopped
+
+networks:
+  default:
+    name: nas
+    external: true

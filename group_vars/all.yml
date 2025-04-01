@@ -6,6 +6,7 @@ nas_email_send_from: example-sender@email.com
 nas_docker_uid: 1001
 nas_docker_gid: 1001
 nas_docker_directory: /srv/Users/docker
+nas_docker_compose_dir: /home/nas/containers/compose
 
 nas_movie_directory: /srv/Storage/Library/Videos/Movies
 nas_tv_directory: /srv/Storage/Library/Videos/Series

@@ -2,86 +2,48 @@
 - name: Start Immich stack
   when: immich_enabled is true
   block:
-    - name: Create immich network
+    - name: Make sure nas default network exists
       community.docker.docker_network:
-        name: immich_network
+        name: nas
         state: present
 
-    - name: Deploy immich_redis container
-      community.docker.docker_container:
-        name: immich_redis
-        image: redis
-        ports:
-          - "6379:6379"
-        state: started
-        restart_policy: unless-stopped
-        networks:
-          - name: immich_network
+    - name: Make sure compose directory exists
+      ansible.builtin.file:
+        path: '{{ nas_docker_compose_dir }}/immich'
+        state: directory
+        owner: '{{ nas_docker_uid }}'
+        group: '{{ nas_docker_gid }}'
+        mode: "0775"
 
-    - name: Deploy immich_postgres container
-      community.docker.docker_container:
-        name: immich_postgres
-        image: tensorchord/pgvecto-rs:pg14-v0.2.0
-        state: started
-        restart_policy: unless-stopped
-        ports:
-          - "5432:5432"
-        env:
-          POSTGRES_USER: "postgres"
-          POSTGRES_PASSWORD: "postgres"
-          POSTGRES_DB: "immich"
-        volumes:
-          - "{{ immich_postgres_data_dir }}:/var/lib/postgresql/data"
-        networks:
-          - name: immich_network
+    - name: Copy Immich compose
+      ansible.builtin.template:
+        src: '{{ role_path }}/templates/docker-compose.yml'
+        dest: '{{ nas_docker_compose_dir }}/immich/docker-compose.yml'
+        owner: '{{ nas_docker_uid }}'
+        group: '{{ nas_docker_gid }}'
+        mode: "0775"
 
-    - name: Deploy immich container
-      community.docker.docker_container:
-        name: immich
-        image: ghcr.io/imagegenius/immich:latest
-        state: started
-        restart_policy: unless-stopped
-        ports:
-          - "{{ immich_port }}:8080"
-        env:
-          PUID: "{{ immich_puid }}"
-          PGID: "{{ immich_pgid }}"
-          TZ: "{{ immich_timezone }}"
-          DB_HOSTNAME: "immich_postgres"
-          DB_USERNAME: "postgres"
-          DB_PASSWORD: "postgres"
-          DB_DATABASE_NAME: "immich"
-          REDIS_HOSTNAME: "immich_redis"
-          MACHINE_LEARNING_HOST: "{{ immich_ml_host }}"
-          MACHINE_LEARNING_PORT: "{{ immich_ml_port }}"
-          MACHINE_LEARNING_WORKERS: "{{ immich_ml_workers }}"
-          MACHINE_LEARNING_WORKER_TIMEOUT: "{{ immich_ml_worker_timeout }}"
-        volumes:
-          - "{{ immich_config_dir }}:/config"
-          - "{{ immich_photos_dir }}:/photos"
-          - "{{ immich_libraries_dir }}:/libraries"
-        networks:
-          - name: immich_network
+    - name: Tear down existing Immich stack
+      community.docker.docker_compose_v2:
+        project_src: '{{ nas_docker_compose_dir }}/immich'
+        state: absent
+
+    - name: Start Immich stack
+      community.docker.docker_compose_v2:
+        project_src: '{{ nas_docker_compose_dir }}/immich'
+        state: present
+        pull: missing
+        remove_orphans: true
 
 - name: Stop Immich stack
   when: immich_enabled is false
   block:
-    - name: Remove immich container
-      community.docker.docker_container:
-        name: immich
+    - name: Tear down existing Immich stack
+      community.docker.docker_compose_v2:
+        project_src: '{{ nas_docker_compose_dir }}/immich'
         state: absent
 
-    - name: Remove immich_postgres container
-      community.docker.docker_container:
-        name: immich_postgres
-        state: absent
-
-    - name: Remove immich_redis container
-      community.docker.docker_container:
-        name: immich_redis
-        state: absent
-
-    - name: Remove immich network
-      community.docker.docker_network:
-        name: immich_network
+    - name: Remove Immich compose files
+      ansible.builtin.file:
+        path: '{{ nas_docker_compose_dir }}/immich'
         state: absent
