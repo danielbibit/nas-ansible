@@ -22,6 +22,9 @@ cadvisor_enabled: true
 promtail_enabled: true
 loki_enabled: true
 
+nginx_proxy_manager_enabled: true
+cloudflare_ddns_enabled: true
+
 system_groups:
   - { name: users, gid: 4200 }
   - { name: docker, gid: 4201 }

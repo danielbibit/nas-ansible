@@ -105,3 +105,15 @@
       tags:
         - immich
         - docker
+
+    - role: nginx_proxy_manager
+      tags:
+        - nginx_proxy_manager
+        - networking
+        - docker
+
+    - role: cloudflare_ddns
+      tags:
+        - cloudflare_ddns
+        - networking
+        - docker

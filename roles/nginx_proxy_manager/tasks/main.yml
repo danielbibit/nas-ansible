@@ -1,6 +1,6 @@
 ---
 - name: Start stack
-  when: immich_enabled is true
+  when: nginx_proxy_manager_enabled is true
   block:
     - name: Make sure nas default network exists
       community.docker.docker_network:
@@ -9,41 +9,41 @@
 
     - name: Make sure compose directory exists
       ansible.builtin.file:
-        path: '{{ nas_docker_compose_dir }}/immich'
+        path: '{{ nas_docker_compose_dir }}/nginx_proxy_manager'
         state: directory
         owner: '{{ nas_docker_uid }}'
         group: '{{ nas_docker_gid }}'
         mode: "0775"
 
-    - name: Copy compose file
+    - name: Copy compose
       ansible.builtin.template:
         src: '{{ role_path }}/templates/docker-compose.yml'
-        dest: '{{ nas_docker_compose_dir }}/immich/docker-compose.yml'
+        dest: '{{ nas_docker_compose_dir }}/nginx_proxy_manager/docker-compose.yml'
         owner: '{{ nas_docker_uid }}'
         group: '{{ nas_docker_gid }}'
         mode: "0775"
 
     - name: Tear down existing stack
       community.docker.docker_compose_v2:
-        project_src: '{{ nas_docker_compose_dir }}/immich'
+        project_src: '{{ nas_docker_compose_dir }}/nginx_proxy_manager'
         state: absent
 
     - name: Start stack
       community.docker.docker_compose_v2:
-        project_src: '{{ nas_docker_compose_dir }}/immich'
+        project_src: '{{ nas_docker_compose_dir }}/nginx_proxy_manager'
         state: present
         pull: missing
         remove_orphans: true
 
 - name: Stop stack
-  when: immich_enabled is false
+  when: nginx_proxy_manager_enabled is false
   block:
     - name: Tear down existing stack
       community.docker.docker_compose_v2:
-        project_src: '{{ nas_docker_compose_dir }}/immich'
+        project_src: '{{ nas_docker_compose_dir }}/nginx_proxy_manager'
         state: absent
 
     - name: Remove compose files
       ansible.builtin.file:
-        path: '{{ nas_docker_compose_dir }}/immich'
+        path: '{{ nas_docker_compose_dir }}/nginx_proxy_manager'
         state: absent
