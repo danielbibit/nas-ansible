@@ -1,0 +1,20 @@
+---
+services:
+  grafana:
+    image: grafana/grafana-enterprise
+    container_name: grafana
+    user: "{{ nas_docker_uid }}"
+    environment:
+      - "GF_AUTH_ANONYMOUS_ENABLED=true"
+    ports:
+      - "{{ grafana_port }}:3000"
+    volumes:
+      - "{{ grafana_data_directory }}:/var/lib/grafana"
+      - '{{ grafana_data_directory }}/provisioning:/etc/grafana/provisioning'
+      - '{{ grafana_data_directory }}/dashboards:/var/lib/grafana/dashboards'
+    restart: unless-stopped
+
+networks:
+  default:
+    name: nas
+    external: true
