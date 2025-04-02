@@ -59,12 +59,6 @@
         - backups
         - system
 
-    - role: glances
-      tags:
-        - glances
-        - monitoring
-        - docker
-
     - role: grafana
       tags:
         - grafana

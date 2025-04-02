@@ -4,7 +4,7 @@ nas_admin: nas
 nas_email_report_to: example-receiver@email.com
 nas_email_send_from: example-sender@email.com
 nas_docker_uid: 1001
-nas_docker_gid: 1001
+nas_docker_gid: 100
 nas_docker_directory: /srv/Users/docker
 nas_docker_compose_dir: /home/nas/containers/compose
 
@@ -14,8 +14,8 @@ nas_music_directory: /srv/Storage/Library/Music
 nas_photos_dir: /srv/Storage/Library/Pictures
 
 immich_enabled: true
+
 grafana_enabled: true
-glances_enabled: false
 node_exporter_enabled: true
 prometheus_enabled: true
 cadvisor_enabled: true
