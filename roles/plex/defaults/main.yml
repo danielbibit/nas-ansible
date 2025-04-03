@@ -1,0 +1,10 @@
+---
+plex_enabled: false
+
+plex_puid: "{{ nas_docker_uid }}"
+plex_pgid: "{{ nas_docker_gid }}"
+plex_tz: "America/Sao_Paulo"
+plex_version: "latest"
+plex_umask: "002"
+plex_config_dir: "{{ nas_docker_directory }}/plex"
+plex_media_dir: "{{ nas_library_dir }}"
