@@ -1,0 +1,44 @@
+---
+- name: Start qbittorrent stack
+  when: qbittorrent_enabled is true
+  block:
+    - name: Make sure nas default network exists
+      community.docker.docker_network:
+        name: nas
+        state: present
+
+    - name: Ensure qbittorrent compose directory exists
+      ansible.builtin.file:
+        path: '{{ nas_docker_compose_dir }}/qbittorrent'
+        state: directory
+        owner: '{{ qbittorrent_uid }}'
+        group: '{{ qbittorrent_gid }}'
+        mode: "0775"
+
+    - name: Copy qbittorrent compose template
+      ansible.builtin.template:
+        src: '{{ role_path }}/templates/docker-compose.yml'
+        dest: '{{ nas_docker_compose_dir }}/qbittorrent/docker-compose.yml'
+        owner: '{{ qbittorrent_uid }}'
+        group: '{{ qbittorrent_gid }}'
+        mode: "0775"
+
+    - name: Start qbittorrent stack
+      community.docker.docker_compose_v2:
+        project_src: '{{ nas_docker_compose_dir }}/qbittorrent'
+        state: present
+        pull: missing
+        remove_orphans: true
+
+- name: Stop qbittorrent stack
+  when: qbittorrent_enabled is false
+  block:
+    - name: Tear down qbittorrent stack
+      community.docker.docker_compose_v2:
+        project_src: '{{ nas_docker_compose_dir }}/qbittorrent'
+        state: absent
+
+    - name: Remove qbittorrent compose directory
+      ansible.builtin.file:
+        path: '{{ nas_docker_compose_dir }}/qbittorrent'
+        state: absent

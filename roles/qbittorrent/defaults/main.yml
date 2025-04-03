@@ -1,0 +1,8 @@
+---
+qbittorrent_enabled: false
+
+qbittorrent_uid: "{{ nas_docker_uid }}"
+qbittorrent_gid: "{{ nas_docker_gid }}"
+qbittorrent_timezone: "America/Sao_Paulo"
+qbittorrent_webui_port: "1337"
+qbittorrent_umask: "002"
