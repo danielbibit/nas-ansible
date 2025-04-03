@@ -111,3 +111,18 @@
         - cloudflare_ddns
         - networking
         - docker
+
+    - role: qbittorrent
+      tags:
+        - qbittorrent
+        - docker
+
+    - role: plex
+      tags:
+        - plex
+        - docker
+
+    - role: arr_stack
+      tags:
+        - arr_stack
+        - docker

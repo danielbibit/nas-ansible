@@ -1,0 +1,44 @@
+---
+- name: Start arr_stack
+  when: arr_stack_enabled is true
+  block:
+    - name: Make sure nas default network exists
+      community.docker.docker_network:
+        name: nas
+        state: present
+
+    - name: Make sure compose directory exists for arr_stack
+      ansible.builtin.file:
+        path: '{{ nas_docker_compose_dir }}/arr_stack'
+        state: directory
+        owner: '{{ nas_docker_uid }}'
+        group: '{{ nas_docker_gid }}'
+        mode: "0775"
+
+    - name: Copy docker-compose template for arr_stack
+      ansible.builtin.template:
+        src: '{{ role_path }}/templates/docker-compose.yml'
+        dest: '{{ nas_docker_compose_dir }}/arr_stack/docker-compose.yml'
+        owner: '{{ nas_docker_uid }}'
+        group: '{{ nas_docker_gid }}'
+        mode: "0775"
+
+    - name: Start arr_stack stack
+      community.docker.docker_compose_v2:
+        project_src: '{{ nas_docker_compose_dir }}/arr_stack'
+        state: present
+        pull: missing
+        remove_orphans: true
+
+- name: Stop arr_stack
+  when: arr_stack_enabled is false
+  block:
+    - name: Tear down existing arr_stack stack
+      community.docker.docker_compose_v2:
+        project_src: '{{ nas_docker_compose_dir }}/arr_stack'
+        state: absent
+
+    - name: Remove arr_stack compose directory
+      ansible.builtin.file:
+        path: '{{ nas_docker_compose_dir }}/arr_stack'
+        state: absent

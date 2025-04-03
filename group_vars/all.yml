@@ -8,10 +8,12 @@ nas_docker_gid: 100
 nas_docker_directory: /srv/Users/docker
 nas_docker_compose_dir: /home/nas/containers/compose
 
+nas_library_dir: /srv/Storage/Library
 nas_movie_directory: /srv/Storage/Library/Videos/Movies
 nas_tv_directory: /srv/Storage/Library/Videos/Series
 nas_music_directory: /srv/Storage/Library/Music
 nas_photos_dir: /srv/Storage/Library/Pictures
+nas_download_dir: /srv/Users/daniel/Downloads
 
 immich_enabled: true
 
@@ -21,6 +23,9 @@ prometheus_enabled: true
 cadvisor_enabled: true
 promtail_enabled: true
 loki_enabled: true
+qbittorrent_enabled: true
+plex_enabled: true
+arr_stack_enabled: true
 
 nginx_proxy_manager_enabled: true
 cloudflare_ddns_enabled: true
