@@ -4,6 +4,14 @@ datasources:
   - name: TestData
     type: testdata
 
+  - name: Loki
+    type: loki
+    url: http://loki:3100
+    access: proxy
+    jsonData:
+      maxLines: 1000
+      timeout: 60
+
 # deleteDatasources:
 #   - name: TestData provisioning
 #     orgId: 1
