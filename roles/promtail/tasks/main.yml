@@ -1,32 +1,54 @@
 ---
-- name: Copy promtail config
+- name: Template promtail config
+  when: promtail_enabled is true
   ansible.builtin.template:
     src: promtail-config.yml
     owner: "{{ nas_docker_gid }}"
     group: "{{ nas_docker_gid }}"
     mode: "0775"
     dest: "{{ promtail_dir }}/promtail-config.yml"
+  notify: Restart promtail
 
-- name: Manage promtail container
+- name: Start stack
   when: promtail_enabled is true
   block:
-    - name: Ensure promtail container is running
-      community.docker.docker_container:
-        name: promtail
-        image: grafana/promtail
-        ports:
-          - "{{ promtail_port }}:9080"
-        volumes:
-          - "{{ promtail_dir }}/promtail-config.yml:/etc/promtail/config.yml"
-          - /var/run/docker.sock:/var/run/docker.sock
-          - /var/lib/docker/containers:/var/lib/docker/containers
-          - /var/log:/var/log
-        restart_policy: always
+    - name: Make sure nas default network exists
+      community.docker.docker_network:
+        name: nas
+        state: present
 
-- name: Stop promtail
+    - name: Make sure compose directory exists
+      ansible.builtin.file:
+        path: '{{ nas_docker_compose_dir }}/promtail'
+        state: directory
+        owner: '{{ nas_docker_uid }}'
+        group: '{{ nas_docker_gid }}'
+        mode: "0775"
+
+    - name: Copy compose
+      ansible.builtin.template:
+        src: '{{ role_path }}/templates/docker-compose.yml'
+        dest: '{{ nas_docker_compose_dir }}/promtail/docker-compose.yml'
+        owner: '{{ nas_docker_uid }}'
+        group: '{{ nas_docker_gid }}'
+        mode: "0775"
+
+    - name: Start stack
+      community.docker.docker_compose_v2:
+        project_src: '{{ nas_docker_compose_dir }}/promtail'
+        state: present
+        pull: missing
+        remove_orphans: true
+
+- name: Stop stack
   when: promtail_enabled is false
   block:
-    - name: Ensure promtail container is stopped
-      community.docker.docker_container:
-        name: promtail
+    - name: Tear down existing stack
+      community.docker.docker_compose_v2:
+        project_src: '{{ nas_docker_compose_dir }}/promtail'
+        state: absent
+
+    - name: Remove compose files
+      ansible.builtin.file:
+        path: '{{ nas_docker_compose_dir }}/promtail'
         state: absent

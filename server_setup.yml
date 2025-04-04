@@ -59,11 +59,10 @@
         - backups
         - system
 
-    - role: glances
+    - role: containers
       tags:
-        - glances
-        - monitoring
-        - docker
+        - containers
+        - system
 
     - role: grafana
       tags:
@@ -99,4 +98,36 @@
       tags:
         - loki
         - monitoring
+        - docker
+
+    - role: immich
+      tags:
+        - immich
+        - docker
+
+    - role: nginx_proxy_manager
+      tags:
+        - nginx_proxy_manager
+        - networking
+        - docker
+
+    - role: cloudflare_ddns
+      tags:
+        - cloudflare_ddns
+        - networking
+        - docker
+
+    - role: qbittorrent
+      tags:
+        - qbittorrent
+        - docker
+
+    - role: plex
+      tags:
+        - plex
+        - docker
+
+    - role: arr_stack
+      tags:
+        - arr_stack
         - docker

@@ -1,0 +1,39 @@
+---
+- name: Start plex container if enabled
+  when: plex_enabled is true
+  block:
+    - name: Ensure plex compose directory exists
+      ansible.builtin.file:
+        path: '{{ nas_docker_compose_dir }}/plex'
+        state: directory
+        owner: '{{ nas_docker_uid }}'
+        group: '{{ nas_docker_gid }}'
+        mode: "0775"
+
+    - name: Copy plex compose file
+      ansible.builtin.template:
+        src: '{{ role_path }}/templates/docker-compose.yml'
+        dest: '{{ nas_docker_compose_dir }}/plex/docker-compose.yml'
+        owner: '{{ nas_docker_uid }}'
+        group: '{{ nas_docker_gid }}'
+        mode: "0775"
+
+    - name: Start plex container via docker-compose
+      community.docker.docker_compose_v2:
+        project_src: '{{ nas_docker_compose_dir }}/plex'
+        state: present
+        pull: missing
+        remove_orphans: true
+
+- name: Stop plex container if disabled
+  when: plex_enabled is not true
+  block:
+    - name: Stop plex container via docker-compose
+      community.docker.docker_compose_v2:
+        project_src: '{{ nas_docker_compose_dir }}/plex'
+        state: absent
+
+    - name: Remove plex compose directory
+      ansible.builtin.file:
+        path: '{{ nas_docker_compose_dir }}/plex'
+        state: absent

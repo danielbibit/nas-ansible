@@ -1,0 +1,15 @@
+services:
+  plex:
+    image: "ghcr.io/linuxserver/plex"
+    container_name: plex
+    network_mode: host
+    environment:
+      - PUID={{ plex_puid }}
+      - PGID={{ plex_pgid }}
+      - TZ={{ plex_tz }}
+      - VERSION={{ plex_version }}
+      - UMASK={{ plex_umask }}
+    volumes:
+      - "{{ plex_config_dir }}:/config"
+      - "{{ plex_media_dir }}:/media"
+    restart: unless-stopped

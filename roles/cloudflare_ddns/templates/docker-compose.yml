@@ -1,0 +1,16 @@
+---
+services:
+  cloudflare-ddns:
+    container_name: cloudflare-ddns
+    image: oznu/cloudflare-ddns:latest
+    restart: always
+    environment:
+      - API_KEY={{ cloudflare_ddns_api_key }}
+      - ZONE={{ cloudflare_ddns_zone }}
+      - SUBDOMAIN={{ cloudflare_ddns_subdomain }}
+      - PROXIED={{ cloudflare_ddns_proxy }}
+
+networks:
+  default:
+    name: nas
+    external: true

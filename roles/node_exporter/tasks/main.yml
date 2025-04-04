@@ -1,23 +1,39 @@
 ---
-- name: Start node_exporter
+- name: Start stack
   when: node_exporter_enabled is true
   block:
-    - name: Ensure node_exporter container is running
-      community.docker.docker_container:
-        name: node_exporter
-        image: quay.io/prometheus/node-exporter:latest
-        command: "--path.rootfs=/host"
-        network_mode: host
-        ports:
-          - "{{ node_exporter_port }}:9100"
-        restart_policy: unless-stopped
-        volumes:
-          - "/:/host:ro"
+    - name: Make sure compose directory exists
+      ansible.builtin.file:
+        path: '{{ nas_docker_compose_dir }}/node_exporter'
+        state: directory
+        owner: '{{ nas_docker_uid }}'
+        group: '{{ nas_docker_gid }}'
+        mode: "0775"
 
-- name: Stop node_exporter
+    - name: Copy compose
+      ansible.builtin.template:
+        src: '{{ role_path }}/templates/docker-compose.yml'
+        dest: '{{ nas_docker_compose_dir }}/node_exporter/docker-compose.yml'
+        owner: '{{ nas_docker_uid }}'
+        group: '{{ nas_docker_gid }}'
+        mode: "0775"
+
+    - name: Start stack
+      community.docker.docker_compose_v2:
+        project_src: '{{ nas_docker_compose_dir }}/node_exporter'
+        state: present
+        pull: missing
+        remove_orphans: true
+
+- name: Stop stack
   when: node_exporter_enabled is false
   block:
-    - name: Ensure node_exporter container is stopped
-      community.docker.docker_container:
-        name: node_exporter
+    - name: Tear down existing stack
+      community.docker.docker_compose_v2:
+        project_src: '{{ nas_docker_compose_dir }}/node_exporter'
+        state: absent
+
+    - name: Remove compose files
+      ansible.builtin.file:
+        path: '{{ nas_docker_compose_dir }}/node_exporter'
         state: absent

@@ -3,3 +3,6 @@ prometheus_enabled: false
 
 prometheus_data_dir: "{{ nas_docker_directory }}/prometheus/config"
 prometheus_port: 9090
+
+prometheus_hass_token: ""
+prometheus_hass_target: "yourhassdomain.com"

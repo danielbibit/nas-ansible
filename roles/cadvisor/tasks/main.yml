@@ -1,29 +1,39 @@
 ---
-- name: Start cadvisor
+- name: Start stack
   when: cadvisor_enabled is true
   block:
-    - name: Ensure cadvisor container is running
-      community.docker.docker_container:
-        name: cadvisor
-        image: gcr.io/cadvisor/cadvisor:latest
-        privileged: true
-        ports:
-          - "{{ cadvisor_port }}:8080"
-        volumes:
-          - /:/rootfs:ro
-          - /var/run:/var/run:ro
-          - /sys:/sys:ro
-          - /var/lib/docker/:/var/lib/docker:ro
-          - /dev/disk/:/dev/disk:ro
-        command:
-          - '-housekeeping_interval=10s'
-          # - '-docker_only=true'
-        restart_policy: always
+    - name: Make sure compose directory exists
+      ansible.builtin.file:
+        path: '{{ nas_docker_compose_dir }}/cadvisor'
+        state: directory
+        owner: '{{ nas_docker_uid }}'
+        group: '{{ nas_docker_gid }}'
+        mode: "0775"
 
-- name: Stop cadvisor
+    - name: Copy compose
+      ansible.builtin.template:
+        src: '{{ role_path }}/templates/docker-compose.yml'
+        dest: '{{ nas_docker_compose_dir }}/cadvisor/docker-compose.yml'
+        owner: '{{ nas_docker_uid }}'
+        group: '{{ nas_docker_gid }}'
+        mode: "0775"
+
+    - name: Start stack
+      community.docker.docker_compose_v2:
+        project_src: '{{ nas_docker_compose_dir }}/cadvisor'
+        state: present
+        pull: missing
+        remove_orphans: true
+
+- name: Stop stack
   when: cadvisor_enabled is false
   block:
-    - name: Ensure cadvisor container is stopped
-      community.docker.docker_container:
-        name: cadvisor
+    - name: Tear down existing stack
+      community.docker.docker_compose_v2:
+        project_src: '{{ nas_docker_compose_dir }}/cadvisor'
+        state: absent
+
+    - name: Remove compose files
+      ansible.builtin.file:
+        path: '{{ nas_docker_compose_dir }}/cadvisor'
         state: absent

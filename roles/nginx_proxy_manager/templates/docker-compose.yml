@@ -1,0 +1,20 @@
+---
+services:
+  nginx-proxy-manager:
+    container_name: nginx-proxy-manager
+    image: 'jc21/nginx-proxy-manager:latest'
+    restart: always
+    ports:
+      - '80:80'
+      - '81:81'
+      - '443:443'
+      - '4280:80'
+      - '42443:443'
+    volumes:
+      - "{{ nginx_proxy_manager_data_dir }}/data:/data"
+      - "{{ nginx_proxy_manager_data_dir }}/letsencrypt:/etc/letsencrypt"
+
+networks:
+  default:
+    name: nas
+    external: true

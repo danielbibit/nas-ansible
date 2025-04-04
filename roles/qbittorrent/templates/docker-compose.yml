@@ -1,0 +1,24 @@
+services:
+  qbittorrent:
+    image: ghcr.io/linuxserver/qbittorrent
+    container_name: qbittorrent
+    environment:
+      - PUID={{ qbittorrent_uid }}
+      - PGID={{ qbittorrent_gid }}
+      - TZ={{ qbittorrent_timezone }}
+      - UMASK={{ qbittorrent_umask }}
+      - WEBUI_PORT={{ qbittorrent_webui_port }}
+    volumes:
+      - "{{ nas_docker_directory }}/qbittorrent:/config"
+      - "{{ nas_download_dir }}:/downloads"
+
+    ports:
+      - 6881:6881
+      - 6881:6881/udp
+      - '{{ qbittorrent_webui_port }}:1337'
+    restart: unless-stopped
+
+networks:
+  default:
+    name: nas
+    external: true

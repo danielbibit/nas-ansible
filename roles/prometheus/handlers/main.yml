@@ -1,0 +1,5 @@
+---
+- name: Restart prometheus
+  community.docker.docker_compose_v2:
+    project_src: '{{ nas_docker_compose_dir }}/prometheus'
+    state: restarted

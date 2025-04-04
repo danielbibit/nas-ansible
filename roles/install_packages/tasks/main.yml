@@ -1,26 +1,27 @@
 - name: Install system packages
   ansible.builtin.apt:
     pkg:
-    - zfsutils-linux
-    - docker.io
-    - docker-compose
+      - zfsutils-linux
+      - docker.io
+      - docker-compose
 
 - name: Install tools packages
   ansible.builtin.apt:
     pkg:
-    - iperf
-    - iotop
-    - sysstat
-    - ncdu
-    - ranger
-    - dstat
+      - iperf
+      - iotop
+      - sysstat
+      - ncdu
+      - ranger
+      - dstat
+      - jq
 
 - name: Install kvm packages
   ansible.builtin.apt:
     pkg:
-    - qemu-system-x86
-    - libvirt-daemon-system
-    - libvirt-clients
-    - bridge-utils
-    - ovmf
-    - virtinst
+      - qemu-system-x86
+      - libvirt-daemon-system
+      - libvirt-clients
+      - bridge-utils
+      - ovmf
+      - virtinst

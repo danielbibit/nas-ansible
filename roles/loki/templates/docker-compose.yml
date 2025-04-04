@@ -1,0 +1,16 @@
+---
+services:
+  loki:
+    image: grafana/loki
+    container_name: loki
+    user: "{{ nas_docker_uid }}"
+    ports:
+      - "{{ loki_port }}:3100"
+    volumes:
+      - "{{ loki_volume_path }}:/loki"
+    restart: "always"
+
+networks:
+  default:
+    name: nas
+    external: true

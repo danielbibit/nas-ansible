@@ -1,0 +1,17 @@
+immich_enabled: false
+
+immich_puid: "{{ nas_docker_uid }}"
+immich_pgid: "{{ nas_docker_gid }}"
+immich_timezone: Etc/UTC
+
+immich_port: "8089"
+
+immich_ml_host: "0.0.0.0"
+immich_ml_port: "3003"
+immich_ml_workers: "1"
+immich_ml_worker_timeout: "120"
+
+immich_config_dir: "{{ nas_docker_directory }}/immich"
+immich_photos_dir: "{{ nas_photos_dir }}/immich"
+immich_libraries_dir: "{{ nas_photos_dir }}"
+immich_postgres_data_dir: "{{ nas_docker_directory }}/immich_postgres"
