@@ -14,6 +14,7 @@
       - ncdu
       - ranger
       - dstat
+      - jq
 
 - name: Install kvm packages
   ansible.builtin.apt:

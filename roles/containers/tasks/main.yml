@@ -1,33 +1,10 @@
-- name: Copy all docker-compose files
-  ansible.builtin.template:
-    src: "{{ item }}"
-    dest: /home/{{ nas_admin }}/compose/
-    owner: root
-    mode: 775
-  with_fileglob:
-    - ../files/compose/*
-
-- name: Copy all private docker-compose files
-  ansible.builtin.template:
-    src: "{{ item }}"
-    dest: /home/{{ nas_admin }}/compose/
-    owner: root
-    mode: 775
-  with_fileglob:
-    - ../files/compose/private/*
-
-- name: Docker-compose up all container
-  ansible.builtin.shell: docker-compose --project-name {{ item | basename }} -f /home/nas/compose/{{ item | basename }} up -d
-  with_fileglob:
-    - ../files/compose/*
-    - ../files/compose/private/*
-
+---
 - name: Copy upgrade script
   ansible.builtin.copy:
-    src: "../files/docker_upgrade.sh"
+    src: "{{ role_path }}/files/docker_upgrade.sh"
     dest: /home/{{ nas_admin }}/scripts
     owner: root
-    mode: 775
+    mode: "775"
 
 - name: Creates cron for auto update every sunday
   ansible.builtin.cron:
@@ -38,7 +15,3 @@
     user: root
     job: 'bash /home/{{ nas_admin }}/scripts/docker_upgrade.sh > /home/{{ nas_admin }}/scripts/docker_upgrade_output 2>&1'
     # job: 'bash /home/{{ nas_admin }}/scripts/docker_upgrade.sh | /urs/sbin/sendmail -t {{ email_report_to }}'
-
-# TODO setup promtail config
-# TODO setup prometheus config
-# TODO setup zigbee2mqtt config

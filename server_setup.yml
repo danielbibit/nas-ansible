@@ -59,6 +59,11 @@
         - backups
         - system
 
+    - role: containers
+      tags:
+        - containers
+        - system
+
     - role: grafana
       tags:
         - grafana
