@@ -5,7 +5,11 @@ services:
     image: "quay.io/prometheus/node-exporter:latest"
     command:
       - "--path.rootfs=/host"
-    network_mode: "host"
     restart: "unless-stopped"
     volumes:
       - "/:/host:ro"
+
+networks:
+  default:
+    name: nas
+    external: true

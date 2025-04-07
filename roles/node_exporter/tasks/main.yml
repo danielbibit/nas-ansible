@@ -2,6 +2,11 @@
 - name: Start stack
   when: node_exporter_enabled is true
   block:
+    - name: Make sure docker network exists
+      community.docker.docker_network:
+        name: nas
+        state: present
+
     - name: Make sure compose directory exists
       ansible.builtin.file:
         path: '{{ nas_docker_compose_dir }}/node_exporter'
