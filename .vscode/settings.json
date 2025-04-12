@@ -6,4 +6,17 @@
     "gitlens.plusFeatures.enabled": true,
     "cSpell.enabled": true,
     "ansible.python.interpreterPath": "/usr/local/bin/python",
+    "workbench.colorCustomizations": {
+        "commandCenter.border": "#e7e7e799",
+        "statusBar.background": "#129646",
+        "statusBar.foreground": "#e7e7e7",
+        "statusBarItem.hoverBackground": "#17c45b",
+        "statusBarItem.remoteBackground": "#129646",
+        "statusBarItem.remoteForeground": "#e7e7e7",
+        "titleBar.activeBackground": "#129646",
+        "titleBar.activeForeground": "#e7e7e7",
+        "titleBar.inactiveBackground": "#12964699",
+        "titleBar.inactiveForeground": "#e7e7e799"
+    },
+    "peacock.remoteColor": "#129646",
 }

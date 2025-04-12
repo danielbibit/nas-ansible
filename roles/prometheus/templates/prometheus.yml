@@ -5,17 +5,17 @@ scrape_configs:
     static_configs:
       - targets: ['localhost:9090']
 
-  - job_name: 'docker'
+  - job_name: 'nas_exporter'
     static_configs:
-      - targets: ['localhost:9323']
+      - targets: ['node_exporter:9100']
+        labels:
+          instance: 'nas'
 
-  - job_name: 'nas'
-    static_configs:
-      - targets: ['localhost:9100']
-
-  - job_name: 'cadvisor'
+  - job_name: 'nas_cadvisor'
     static_configs:
       - targets: ['cadvisor:8080']
+        labels:
+          instance: 'nas'
 
   - job_name: "hass"
     scrape_interval: 60s
