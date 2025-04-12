@@ -70,7 +70,7 @@
         - monitoring
         - docker
 
-    - role: node_exporter
+    - role: prometheus.prometheus.node_exporter
       tags:
         - node_exporter
         - monitoring
