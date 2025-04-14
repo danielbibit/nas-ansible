@@ -17,6 +17,12 @@ scrape_configs:
         labels:
           instance: 'nas'
 
+  - job_name: 'dex'
+    static_configs:
+      - targets: ['dex:8080']
+        labels:
+          instance: 'nas'
+
   - job_name: "hass"
     scrape_interval: 60s
     metrics_path: /api/prometheus

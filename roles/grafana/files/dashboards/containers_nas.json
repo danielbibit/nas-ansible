@@ -36,8 +36,8 @@
       "repeatDirection": "h",
       "targets": [
         {
-          "expr": "sum(container_memory_usage_bytes{name=~\".+\"}) by (name)",
-          "interval": "5m",
+          "expr": "sum(container_memory_usage_bytes{name=~\"$container\"}) by (name)",
+          "interval": "1m",
           "legendFormat": "{{name}}",
           "refId": ""
         }
@@ -51,6 +51,7 @@
         "defaults": {
           "custom": {
             "drawStyle": "line",
+            "fillOpacity": 10.0,
             "lineInterpolation": "linear"
           },
           "unit": "%"
@@ -78,9 +79,16 @@
       "repeatDirection": "h",
       "targets": [
         {
-          "expr": "100 * sum(rate(container_cpu_system_seconds_total{name=~\".+\"}[$__rate_interval])) by (name)",
-          "interval": "5m",
+          "expr": "100 * sum(rate(container_cpu_system_seconds_total{name=~\"$container\"}[$__rate_interval])) by (name)",
+          "hide": true,
+          "interval": "1m",
           "legendFormat": "{{name}}",
+          "refId": ""
+        },
+        {
+          "expr": "100 * sum(rate(dex_cpu_utilization_seconds_total{container_name=~\"$container\"}[$__rate_interval])) by (container_name)",
+          "interval": "1m",
+          "legendFormat": "{{container_name}}",
           "refId": ""
         }
       ],
@@ -120,13 +128,13 @@
       "repeatDirection": "h",
       "targets": [
         {
-          "expr": "sum(rate(container_network_receive_bytes_total{name=~\".+\"}[$__rate_interval])) by (name)",
-          "interval": "5m",
+          "expr": "sum(rate(container_network_receive_bytes_total{name=~\"$container\"}[$__rate_interval])) by (name)",
+          "interval": "1m",
           "legendFormat": "{{name}}",
           "refId": ""
         }
       ],
-      "title": "Network Usage - Download",
+      "title": "Network Usage - Rx",
       "transparent": false,
       "type": "timeseries"
     },
@@ -162,13 +170,13 @@
       "repeatDirection": "h",
       "targets": [
         {
-          "expr": "sum(rate(container_network_transmit_bytes_total{name=~\".+\"}[$__rate_interval])) by (name)",
-          "interval": "5m",
+          "expr": "sum(rate(container_network_transmit_bytes_total{name=~\"$container\"}[$__rate_interval])) by (name)",
+          "interval": "1m",
           "legendFormat": "{{name}}",
           "refId": ""
         }
       ],
-      "title": "Network Usage - Upload",
+      "title": "Network Usage - Tx",
       "transparent": false,
       "type": "timeseries"
     },
@@ -204,8 +212,8 @@
       "repeatDirection": "h",
       "targets": [
         {
-          "expr": "sum(rate(container_fs_reads_bytes_total{name=~\".+\"}[5m])) by (name)",
-          "interval": "5m",
+          "expr": "sum(rate(container_fs_reads_bytes_total{name=~\"$container\"}[$__rate_interval])) by (name)",
+          "interval": "1m",
           "legendFormat": "{{name}}",
           "refId": ""
         }
@@ -246,8 +254,8 @@
       "repeatDirection": "h",
       "targets": [
         {
-          "expr": "sum(rate(container_fs_writes_bytes_total{name=~\".+\"}[$__rate_interval])) by (name)",
-          "interval": "5m",
+          "expr": "sum(rate(container_fs_writes_bytes_total{name=~\"$container\"}[$__rate_interval])) by (name)",
+          "interval": "1m",
           "legendFormat": "{{name}}",
           "refId": ""
         }
@@ -272,10 +280,10 @@
       "repeatDirection": "h",
       "targets": [
         {
-          "expr": "(time() - container_start_time_seconds{name=~\".+\"})",
+          "expr": "(time() - container_start_time_seconds{name=~\"$container\"})",
           "format": "table",
           "instant": true,
-          "interval": "5m",
+          "interval": "1m",
           "legendFormat": "{{name}}",
           "range": false,
           "refId": ""
@@ -312,7 +320,30 @@
     }
   ],
   "schemaVersion": 39,
-  "templating": {},
+  "templating": {
+    "list": [
+      {
+        "allowCustomValue": true,
+        "auto": false,
+        "auto_count": 30,
+        "auto_min": "10s",
+        "current": {
+          "selected": true,
+          "text": "All",
+          "value": "$__all"
+        },
+        "includeAll": true,
+        "label": "Container",
+        "multi": true,
+        "name": "container",
+        "query": "label_values(container_cpu_usage_seconds_total, name)",
+        "refresh": 2,
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      }
+    ]
+  },
   "timezone": "browser",
   "title": "Containers - nas"
 }

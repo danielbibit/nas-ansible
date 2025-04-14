@@ -15,21 +15,31 @@ from grafana_foundation_sdk.models  import (
 def set_legend_on_side():
     return common_builder.VizLegendOptions().placement(common.LegendPlacement.RIGHT).show_legend(True)
 
-time_series_min_step: str = '5m'
+time_series_min_step: str = '1m'
 
 builder = (
     dashboard.Dashboard("Containers - nas")
     .id('nas_containers_test')
     .tooltip(common.TooltipDisplayMode.SINGLE)
 
+    .with_variable(
+        dashboard.QueryVariable('container')
+        .label('Container')
+        .query('label_values(container_cpu_usage_seconds_total, name)')
+        # .datasource('prometheus')
+        .current(dashboard_model.VariableOption(selected=True, text="All", value="$__all"))
+        .refresh(dashboard_model.VariableRefresh.ON_TIME_RANGE_CHANGED)
+        .sort(dashboard_model.VariableSort.ALPHABETICAL_ASC)
+        .multi(True)
+        .include_all(True)
+    )
+
     .with_panel(
         timeseries.Panel()
         .title('Memory Usage')
         .with_target(
             prometheus.Dataquery()
-            # Use sum to sum containers with same name after restart
-            # name=~".+" to exclude the All sum
-            .expr('sum(container_memory_usage_bytes{name=~".+"}) by (name)')
+            .expr('sum(container_memory_usage_bytes{name=~"$container"}) by (name)')
             .interval(time_series_min_step)
             .legend_format('{{name}}')
         )
@@ -45,12 +55,20 @@ builder = (
         .title('CPU Usage')
         .with_target(
             prometheus.Dataquery()
-            .expr('100 * sum(rate(container_cpu_system_seconds_total{name=~".+"}[$__rate_interval])) by (name)')
+            .expr('100 * sum(rate(container_cpu_system_seconds_total{name=~"$container"}[$__rate_interval])) by (name)')
             .interval(time_series_min_step)
             .legend_format('{{name}}')
+            .hide(True) # Cadvisor has a bug that does not report CPU usage for child processes on cgroup v2
+        )
+        .with_target(
+            prometheus.Dataquery()
+            .expr('100 * sum(rate(dex_cpu_utilization_seconds_total{container_name=~"$container"}[$__rate_interval])) by (container_name)')
+            .interval(time_series_min_step)
+            .legend_format('{{container_name}}')
         )
         .legend(set_legend_on_side())
         .unit('%')
+        .fill_opacity(10.0)
         .draw_style(common.GraphDrawStyle.LINE)
         .line_interpolation(common.LineInterpolation.LINEAR)
         .height(8)
@@ -59,10 +77,10 @@ builder = (
 
     .with_panel(
         timeseries.Panel()
-        .title('Network Usage - Download')
+        .title('Network Usage - Rx')
         .with_target(
             prometheus.Dataquery()
-            .expr('sum(rate(container_network_receive_bytes_total{name=~".+"}[$__rate_interval])) by (name)')
+            .expr('sum(rate(container_network_receive_bytes_total{name=~"$container"}[$__rate_interval])) by (name)')
             .interval(time_series_min_step)
             .legend_format('{{name}}')
         )
@@ -76,10 +94,10 @@ builder = (
 
     .with_panel(
         timeseries.Panel()
-        .title('Network Usage - Upload')
+        .title('Network Usage - Tx')
         .with_target(
             prometheus.Dataquery()
-            .expr('sum(rate(container_network_transmit_bytes_total{name=~".+"}[$__rate_interval])) by (name)')
+            .expr('sum(rate(container_network_transmit_bytes_total{name=~"$container"}[$__rate_interval])) by (name)')
             .interval(time_series_min_step)
             .legend_format('{{name}}')
         )
@@ -96,7 +114,7 @@ builder = (
         .title('Disk Usage - Read')
         .with_target(
             prometheus.Dataquery()
-            .expr('sum(rate(container_fs_reads_bytes_total{name=~".+"}[5m])) by (name)')
+            .expr('sum(rate(container_fs_reads_bytes_total{name=~"$container"}[$__rate_interval])) by (name)')
             .interval(time_series_min_step)
             .legend_format('{{name}}')
         )
@@ -113,7 +131,7 @@ builder = (
         .title('Disk Usage - Write')
         .with_target(
             prometheus.Dataquery()
-            .expr('sum(rate(container_fs_writes_bytes_total{name=~".+"}[$__rate_interval])) by (name)')
+            .expr('sum(rate(container_fs_writes_bytes_total{name=~"$container"}[$__rate_interval])) by (name)')
             .interval(time_series_min_step)
             .legend_format('{{name}}')
         )
@@ -129,7 +147,7 @@ builder = (
         table.Panel()
         .with_target(
             prometheus.Dataquery()
-            .expr('(time() - container_start_time_seconds{name=~".+"})')
+            .expr('(time() - container_start_time_seconds{name=~"$container"})')
             .interval(time_series_min_step)
             .legend_format('{{name}}')
             .format(prometheus_model.PromQueryFormat.TABLE)

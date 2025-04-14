@@ -1,0 +1,15 @@
+---
+services:
+  dex:
+    image: spx01/dex
+    container_name: dex
+    volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+        - "{{ dex_port }}:8080"
+    restart: always
+
+networks:
+  default:
+    name: nas
+    external: true
