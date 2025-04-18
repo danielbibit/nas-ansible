@@ -24,3 +24,20 @@ scrape_configs:
         labels:
           job: varlogs
           __path__: /var/log/*.log
+    relabel_configs:
+      # Label the filename (e.g., syslog, auth.log)
+      - source_labels: ['__path__']
+        target_label: 'filename'
+        # target_label: logfile
+        regex: '.*/([^/]+)\.log'
+        replacement: '$1'
+
+  - job_name: journal
+    journal:
+      max_age: 48h
+      path: /var/log/journal
+      labels:
+        job: systemd-journal
+    relabel_configs:
+      - source_labels: ['__journal__systemd_unit']
+        target_label: 'unit'
