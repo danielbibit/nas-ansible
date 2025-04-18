@@ -1,0 +1,407 @@
+{
+  "annotations": {},
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": "single",
+  "id": "node_nas_1",
+  "panels": [
+    {
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "green",
+            "mode": "fixed"
+          },
+          "unit": "dtdhms"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 0,
+        "y": 0
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": []
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "expr": "time() - node_boot_time_seconds",
+          "refId": ""
+        }
+      ],
+      "title": "Uptime",
+      "transparent": false,
+      "type": "stat"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "max": 100.0,
+          "min": 0.0,
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "green",
+                "value": 70
+              },
+              {
+                "color": "yellow",
+                "value": 80
+              },
+              {
+                "color": "red",
+                "value": 90
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 4,
+        "y": 0
+      },
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "expr": "(node_memory_MemTotal_bytes{instance=~\"nas\"} - node_memory_MemAvailable_bytes{instance=~\"nas\"}) / node_memory_MemTotal_bytes{instance=~\"nas\"} * 100",
+          "refId": ""
+        }
+      ],
+      "title": "Memory Usage",
+      "transparent": false,
+      "type": "gauge"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "left",
+            "inspect": false
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 8,
+        "y": 0
+      },
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "reducer": [],
+          "show": false
+        },
+        "frameIndex": 0,
+        "showHeader": false,
+        "showTypeIcons": false
+      },
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "expr": "node_load1{instance=\"nas\"}",
+          "format": "table",
+          "instant": true,
+          "range": false,
+          "refId": ""
+        },
+        {
+          "expr": "node_load5{instance=\"nas\"}",
+          "format": "table",
+          "instant": true,
+          "range": false,
+          "refId": ""
+        },
+        {
+          "expr": "node_load15{instance=\"nas\"}",
+          "format": "table",
+          "instant": true,
+          "range": false,
+          "refId": ""
+        }
+      ],
+      "title": "System Load",
+      "transformations": [
+        {
+          "id": "merge",
+          "options": null
+        },
+        {
+          "id": "calculateField",
+          "options": {
+            "include": [
+              "Value #A",
+              "Value #B",
+              "Value #C"
+            ],
+            "mode": "reduceRow",
+            "reducer": "sum"
+          }
+        },
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "include": {
+              "names": [
+                "__name__",
+                "Total"
+              ]
+            }
+          }
+        }
+      ],
+      "transparent": false,
+      "type": "table"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": 0
+              },
+              {
+                "color": "green",
+                "value": 10737418240
+              }
+            ]
+          },
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 12,
+        "y": 0
+      },
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "expr": "node_filesystem_free_bytes{mountpoint=\"/\"}",
+          "refId": ""
+        }
+      ],
+      "title": "Free Disk root",
+      "transparent": false,
+      "type": "stat"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "unit": "celsius"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 16,
+        "y": 0
+      },
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "asc"
+        }
+      },
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "expr": "node_hwmon_temp_celsius{instance=~\"nas\", sensor=~\"temp1\"}",
+          "refId": ""
+        }
+      ],
+      "title": "Temperature",
+      "transparent": false,
+      "type": "timeseries"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "unit": "celsius"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 20,
+        "y": 0
+      },
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "expr": "node_hwmon_temp_celsius{instance=~\"nas\", sensor=~\"temp1\"}",
+          "refId": ""
+        }
+      ],
+      "title": "Temperature",
+      "transparent": false,
+      "type": "stat"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 12,
+        "x": 0,
+        "y": 4
+      },
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "expr": "100 * sum(rate(node_cpu_seconds_total{mode=~\"system|user\"}[$__rate_interval])) / count(node_cpu_seconds_total{mode=\"user\"})",
+          "interval": "1m",
+          "refId": ""
+        }
+      ],
+      "title": "CPU",
+      "transparent": false,
+      "type": "timeseries"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "unit": "Bps"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 12,
+        "x": 12,
+        "y": 4
+      },
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "expr": "-sum(rate(node_disk_written_bytes_total[$__rate_interval]))",
+          "interval": "1m",
+          "refId": ""
+        },
+        {
+          "expr": "sum(rate(node_disk_read_bytes_total[$__rate_interval]))",
+          "interval": "1m",
+          "refId": ""
+        }
+      ],
+      "title": "Disk IO",
+      "transparent": false,
+      "type": "timeseries"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 12,
+        "x": 0,
+        "y": 14
+      },
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "expr": "100 - (node_filesystem_avail_bytes{device != \"tmpfs\"} * 100) / node_filesystem_size_bytes{device != \"tmpfs\"}",
+          "format": "table",
+          "instant": true,
+          "range": false,
+          "refId": ""
+        }
+      ],
+      "title": "File Systems",
+      "transformations": [
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "include": {
+              "names": [
+                "device",
+                "fstype",
+                "mountpoint",
+                "Value"
+              ]
+            }
+          }
+        }
+      ],
+      "transparent": false,
+      "type": "table"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "unit": "Bps"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 12,
+        "x": 12,
+        "y": 14
+      },
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "expr": "rate(node_network_transmit_bytes_total[$__rate_interval])",
+          "interval": "1m",
+          "legendFormat": "{{device}}",
+          "refId": ""
+        },
+        {
+          "expr": "-rate(node_network_receive_bytes_total[$__rate_interval])",
+          "interval": "1m",
+          "legendFormat": "{{device}}",
+          "refId": ""
+        }
+      ],
+      "title": "Network Usage",
+      "transparent": false,
+      "type": "timeseries"
+    }
+  ],
+  "schemaVersion": 39,
+  "templating": {},
+  "timezone": "browser",
+  "title": "Node Stats - nas"
+}
