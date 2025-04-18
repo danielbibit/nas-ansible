@@ -63,6 +63,19 @@ services:
       - '{{ arr_stack_jackett_port }}:9117'
     restart: unless-stopped
 
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
+    environment:
+      - PUID={{ arr_stack_puid }}
+      - PGID={{ arr_stack_pgid }}
+      - TZ={{ arr_stack_timezone }}
+    volumes:
+      - '{{ arr_stack_prowlarr_config_dir }}:/config'
+    ports:
+      - 9696:9696
+    restart: unless-stopped
+
 networks:
   default:
     name: nas

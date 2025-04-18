@@ -12,6 +12,13 @@
         mode: "0775"
       notify: Restart grafana
 
+    - name: Generate dashboards on host # noqa no-changed-when
+      ansible.builtin.command: "/bin/bash {{ playbook_dir }}/scripts/generate_dashboards.sh"
+      args:
+        chdir: "{{ playbook_dir }}/scripts"
+      delegate_to: 127.0.0.1
+      tags: grafana_dashboards
+
     - name: Copy all dashboards
       ansible.builtin.copy:
         src: "{{ role_path }}/files/dashboards"
@@ -20,6 +27,7 @@
         owner: '{{ nas_docker_uid }}'
         group: '{{ nas_docker_gid }}'
         mode: "0775"
+      tags: grafana_dashboards
 
 - name: Start stack
   when: grafana_enabled is true

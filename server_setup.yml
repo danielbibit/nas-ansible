@@ -70,7 +70,7 @@
         - monitoring
         - docker
 
-    - role: node_exporter
+    - role: prometheus.prometheus.node_exporter
       tags:
         - node_exporter
         - monitoring
@@ -130,4 +130,10 @@
     - role: arr_stack
       tags:
         - arr_stack
+        - docker
+
+    - role: dex
+      tags:
+        - dex
+        - monitoring
         - docker

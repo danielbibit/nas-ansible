@@ -351,6 +351,18 @@ testing = ["covdefaults (>=2.3)", "coverage (>=7.6.10)", "diff-cover (>=9.2.1)",
 typing = ["typing-extensions (>=4.12.2) ; python_version < \"3.11\""]
 
 [[package]]
+name = "grafana-foundation-sdk"
+version = "1743724444!11.5.0"
+description = "A set of tools, types and libraries for building and manipulating Grafana objects."
+optional = false
+python-versions = ">=3.11"
+groups = ["main"]
+files = [
+    {file = "grafana_foundation_sdk-1743724444!11.5.0-py3-none-any.whl", hash = "sha256:832957b36faca43db568e6f8fe23d2f6d150766724a4e49b44497dbd17cb5d11"},
+    {file = "grafana_foundation_sdk-1743724444!11.5.0.tar.gz", hash = "sha256:36e05bd34818c4be20230897fffe34f1fabbda1a6735eb7df8532b6cf7ba64e4"},
+]
+
+[[package]]
 name = "importlib-metadata"
 version = "8.6.1"
 description = "Read metadata from Python packages"
@@ -950,4 +962,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.12"
-content-hash = "72a84d96da7b108c6f9cb69a2bf533f2bac73dbebbefb9630e805bb528ed5c05"
+content-hash = "3395d4d17f079c698961a301b7a72e8eae64b4f1cc8c847636306d97e698bb1c"

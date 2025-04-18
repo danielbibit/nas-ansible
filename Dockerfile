@@ -21,4 +21,6 @@ COPY . ./
 
 RUN poetry install --no-root
 
+RUN ansible-galaxy collection install prometheus.prometheus
+
 RUN export ANSIBLE_HOST_KEY_CHECKING=False
