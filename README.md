@@ -31,7 +31,6 @@ to implement a similar server, you can check the pre requisites section to get s
 * Reverse Proxy NGINX
 
 ### Media and Downloads
-* Jdownloader - Generic download client
 * qBittorrent - Torrent client
 * Jackett - Torrent source aggregator
 * Sonarr - TV Shows automatic download
@@ -49,7 +48,6 @@ to implement a similar server, you can check the pre requisites section to get s
 * Prometheus
 * Loki
 * Grafana dashboard with alerts
-* Glances
 
 ## Pre requisites
 ### OS setup - Ubuntu

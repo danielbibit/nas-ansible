@@ -1,0 +1,6 @@
+---
+backup_immich_photos_directory: "/path/to/photos"
+backup_immich_aws_access_key_id: "your-access-key-id"
+backup_immich_aws_secret_access_key: ""
+backup_immich_restic_repository_path: "s3:url/your/bukcet"
+backup_immich_restic_password: "password"

@@ -66,6 +66,12 @@
         - backups
         - system
 
+    - role: backup_restic
+      tags:
+        - restic
+        - backups
+        - system
+
     - role: containers
       tags:
         - containers
