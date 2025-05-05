@@ -9,7 +9,7 @@
 ## Top Bay
 | Brand   | Model     | Size | Serial          | DateBuy    | Disk id                                  | Controller | APM | Spin Down | Comments       |
 |---------|-----------|------|-----------------|------------|------------------------------------------|------------|-----|-----------|----------------|
-| Seagate | Ironwolf  | 4TB  | ZDHBVCKS        | 18/11/2022 | ata-ST4000VN008-2DR166_ZDHBVCKS          | PCI (R)    | 255 | 120       | Lastbuy        |
+| WD      | Purple    | 4TB  | WD-WX22DA4NUCJN | 05/05/2025 | ata-WDC_WD43PURZ-74BWPY0_WD-WX22DA4NUCJN | PCI (R)    |     |           | -              |
 | Seagate | Barracuda | 4TB  | 2CV104_ZFN0T8Z9 | 20/05/2018 | ata-ST4000DM004-2CV104_ZFN0T8Z9          | MOBO (R)   |     |           | Antigo Parity1 |
 | WD      | Purple    | 4TB  | WD-WX62D12JZ0FH | 18/11/2022 | ata-WDC_WD42PURZ-85B4YY0_WD-WX62D12JZ0FH | MOBO (R)   |     |           | Lastbuy        |
 
