@@ -1,5 +1,14 @@
 # Disk managment Manual
 
+## Disk replacement procedure
+1. Remove the faulted disk from the NAS. (Look up the disk_map.md for the physical location)
+2. Insert the new disk into the NAS. Update the disk_map.md with the new disk.
+3. Check if the disk qualifies for warranty.
+4. Boot up and find the new disk (See 'List disks' section below)
+5. Run conveyance, short and long tests on the new disk. (See 'Test hard drive' section below)
+6. Replace the disk in the ZFS pool. (See 'Replace disk' section below)
+7. Update the disk on the smartd.conf file for continuing monitoring.
+
 ## List disks
 ```sh
 lsblk
