@@ -4,22 +4,62 @@
     name: restic
     state: present
 
+- name: Ensure the directory for the password file exists
+  ansible.builtin.file:
+    path: "{{ backup_immich_restic_password_file_path | dirname }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0700'
+
+- name: Create restic password file
+  ansible.builtin.copy:
+    dest: "{{ backup_immich_restic_password_file_path }}"
+    content: "{{ backup_immich_restic_password }}"
+    owner: root
+    group: root
+    mode: '0600'
+
+- name: Set restic environment variables
+  ansible.builtin.set_fact:
+    restic_env:
+      AWS_ACCESS_KEY_ID: "{{ backup_immich_aws_access_key_id }}"
+      AWS_SECRET_ACCESS_KEY: "{{ backup_immich_aws_secret_access_key }}"
+      RESTIC_REPOSITORY: "{{ backup_immich_restic_repository_path }}"
+      RESTIC_PASSWORD_FILE: "{{ backup_immich_restic_password_file_path }}"
+
 - name: Check if restic repo is init
-  ansible.builtin.stat:
-    path: /etc/ansible_backups/immich_restic
+  ansible.builtin.command:
+    cmd: restic snapshots
+  changed_when: false # command snapshot don't change anything
+  environment: "{{ restic_env }}"
   register: restic_init
 
-- name: Initialize Restic repository
-  ansible.builtin.command:
-    cmd: >
-      export AWS_ACCESS_KEY_ID={{ backup_immich_b2_account_id }}
-      export AWS_SECRET_ACCESS_KEY={{ backup_immich_b2_account_key }}
-      export RESTIC_REPOSITORY=
-      export RESTIC_PASSWORD_FILE=
-      restic init
-  when: not restic_init.stat.exists
+# - name: Initialize Restic repository # noqa no-changed-when
+#   ansible.builtin.command:
+#     cmd: >
+#       restic init
+#   when: restic_init.rc != 0
+#   environment: "{{ restic_env }}"
 
-- name: Install borgbackup
-  ansible.builtin.package:
-    name: borgbackup
-    state: present
+# - name: Create restic systemd service
+#   ansible.builtin.template:
+#     src: "{{ role_path }}/templates/restic.service.j2"
+#     dest: /etc/systemd/system/restic.service
+#     owner: root
+#     group: root
+#     mode: '0644'
+
+# - name: Create restic systemd timer
+#   ansible.builtin.template:
+#     src: "{{ role_path }}/templates/restic.timer.j2"
+#     dest: /etc/systemd/system/restic.timer
+#     owner: root
+#     group: root
+#     mode: '0644'
+  # notify: Reload systemd
+
+# - name: Install borgbackup
+#   ansible.builtin.package:
+#     name: borgbackup
+#     state: present

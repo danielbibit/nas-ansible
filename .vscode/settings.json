@@ -19,4 +19,5 @@
         "titleBar.inactiveForeground": "#e7e7e799"
     },
     "peacock.remoteColor": "#129646",
+    "ansible.lightspeed.enabled": false,
 }
