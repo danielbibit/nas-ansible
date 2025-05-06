@@ -66,7 +66,7 @@
         - backups
         - system
 
-    - role: backup_restic
+    - role: backup_immich
       tags:
         - restic
         - backups
