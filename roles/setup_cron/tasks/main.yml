@@ -1,5 +1,0 @@
-- name: Monthly scrub
-  ansible.builtin.cron:
-    name: "Scrub ZFS pool"
-    special_time: monthly
-    job: "zpool scrub Users"

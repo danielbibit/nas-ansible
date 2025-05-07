@@ -29,10 +29,6 @@
     #   tags:
     #     - system
 
-    - role: setup_cron
-      tags:
-        - system
-
     - role: samba
       tags:
         - samba
@@ -44,10 +40,11 @@
         - system
         - monitoring
 
-    - role: monitoring
+    - role: zfs
       tags:
-        - monitoring
+        - zfs
         - system
+        - monitoring
 
     - role: smartmontools
       tags:
