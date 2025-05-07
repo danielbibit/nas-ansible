@@ -1,0 +1,26 @@
+---
+- name: Install monitoring packages
+  ansible.builtin.apt:
+    pkg:
+      - smartmontools
+
+- name: Template smartd.conf config
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/smartd.conf.j2"
+    dest: /etc/smartd.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart smartmoontools
+
+- name: Enable service smartmoontools
+  ansible.builtin.systemd:
+    name: smartmontools
+    enabled: true
+
+- name: Test smartmoon report
+  ansible.builtin.shell: "set -o pipefail && echo '/dev/sda -m {{ email_report_to }} -M test' | smartd -c - -q onecheck"
+  args:
+    executable: /bin/bash
+  register: smartctl_report
+  changed_when: false

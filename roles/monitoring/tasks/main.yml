@@ -1,8 +1,8 @@
+---
 # Setup monitoring packages
 - name: Install monitoring packages
   ansible.builtin.apt:
     pkg:
-      - smartmontools
       - zfs-zed
 
 # Setup ZFS monitoring
@@ -14,26 +14,10 @@
     group: root
     mode: '0600'
 
-- name: Enable service zfs-zed  and ensure it is not masked
+- name: Enable service zfs-zed and ensure it is not masked
   ansible.builtin.systemd:
     name: zfs-zed
     enabled: true
-
-# Setup S.M.A.R.T monitoring
-- name: Template smartd.conf config
-  ansible.builtin.template:
-    src: "{{ role_path }}/templates/smartd.conf.j2"
-    dest: /etc/smartd.conf
-    owner: root
-    group: root
-    mode: '0644'
-
-
-# TODO: Run tests if above tasks changed
-# HOW TO TEST smartd
-# sudo echo /dev/sdh -m danielbibit@gmail.com -M test | sudo smartd -c - -q onecheck
-# systemctl status smartd.service
-
 
 ## HOW TO TEST ZED
 # systemctl status zfs-zed.service

@@ -49,6 +49,13 @@
         - monitoring
         - system
 
+    - role: smartmontools
+      tags:
+        - smartmontools
+        - system
+        - monitoring
+        - alerting
+
     - role: reports
       tags:
         - reports
