@@ -105,7 +105,7 @@ or setup the project manually using Poetry.
 ansible-playbook server_setup.yml -i inventories/nas/inventory.yml --diff --ask-pass --ask-become-pass --check
 ansible-playbook server_setup.yml -i inventories/nas/inventory.yml --diff --check
 
-ansible-playbook node_exporter_playbook.yml -i inventories/pve/inventory.yml --diff --check
+ansible-playbook exporters_playbook.yml -i inventories/pve/inventory.yml --diff --check
 ```
 
 To run a tag:

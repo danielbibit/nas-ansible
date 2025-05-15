@@ -1,5 +1,5 @@
 ---
-- name: Setup proxmox machine
+- name: Setup exporters
   hosts: all
 
   roles:
@@ -8,3 +8,7 @@
         - node_exporter
         - monitoring
 
+    - role: promtail
+      tags:
+        - promtail
+        - monitoring
