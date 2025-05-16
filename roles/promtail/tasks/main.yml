@@ -26,6 +26,21 @@
       changed_when: false
       failed_when: false
 
+    - name: Set capabilities for promtail # no-qa
+      ansible.builtin.command: "setcap 'cap_dac_read_search=+ep' /usr/bin/promtail"
+      register: setcap_result
+      changed_when: false
+
+    - name: Add promtail to systemd-journal
+      ansible.builtin.user:
+        name: promtail
+        groups:
+          - systemd-journal
+        system: true
+        append: true
+        createhome: false
+        state: present
+
     - name: Make sure directory exists
       ansible.builtin.file:
         path: '{{ promtail_config_dir }}'
@@ -44,7 +59,7 @@
         dest: "{{ promtail_config_dir }}/config.yml"
       vars:
         server_docker_enabled: "{{ docker_check.rc == 0 }}"
-      notify: retart_promtail
+      notify: restart_promtail
 
     - name: Install promtail
       ansible.builtin.apt:
