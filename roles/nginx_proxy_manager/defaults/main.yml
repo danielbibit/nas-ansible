@@ -2,3 +2,4 @@
 nginx_proxy_manager_enabled: false
 
 nginx_proxy_manager_data_dir: "{{ nas_docker_directory }}/nginx_proxy_manager"
+nginx_proxy_manager_timezone: "America/Sao_Paulo"
