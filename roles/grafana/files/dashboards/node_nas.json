@@ -224,6 +224,43 @@
         "y": 0
       },
       "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": []
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "expr": "node_hwmon_temp_celsius{instance=~\"$host\", sensor=~\"temp1\"}",
+          "refId": ""
+        }
+      ],
+      "title": "Temperature",
+      "transparent": false,
+      "type": "stat"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "unit": "celsius"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 20,
+        "y": 0
+      },
+      "options": {
         "legend": {
           "calcs": [],
           "displayMode": "list",
@@ -245,30 +282,6 @@
       "title": "Temperature",
       "transparent": false,
       "type": "timeseries"
-    },
-    {
-      "fieldConfig": {
-        "defaults": {
-          "unit": "celsius"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 4,
-        "w": 4,
-        "x": 20,
-        "y": 0
-      },
-      "repeatDirection": "h",
-      "targets": [
-        {
-          "expr": "node_hwmon_temp_celsius{instance=~\"$host\", sensor=~\"temp1\"}",
-          "refId": ""
-        }
-      ],
-      "title": "Temperature",
-      "transparent": false,
-      "type": "stat"
     },
     {
       "fieldConfig": {

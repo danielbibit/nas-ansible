@@ -10,6 +10,7 @@ from grafana_foundation_sdk.builders import (
 )
 from grafana_foundation_sdk.models  import (
     common,
+    units,
     prometheus as prometheus_models,
     dashboard as dashboard_model
 )
@@ -153,26 +154,27 @@ builder = (
     )
 
     .with_panel(
-        timeseries.Panel()
-        .title('Temperature')
-        .with_target(
-            prometheus.Dataquery()
-            .expr('node_hwmon_temp_celsius{instance=~"$host", sensor=~"temp1"}')
-        )
-        .unit('celsius')
-        .legend(common_builder.VizLegendOptions().show_legend(False))
-        .height(4)
-        .span(4)
-    )
-
-    .with_panel(
         stat.Panel()
         .title('Temperature')
         .with_target(
             prometheus.Dataquery()
             .expr('node_hwmon_temp_celsius{instance=~"$host", sensor=~"temp1"}')
         )
-        .unit('celsius')
+        .unit(units.Celsius)
+        .graph_mode(common.BigValueGraphMode.NONE)
+        .height(4)
+        .span(4)
+    )
+
+    .with_panel(
+        timeseries.Panel()
+        .title('Temperature')
+        .with_target(
+            prometheus.Dataquery()
+            .expr('node_hwmon_temp_celsius{instance=~"$host", sensor=~"temp1"}')
+        )
+        .unit(units.Celsius)
+        .legend(common_builder.VizLegendOptions().show_legend(False))
         .height(4)
         .span(4)
     )
