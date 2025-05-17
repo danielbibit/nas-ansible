@@ -13,6 +13,8 @@ services:
     volumes:
       - "{{ nginx_proxy_manager_data_dir }}/data:/data"
       - "{{ nginx_proxy_manager_data_dir }}/letsencrypt:/etc/letsencrypt"
+    environment:
+      - TZ={{ nginx_proxy_manager_timezone }}
 
 networks:
   default:

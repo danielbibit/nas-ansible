@@ -21,12 +21,21 @@ builder = (
     .id('node_nas_1')
     .tooltip(common.TooltipDisplayMode.SINGLE)
 
+    .with_variable(
+        dashboard.QueryVariable('host')
+        .label('host')
+        .query('label_values(node_boot_time_seconds, instance)')
+        .refresh(dashboard_model.VariableRefresh.ON_TIME_RANGE_CHANGED)
+        .sort(dashboard_model.VariableSort.ALPHABETICAL_ASC)
+        .include_all(False)
+    )
+
     .with_panel(
         stat.Panel()
         .title('Uptime')
         .with_target(
             prometheus.Dataquery()
-            .expr('time() - node_boot_time_seconds')
+            .expr('time() - node_boot_time_seconds{instance=~"$host"}')
         )
         .graph_mode(
             common.BigValueGraphMode.NONE
@@ -47,8 +56,8 @@ builder = (
         .with_target(
             prometheus.Dataquery()
             .expr(
-                '(node_memory_MemTotal_bytes{instance=~"nas"} - node_memory_MemAvailable_bytes{instance=~"nas"}) ' \
-                '/ node_memory_MemTotal_bytes{instance=~"nas"} * 100'
+                '(node_memory_MemTotal_bytes{instance=~"$host"} - node_memory_MemAvailable_bytes{instance=~"$host"}) ' \
+                '/ node_memory_MemTotal_bytes{instance=~"$host"} * 100'
             )
         )
         .thresholds(
@@ -70,19 +79,19 @@ builder = (
         .title('System Load')
         .with_target(
             prometheus.Dataquery()
-            .expr('node_load1{instance="nas"}')
+            .expr('node_load1{instance=~"$host"}')
             .format(prometheus_models.PromQueryFormat.TABLE)
             .instant()
         )
         .with_target(
             prometheus.Dataquery()
-            .expr('node_load5{instance="nas"}')
+            .expr('node_load5{instance=~"$host"}')
             .format(prometheus_models.PromQueryFormat.TABLE)
             .instant()
         )
         .with_target(
             prometheus.Dataquery()
-            .expr('node_load15{instance="nas"}')
+            .expr('node_load15{instance=~"$host"}')
             .format(prometheus_models.PromQueryFormat.TABLE)
             .instant()
         )
@@ -130,7 +139,7 @@ builder = (
         .title('Free Disk root')
         .with_target(
             prometheus.Dataquery()
-            .expr('node_filesystem_free_bytes{mountpoint="/"}')
+            .expr('node_filesystem_free_bytes{mountpoint="/", instance=~"$host"}')
         )
         .thresholds(
             dashboard.ThresholdsConfig().mode(gauge.dashboard.ThresholdsMode.ABSOLUTE).steps([
@@ -148,7 +157,7 @@ builder = (
         .title('Temperature')
         .with_target(
             prometheus.Dataquery()
-            .expr('node_hwmon_temp_celsius{instance=~"nas", sensor=~"temp1"}')
+            .expr('node_hwmon_temp_celsius{instance=~"$host", sensor=~"temp1"}')
         )
         .unit('celsius')
         .legend(common_builder.VizLegendOptions().show_legend(False))
@@ -161,7 +170,7 @@ builder = (
         .title('Temperature')
         .with_target(
             prometheus.Dataquery()
-            .expr('node_hwmon_temp_celsius{instance=~"nas", sensor=~"temp1"}')
+            .expr('node_hwmon_temp_celsius{instance=~"$host", sensor=~"temp1"}')
         )
         .unit('celsius')
         .height(4)
@@ -173,7 +182,17 @@ builder = (
         .title('CPU')
         .with_target(
             prometheus.Dataquery()
-            .expr('100 * sum(rate(node_cpu_seconds_total{mode=~"system|user"}[$__rate_interval])) / count(node_cpu_seconds_total{mode="user"})')
+            .expr(
+                '''
+                100 * sum(
+                    rate(node_cpu_seconds_total{ mode=~"system|user", instance=~"$host" }[$__rate_interval])
+                )
+                /
+                count(
+                    node_cpu_seconds_total{ mode="user", instance=~"$host" }
+                )
+                '''
+            )
             # .expr('100 * sum(rate(node_cpu_seconds_total{mode=~"system|user"}[$__rate_interval])) by (cpu)')
             .interval(time_series_min_step)
         )
@@ -187,12 +206,12 @@ builder = (
         .title('Disk IO')
         .with_target(
             prometheus.Dataquery()
-            .expr('-sum(rate(node_disk_written_bytes_total[$__rate_interval]))')
+            .expr('-sum(rate(node_disk_written_bytes_total{instance=~"$host"}[$__rate_interval]))')
             .interval(time_series_min_step)
         )
         .with_target(
             prometheus.Dataquery()
-            .expr('sum(rate(node_disk_read_bytes_total[$__rate_interval]))')
+            .expr('sum(rate(node_disk_read_bytes_total{instance=~"$host"}[$__rate_interval]))')
             .interval(time_series_min_step)
         )
         .unit('Bps')
@@ -205,7 +224,20 @@ builder = (
         .title('File Systems')
         .with_target(
             prometheus.Dataquery()
-            .expr('100 - (node_filesystem_avail_bytes{device != "tmpfs"} * 100) / node_filesystem_size_bytes{device != "tmpfs"}')
+            .expr(
+                '''
+                100 - (
+                    node_filesystem_avail_bytes{
+                        device != "tmpfs",
+                        instance=~"$host"
+                    } * 100
+                ) /
+                node_filesystem_size_bytes{
+                    device != "tmpfs",
+                    instance=~"$host"
+                }
+                '''
+            )
             .format(prometheus_models.PromQueryFormat.TABLE)
             .instant()
         )
@@ -234,13 +266,13 @@ builder = (
         .title('Network Usage')
         .with_target(
             prometheus.Dataquery()
-            .expr('rate(node_network_transmit_bytes_total[$__rate_interval])')
+            .expr('rate(node_network_transmit_bytes_total{instance=~"$host"}[$__rate_interval])')
             .interval(time_series_min_step)
             .legend_format('{{device}}')
         )
         .with_target(
             prometheus.Dataquery()
-            .expr('-rate(node_network_receive_bytes_total[$__rate_interval])')
+            .expr('-rate(node_network_receive_bytes_total{instance=~"$host"}[$__rate_interval])')
             .interval(time_series_min_step)
             .legend_format('{{device}}')
         )

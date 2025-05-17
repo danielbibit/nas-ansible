@@ -1,4 +1,7 @@
 ---
+- name: Add exporters to server
+  import_playbook: "exporters_playbook.yml"
+
 - name: Nas setup
   hosts: all
 
@@ -74,12 +77,6 @@
         - monitoring
         - docker
 
-    - role: prometheus.prometheus.node_exporter
-      tags:
-        - node_exporter
-        - monitoring
-        - docker
-
     - role: prometheus
       tags:
         - prometheus
@@ -89,12 +86,6 @@
     - role: cadvisor
       tags:
         - cadvisor
-        - monitoring
-        - docker
-
-    - role: promtail
-      tags:
-        - promtail
         - monitoring
         - docker
 

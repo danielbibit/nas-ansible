@@ -1,0 +1,14 @@
+---
+- name: Setup exporters
+  hosts: all
+
+  roles:
+    - role: prometheus.prometheus.node_exporter
+      tags:
+        - node_exporter
+        - monitoring
+
+    - role: promtail
+      tags:
+        - promtail
+        - monitoring

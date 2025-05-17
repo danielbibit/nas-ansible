@@ -1,54 +1,93 @@
 ---
-- name: Template promtail config
-  when: promtail_enabled is true
-  ansible.builtin.template:
-    src: promtail-config.yml
-    owner: "{{ nas_docker_gid }}"
-    group: "{{ nas_docker_gid }}"
-    mode: "0775"
-    dest: "{{ promtail_dir }}/promtail-config.yml"
-  notify: Restart promtail
+- name: Obtain the latest version from the GitHub repo
+  when: promtail_version == "latest"
+  block:
+    - name: Scrape Github API endpoint to obtain latest Promtail version
+      ansible.builtin.uri:
+        url: "https://api.github.com/repos/grafana/loki/releases/latest"
+        method: GET
+        body_format: json
+      become: false
+      delegate_to: localhost
+      run_once: true
+      check_mode: false
+      register: __github_latest_version
 
-- name: Start stack
+    - name: Latest available Promtail version
+      ansible.builtin.set_fact:
+        promtail_version: "{{ __github_latest_version.json.tag_name | regex_replace('^v?(\\d+\\.\\d+\\.\\d+)$', '\\1') }}"
+
+- name: Install promtail
   when: promtail_enabled is true
   block:
-    - name: Make sure nas default network exists
-      community.docker.docker_network:
-        name: nas
+    - name: Check if system has docker
+      ansible.builtin.command: docker ps
+      register: docker_check
+      changed_when: false
+      failed_when: false
+
+    - name: Add promtail to system groups
+      ansible.builtin.user:
+        name: promtail
+        groups:
+          - systemd-journal
+          - adm
+        system: true
+        append: true
+        createhome: false
         state: present
 
-    - name: Make sure compose directory exists
+    - name: Add promtail to docker group if exists
+      ansible.builtin.user:
+        name: promtail
+        groups:
+          - docker
+        system: true
+        append: true
+        createhome: false
+        state: present
+      when: docker_check.rc == 0
+
+    - name: Make sure positions cache directory exists
       ansible.builtin.file:
-        path: '{{ nas_docker_compose_dir }}/promtail'
+        path: '{{ promtail_cache_dir }}'
         state: directory
-        owner: '{{ nas_docker_uid }}'
-        group: '{{ nas_docker_gid }}'
+        owner: promtail
+        group: root
         mode: "0775"
 
-    - name: Copy compose
-      ansible.builtin.template:
-        src: '{{ role_path }}/templates/docker-compose.yml'
-        dest: '{{ nas_docker_compose_dir }}/promtail/docker-compose.yml'
-        owner: '{{ nas_docker_uid }}'
-        group: '{{ nas_docker_gid }}'
-        mode: "0775"
-
-    - name: Start stack
-      community.docker.docker_compose_v2:
-        project_src: '{{ nas_docker_compose_dir }}/promtail'
-        state: present
-        pull: missing
-        remove_orphans: true
-
-- name: Stop stack
-  when: promtail_enabled is false
-  block:
-    - name: Tear down existing stack
-      community.docker.docker_compose_v2:
-        project_src: '{{ nas_docker_compose_dir }}/promtail'
-        state: absent
-
-    - name: Remove compose files
+    - name: Make sure directory exists
       ansible.builtin.file:
-        path: '{{ nas_docker_compose_dir }}/promtail'
-        state: absent
+        path: '{{ promtail_config_dir }}'
+        state: directory
+        owner: promtail
+        group: root
+        mode: "0775"
+
+    - name: Template promtail config
+      when: promtail_enabled is true
+      ansible.builtin.template:
+        src: promtail-config.yml.j2
+        owner: root
+        group: root
+        mode: "0775"
+        dest: "{{ promtail_config_dir }}/config.yml"
+      vars:
+        server_docker_enabled: "{{ docker_check.rc == 0 }}"
+      notify: restart_promtail
+
+    - name: Install promtail
+      ansible.builtin.apt:
+        deb: "{{ promtail_download_url_deb }}"
+        state: present
+
+    - name: Make sure promtail is enabled
+      ansible.builtin.systemd:
+        name: promtail
+        enabled: true
+        state: started
+
+    - name: Make sure promtail is running
+      ansible.builtin.systemd:
+        name: promtail
+        state: started

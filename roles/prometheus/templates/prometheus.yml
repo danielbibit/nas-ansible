@@ -11,6 +11,12 @@ scrape_configs:
         labels:
           instance: 'nas'
 
+  - job_name: 'thinkcentre_exporter'
+    static_configs:
+      - targets: ['192.168.1.13:9100']
+        labels:
+          instance: 'thinkcentre'
+
   - job_name: 'nas_cadvisor'
     static_configs:
       - targets: ['cadvisor:8080']

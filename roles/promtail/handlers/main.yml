@@ -1,5 +1,8 @@
 ---
 - name: Restart promtail
-  community.docker.docker_compose_v2:
-    project_src: '{{ nas_docker_compose_dir }}/promtail'
+  ansible.builtin.systemd:
+    name: promtail.service
+    daemon_reload: true
     state: restarted
+    enabled: true
+  listen: "restart_promtail"

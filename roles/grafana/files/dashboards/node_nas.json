@@ -38,7 +38,7 @@
       "repeatDirection": "h",
       "targets": [
         {
-          "expr": "time() - node_boot_time_seconds",
+          "expr": "time() - node_boot_time_seconds{instance=~\"$host\"}",
           "refId": ""
         }
       ],
@@ -81,7 +81,7 @@
       "repeatDirection": "h",
       "targets": [
         {
-          "expr": "(node_memory_MemTotal_bytes{instance=~\"nas\"} - node_memory_MemAvailable_bytes{instance=~\"nas\"}) / node_memory_MemTotal_bytes{instance=~\"nas\"} * 100",
+          "expr": "(node_memory_MemTotal_bytes{instance=~\"$host\"} - node_memory_MemAvailable_bytes{instance=~\"$host\"}) / node_memory_MemTotal_bytes{instance=~\"$host\"} * 100",
           "refId": ""
         }
       ],
@@ -119,21 +119,21 @@
       "repeatDirection": "h",
       "targets": [
         {
-          "expr": "node_load1{instance=\"nas\"}",
+          "expr": "node_load1{instance=~\"$host\"}",
           "format": "table",
           "instant": true,
           "range": false,
           "refId": ""
         },
         {
-          "expr": "node_load5{instance=\"nas\"}",
+          "expr": "node_load5{instance=~\"$host\"}",
           "format": "table",
           "instant": true,
           "range": false,
           "refId": ""
         },
         {
-          "expr": "node_load15{instance=\"nas\"}",
+          "expr": "node_load15{instance=~\"$host\"}",
           "format": "table",
           "instant": true,
           "range": false,
@@ -202,7 +202,7 @@
       "repeatDirection": "h",
       "targets": [
         {
-          "expr": "node_filesystem_free_bytes{mountpoint=\"/\"}",
+          "expr": "node_filesystem_free_bytes{mountpoint=\"/\", instance=~\"$host\"}",
           "refId": ""
         }
       ],
@@ -238,7 +238,7 @@
       "repeatDirection": "h",
       "targets": [
         {
-          "expr": "node_hwmon_temp_celsius{instance=~\"nas\", sensor=~\"temp1\"}",
+          "expr": "node_hwmon_temp_celsius{instance=~\"$host\", sensor=~\"temp1\"}",
           "refId": ""
         }
       ],
@@ -262,7 +262,7 @@
       "repeatDirection": "h",
       "targets": [
         {
-          "expr": "node_hwmon_temp_celsius{instance=~\"nas\", sensor=~\"temp1\"}",
+          "expr": "node_hwmon_temp_celsius{instance=~\"$host\", sensor=~\"temp1\"}",
           "refId": ""
         }
       ],
@@ -286,7 +286,7 @@
       "repeatDirection": "h",
       "targets": [
         {
-          "expr": "100 * sum(rate(node_cpu_seconds_total{mode=~\"system|user\"}[$__rate_interval])) / count(node_cpu_seconds_total{mode=\"user\"})",
+          "expr": "\n                100 * sum(\n                    rate(node_cpu_seconds_total{ mode=~\"system|user\", instance=~\"$host\" }[$__rate_interval])\n                )\n                /\n                count(\n                    node_cpu_seconds_total{ mode=\"user\", instance=~\"$host\" }\n                )\n                ",
           "interval": "1m",
           "refId": ""
         }
@@ -311,12 +311,12 @@
       "repeatDirection": "h",
       "targets": [
         {
-          "expr": "-sum(rate(node_disk_written_bytes_total[$__rate_interval]))",
+          "expr": "-sum(rate(node_disk_written_bytes_total{instance=~\"$host\"}[$__rate_interval]))",
           "interval": "1m",
           "refId": ""
         },
         {
-          "expr": "sum(rate(node_disk_read_bytes_total[$__rate_interval]))",
+          "expr": "sum(rate(node_disk_read_bytes_total{instance=~\"$host\"}[$__rate_interval]))",
           "interval": "1m",
           "refId": ""
         }
@@ -341,7 +341,7 @@
       "repeatDirection": "h",
       "targets": [
         {
-          "expr": "100 - (node_filesystem_avail_bytes{device != \"tmpfs\"} * 100) / node_filesystem_size_bytes{device != \"tmpfs\"}",
+          "expr": "\n                100 - (\n                    node_filesystem_avail_bytes{\n                        device != \"tmpfs\",\n                        instance=~\"$host\"\n                    } * 100\n                ) /\n                node_filesystem_size_bytes{\n                    device != \"tmpfs\",\n                    instance=~\"$host\"\n                }\n                ",
           "format": "table",
           "instant": true,
           "range": false,
@@ -383,13 +383,13 @@
       "repeatDirection": "h",
       "targets": [
         {
-          "expr": "rate(node_network_transmit_bytes_total[$__rate_interval])",
+          "expr": "rate(node_network_transmit_bytes_total{instance=~\"$host\"}[$__rate_interval])",
           "interval": "1m",
           "legendFormat": "{{device}}",
           "refId": ""
         },
         {
-          "expr": "-rate(node_network_receive_bytes_total[$__rate_interval])",
+          "expr": "-rate(node_network_receive_bytes_total{instance=~\"$host\"}[$__rate_interval])",
           "interval": "1m",
           "legendFormat": "{{device}}",
           "refId": ""
@@ -401,7 +401,25 @@
     }
   ],
   "schemaVersion": 39,
-  "templating": {},
+  "templating": {
+    "list": [
+      {
+        "allowCustomValue": true,
+        "auto": false,
+        "auto_count": 30,
+        "auto_min": "10s",
+        "includeAll": false,
+        "label": "host",
+        "multi": false,
+        "name": "host",
+        "query": "label_values(node_boot_time_seconds, instance)",
+        "refresh": 2,
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      }
+    ]
+  },
   "timezone": "browser",
   "title": "Node Stats - nas"
 }

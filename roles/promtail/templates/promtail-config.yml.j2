@@ -1,21 +1,27 @@
 server:
+  http_listen_address: 0.0.0.0
   http_listen_port: 9080
   grpc_listen_port: 0
 
 clients:
-  - url: http://loki:3100/loki/api/v1/push
+  - url: "{{ promtail_loki_target }}"
+
+positions:
+  filename: {{ promtail_cache_dir }}/positions.yml
 
 scrape_configs:
+{% if server_docker_enabled %}
   - job_name: docker
-    # use docker.sock to filter containers
     docker_sd_configs:
       - host: "unix:///var/run/docker.sock"
         refresh_interval: 15s
-    # use container name to create a loki label
     relabel_configs:
       - source_labels: ['__meta_docker_container_name']
         regex: '/(.*)'
         target_label: 'container'
+      - target_label: 'host'
+        replacement: '{{ ansible_hostname }}'
+{% endif %}
 
   - job_name: system
     static_configs:
@@ -25,12 +31,12 @@ scrape_configs:
           job: varlogs
           __path__: /var/log/*.log
     relabel_configs:
-      # Label the filename (e.g., syslog, auth.log)
       - source_labels: ['__path__']
         target_label: 'filename'
-        # target_label: logfile
         regex: '.*/([^/]+)\.log'
         replacement: '$1'
+      - target_label: 'host'
+        replacement: '{{ ansible_hostname }}'
 
   - job_name: journal
     journal:
@@ -41,3 +47,5 @@ scrape_configs:
     relabel_configs:
       - source_labels: ['__journal__systemd_unit']
         target_label: 'unit'
+      - target_label: 'host'
+        replacement: '{{ ansible_hostname }}'
