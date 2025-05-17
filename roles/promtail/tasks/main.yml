@@ -26,26 +26,41 @@
       changed_when: false
       failed_when: false
 
-    - name: Set capabilities for promtail # no-qa
-      ansible.builtin.command: "setcap 'cap_dac_read_search=+ep' /usr/bin/promtail"
-      register: setcap_result
-      changed_when: false
-
-    - name: Add promtail to systemd-journal
+    - name: Add promtail to system groups
       ansible.builtin.user:
         name: promtail
         groups:
           - systemd-journal
+          - adm
         system: true
         append: true
         createhome: false
         state: present
 
+    - name: Add promtail to docker group if exists
+      ansible.builtin.user:
+        name: promtail
+        groups:
+          - docker
+        system: true
+        append: true
+        createhome: false
+        state: present
+      when: docker_check.rc == 0
+
+    - name: Make sure positions cache directory exists
+      ansible.builtin.file:
+        path: '{{ promtail_cache_dir }}'
+        state: directory
+        owner: promtail
+        group: root
+        mode: "0775"
+
     - name: Make sure directory exists
       ansible.builtin.file:
         path: '{{ promtail_config_dir }}'
         state: directory
-        owner: root
+        owner: promtail
         group: root
         mode: "0775"
 

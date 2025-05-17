@@ -6,6 +6,9 @@ server:
 clients:
   - url: "{{ promtail_loki_target }}"
 
+positions:
+  filename: {{ promtail_cache_dir }}/positions.yml
+
 scrape_configs:
 {% if server_docker_enabled %}
   - job_name: docker
