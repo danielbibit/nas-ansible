@@ -102,15 +102,15 @@ or setup the project manually using Poetry.
 
 ### Running ansible
 ```sh
-ansible-playbook server_setup.yml -i inventories/nas/inventory.yml --diff --ask-pass --ask-become-pass --check
-ansible-playbook server_setup.yml -i inventories/nas/inventory.yml --diff --check
+ansible-playbook nas_playbook.yml -i inventories/nas/inventory.yml --diff --ask-pass --ask-become-pass --check
+ansible-playbook nas_playbook.yml -i inventories/nas/inventory.yml --diff --check
 
 ansible-playbook exporters_playbook.yml -i inventories/pve/inventory.yml --diff --check
 ```
 
 To run a tag:
 ```sh
-ansible-playbook server_setup.yml -i inventories/nas/inventory.yml --diff --tags docker --check
+ansible-playbook nas_playbook.yml -i inventories/nas/inventory.yml --diff --tags docker --check
 ```
 
 ## TODO
