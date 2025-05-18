@@ -1,0 +1,8 @@
+[Unit]
+Description=Restic backup for Immich
+
+[Timer]
+OnCalendar={{ backup_immich_restic_systemd_on_calendar }}
+
+[Install]
+WantedBy=timers.target

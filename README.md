@@ -17,21 +17,18 @@ serving as a tool to deploy changes and save the server definitions as code.
 Although this project is tailored made for my need, I believe it can be very useful as a boilerplate
 to implement a similar server, you can check the pre requisites section to get started.
 
-
 ## Features
 ### Server setup
-* Users and group creation (Ansible)
-* VM management (Ansible)*
-* Software management (Ansible)
-* SAMBA setup (Ansible)
-* Auto container upgrades (Shell Script)
+* Users and group creation
+* Email setup
+* SAMBA setup
+* Auto container upgrades
 
 ### Network setup
 * DDNS Cloudflare Auto Update
 * Reverse Proxy NGINX
 
 ### Media and Downloads
-* Jdownloader - Generic download client
 * qBittorrent - Torrent client
 * Jackett - Torrent source aggregator
 * Sonarr - TV Shows automatic download
@@ -40,16 +37,29 @@ to implement a similar server, you can check the pre requisites section to get s
 * Plex - Media server
 
 ### Backups
-* Cloud backup
-* Local services backup
+3-2-1 Backup strategy using the following technologies:
+* ZFS Snapshots - Quick container restore
+* Borg - Local backup
+* Restic - Cloud backup to Backblaze B2
+
+The following are backed up:
+* Docker containers
+* Immich library
+* Home Assistant
+* Documents
 
 ### Monitoring and reports
+#### All nodes
+* Promtail - Log collection
+* Node Exporter - System metrics
+
+#### NAS
 * Smartmon disk monitoring with daily tests and monthly email report
 * ZFS monitoring
 * Prometheus
 * Loki
-* Grafana dashboard with alerts
-* Glances
+* Grafana - Dashboards for containers and nodes
+* Grafana - Alerts
 
 ## Pre requisites
 ### OS setup - Ubuntu
@@ -86,7 +96,12 @@ All the default configuration are stored inside the roles (role_name/defaults/ma
 and in the group_vars directory (group_vars/all.yml).
 
 You can override any of these values in your inventory file, just add the desired
-variable with the new value to your inventories/your_inventory/group_vars/all.yml
+variable with the new value to your inventories/your_inventory/group_vars/your_inventory.yml
+
+The order of precedence of this projects is:
+1. Inventory group_vars
+2. Project group_vars
+3. Role defaults
 
 ## Running
 ### Setting up
@@ -100,28 +115,28 @@ this way you can edit your files and don't have to worry about setting up ansibl
 If you don't want to use VSCode, you can build the container yourself,
 or setup the project manually using Poetry.
 
-### Running ansible
+### Running a playbook
 ```sh
-ansible-playbook nas_playbook.yml -i inventories/nas/inventory.yml --diff --ask-pass --ask-become-pass --check
+# Default playbook for the full NAS server
 ansible-playbook nas_playbook.yml -i inventories/nas/inventory.yml --diff --check
 
+# Playbook for obervability nodes
 ansible-playbook exporters_playbook.yml -i inventories/pve/inventory.yml --diff --check
 ```
 
 To run a tag:
 ```sh
+# Single tag
 ansible-playbook nas_playbook.yml -i inventories/nas/inventory.yml --diff --tags docker --check
+
+# Multiple tags
+ansible-playbook nas_playbook.yml -i inventories/nas/inventory.yml --diff --tags docker,system --check
 ```
 
 ## TODO
-* Setup local backup
-* Setup cloud backup
-* Setup tdarr
 * Implement grafana alerts
-* Refactor containers network
-
-## Encryption
-```sh
-ansible-vault encrypt secrets.yml
-ansible-vault decrypt secrets.yml
-```
+* Add screenshots to the readme
+* Setup local backup (In progress)
+* Setup cloud backup (In progress)
+* Setup tdarr
+* Refactor containers network with traefik ?

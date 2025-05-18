@@ -15,8 +15,8 @@ nas_music_directory: /srv/Storage/Library/Music
 nas_photos_dir: /srv/Storage/Library/Pictures
 nas_download_dir: /srv/Users/daniel/Downloads
 
+dex_enabled: true
 immich_enabled: true
-
 grafana_enabled: true
 node_exporter_enabled: true
 prometheus_enabled: true
@@ -26,9 +26,10 @@ loki_enabled: true
 qbittorrent_enabled: true
 plex_enabled: true
 arr_stack_enabled: true
-
 nginx_proxy_manager_enabled: true
 cloudflare_ddns_enabled: true
+
+backup_immich_photos_path: "{{ nas_photos_dir }}"
 
 system_groups:
   - { name: users, gid: 4200 }

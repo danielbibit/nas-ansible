@@ -1,0 +1,79 @@
+---
+- name: Install Restic
+  ansible.builtin.package:
+    name: restic
+    state: present
+
+- name: Ensure the directory for the cache exists
+  ansible.builtin.file:
+    path: "/var/cache/restic"
+    state: directory
+    owner: root
+    group: root
+    mode: '0775'
+
+- name: Ensure the directory for the env file exists
+  ansible.builtin.file:
+    path: "{{ backup_immich_restic_env_path }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0775'
+
+- name: Create restic env file for manual manipulation
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/backup-immich-restic-env.j2"
+    dest: "{{ backup_immich_restic_env_path }}/backup-immich-restic-env"
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Set restic environment variables
+  ansible.builtin.set_fact:
+    restic_env:
+      AWS_ACCESS_KEY_ID: "{{ backup_immich_aws_access_key_id }}"
+      AWS_SECRET_ACCESS_KEY: "{{ backup_immich_aws_secret_access_key }}"
+      RESTIC_REPOSITORY: "{{ backup_immich_restic_repository_path }}"
+      RESTIC_PASSWORD: "{{ backup_immich_restic_password }}"
+
+- name: Check if restic repo is init
+  ansible.builtin.command:
+    cmd: restic snapshots
+  changed_when: false # command snapshot don't change anything
+  failed_when: false
+  environment: "{{ restic_env }}"
+  register: restic_init
+
+- name: Initialize Restic repository # noqa no-changed-when
+  ansible.builtin.command:
+    cmd: >
+      restic init
+  when: restic_init.rc != 0
+  environment: "{{ restic_env }}"
+
+- name: Create restic systemd service
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/backup-immich-restic.service.j2"
+    dest: /etc/systemd/system/backup-immich-restic.service
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Reload systemd
+
+- name: Create restic systemd timer
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/backup-immich-restic.timer.j2"
+    dest: /etc/systemd/system/backup-immich-restic.timer
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Reload systemd
+
+- name: Enable restic systemd timer
+  ansible.builtin.systemd:
+    name: backup-immich-restic.timer
+    enabled: true
+    state: started
+
+# TODO borg backups OR ZFS
+# TODO email backup checks

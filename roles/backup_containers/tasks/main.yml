@@ -7,9 +7,3 @@
     minute: "00"
     user: root
     job: "rsync -a /srv/Users/docker/ /srv/Storage/Backups/NAS/docker"
-
-# BACKUP PHOTOS
-# TODO
-
-# BACKUP HOME ASSISTANT
-# TODO

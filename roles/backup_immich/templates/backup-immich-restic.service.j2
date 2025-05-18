@@ -1,0 +1,33 @@
+[Unit]
+Description=Restic Backup for Immich
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+
+Environment="RESTIC_CACHE_DIR=/var/cache/restic"
+Environment="RESTIC_REPOSITORY={{ backup_immich_restic_repository_path }}"
+Environment="RESTIC_PASSWORD={{ backup_immich_restic_password }}"
+Environment="AWS_ACCESS_KEY_ID={{ backup_immich_aws_access_key_id }}"
+Environment="AWS_SECRET_ACCESS_KEY={{ backup_immich_aws_secret_access_key }}"
+
+{% if backup_immich_restic_check %}
+ExecStartPre=/usr/bin/restic check
+{% endif -%}
+
+ExecStart=/usr/bin/restic backup --verbose {{ backup_immich_photos_path}}
+
+{% if backup_immich_restic_forget %}
+ExecStartPost=/usr/bin/restic forget {{ backup_immich_restic_forget_flags }}
+{% endif -%}
+
+Nice=10
+IOSchedulingClass=idle
+ProtectSystem=full
+ProtectHome=yes
+PrivateTmp=yes
+NoNewPrivileges=yes
+
+[Install]
+WantedBy=multi-user.target
