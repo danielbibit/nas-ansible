@@ -4,13 +4,21 @@
     name: restic
     state: present
 
+- name: Ensure the directory for the cache exists
+  ansible.builtin.file:
+    path: "/var/cache/restic"
+    state: directory
+    owner: root
+    group: root
+    mode: '0775'
+
 - name: Ensure the directory for the env file exists
   ansible.builtin.file:
     path: "{{ backup_immich_restic_env_path }}"
     state: directory
     owner: root
     group: root
-    mode: '0700'
+    mode: '0775'
 
 - name: Create restic env file for manual manipulation
   ansible.builtin.template:
@@ -18,7 +26,7 @@
     dest: "{{ backup_immich_restic_env_path }}/backup-immich-restic-env"
     owner: root
     group: root
-    mode: '0600'
+    mode: '0644'
 
 - name: Set restic environment variables
   ansible.builtin.set_fact:

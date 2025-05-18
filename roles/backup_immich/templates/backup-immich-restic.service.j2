@@ -6,6 +6,7 @@ After=network-online.target
 [Service]
 Type=oneshot
 
+Environment="RESTIC_CACHE_DIR=/var/cache/restic"
 Environment="RESTIC_REPOSITORY={{ backup_immich_restic_repository_path }}"
 Environment="RESTIC_PASSWORD={{ backup_immich_restic_password }}"
 Environment="AWS_ACCESS_KEY_ID={{ backup_immich_aws_access_key_id }}"
