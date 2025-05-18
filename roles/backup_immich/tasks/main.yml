@@ -76,3 +76,4 @@
     state: started
 
 # TODO borg backups OR ZFS
+# TODO email backup checks

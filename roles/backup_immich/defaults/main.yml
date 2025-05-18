@@ -7,5 +7,6 @@ backup_immich_restic_repository_path: "s3:url/your/bukcet"
 backup_immich_restic_env_path: "/etc/ansible_backup"
 backup_immich_restic_password: "foobar"
 backup_immich_restic_check: false
-backup_immich_restic_forget: false
+backup_immich_restic_forget: true
+backup_immich_restic_forget_flags: "--prune --keep-daily 7 --keep-weekly 4 --keep-monthly 12"
 backup_immich_restic_systemd_on_calendar: "daily"

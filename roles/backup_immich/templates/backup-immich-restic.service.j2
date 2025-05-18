@@ -19,7 +19,7 @@ ExecStartPre=/usr/bin/restic check
 ExecStart=/usr/bin/restic backup --verbose {{ backup_immich_photos_path}}
 
 {% if backup_immich_restic_forget %}
-ExecStartPost=/usr/bin/restic forget --prune --keep-daily 7 --keep-weekly 4 --keep-monthly 12
+ExecStartPost=/usr/bin/restic forget {{ backup_immich_restic_forget_flags }}
 {% endif -%}
 
 Nice=10
