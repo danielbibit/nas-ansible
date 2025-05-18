@@ -61,15 +61,15 @@
         - reports
         - system
 
-    - role: automated_backups
+    - role: backup_containers
       tags:
-        - backups
+        - backup
         - system
 
     - role: backup_immich
       tags:
-        - restic
-        - backups
+        - backup_immich
+        - backup
         - system
 
     - role: containers
