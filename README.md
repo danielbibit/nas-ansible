@@ -132,13 +132,13 @@ ansible-playbook nas_playbook.yml -i inventories/nas/inventory.yml --diff --tags
 # Multiple tags
 ansible-playbook nas_playbook.yml -i inventories/nas/inventory.yml --diff --tags docker,system --check
 ```
-### Preview
-#### Grafana
+## Preview
+### Grafana
 ![Node Dashboards](assets/grafana_dashboard_node_stats.png)
 ![Containers Dashboards](assets/grafana_dashboard_containers.png)
 ![Grafana Logs](assets/grafana_logs.png)
 
-#### Email reports
+### Email reports
 ![Drive Failure](assets/reports_drive_failed.png)
 ![ZFS Scrub](assets/reports_zfs_scrub.png)
 ## TODO
