@@ -1,0 +1,12 @@
+---
+jellyfin_enabled: false
+
+jellyfin_puid: "{{ nas_docker_uid }}"
+jellyfin_pgid: "{{ nas_docker_gid }}"
+jellyfin_tz: "{{ plex_tz | default('America/Sao_Paulo') }}"
+jellyfin_umask: "002"
+jellyfin_config_dir: "{{ nas_docker_directory }}/jellyfin"
+jellyfin_media_dir: "{{ nas_library_dir }}"
+jellyfin_cache_dir: "{{ nas_docker_directory }}/jellyfin/cache"
+jellyfin_web_port: 8096
+jellyfin_https_port: 8920

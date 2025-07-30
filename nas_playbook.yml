@@ -138,3 +138,8 @@
         - dex
         - monitoring
         - docker
+
+    - role: jellyfin
+      tags:
+        - jellyfin
+        - docker

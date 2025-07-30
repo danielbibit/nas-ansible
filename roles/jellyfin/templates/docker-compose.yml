@@ -1,0 +1,19 @@
+services:
+  jellyfin:
+    image: "lscr.io/linuxserver/jellyfin:latest"
+    container_name: jellyfin
+    environment:
+      - PUID={{ jellyfin_puid }}
+      - PGID={{ jellyfin_pgid }}
+      - TZ={{ jellyfin_tz }}
+      - UMASK={{ jellyfin_umask }}
+    volumes:
+      - "{{ jellyfin_config_dir }}:/config"
+      - "{{ jellyfin_media_dir }}:/media"
+      - "{{ jellyfin_cache_dir }}:/cache"
+    ports:
+      - "{{ jellyfin_web_port }}:8096"
+      - "{{ jellyfin_https_port }}:8920"
+    restart: unless-stopped
+    # devices:
+    #   - /dev/dri:/dev/dri  # For hardware acceleration if available

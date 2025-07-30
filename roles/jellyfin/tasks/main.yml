@@ -1,0 +1,39 @@
+---
+- name: Start jellyfin container if enabled
+  when: jellyfin_enabled is true
+  block:
+    - name: Ensure jellyfin compose directory exists
+      ansible.builtin.file:
+        path: '{{ nas_docker_compose_dir }}/jellyfin'
+        state: directory
+        owner: '{{ nas_docker_uid }}'
+        group: '{{ nas_docker_gid }}'
+        mode: "0775"
+
+    - name: Copy jellyfin compose file
+      ansible.builtin.template:
+        src: '{{ role_path }}/templates/docker-compose.yml'
+        dest: '{{ nas_docker_compose_dir }}/jellyfin/docker-compose.yml'
+        owner: '{{ nas_docker_uid }}'
+        group: '{{ nas_docker_gid }}'
+        mode: "0775"
+
+    - name: Start jellyfin container via docker-compose
+      community.docker.docker_compose_v2:
+        project_src: '{{ nas_docker_compose_dir }}/jellyfin'
+        state: present
+        pull: missing
+        remove_orphans: true
+
+- name: Stop jellyfin container if disabled
+  when: jellyfin_enabled is not true
+  block:
+    - name: Stop jellyfin container via docker-compose
+      community.docker.docker_compose_v2:
+        project_src: '{{ nas_docker_compose_dir }}/jellyfin'
+        state: absent
+
+    - name: Remove jellyfin compose directory
+      ansible.builtin.file:
+        path: '{{ nas_docker_compose_dir }}/jellyfin'
+        state: absent
