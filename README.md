@@ -132,7 +132,10 @@ ansible-playbook nas_playbook.yml -i inventories/nas/inventory.yml --diff --tags
 # Multiple tags
 ansible-playbook nas_playbook.yml -i inventories/nas/inventory.yml --diff --tags docker,system --check
 ```
-## Preview
+## Media
+### Hardware
+![NAS Case](assets/nas_define_r5_case.png)
+
 ### Grafana
 ![Node Dashboards](assets/grafana_dashboard_node_stats.png)
 ![Containers Dashboards](assets/grafana_dashboard_containers.png)
