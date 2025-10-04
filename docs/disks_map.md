@@ -5,7 +5,7 @@
 | Brand   | Model     | Size  | Serial          | DateBuy    | Disk id                                       | Controller  | APM | Spin Down | Comments    |
 |---------|-----------|-------|-----------------|------------|-----------------------------------------------|-------------|-----|-----------|-------------|
 | Samsung | EVO       | 120GB | S21TNSAG121503V | ?          | ata-Samsung_SSD_850_EVO_120GB_S21TNSAG121503V | MOBO (OR)   | -   | -         | Boot drive  |
-| -       | -         | -     | -               | -          | -                                             | -           |     |           | -           |
+| WD      | Purple    | 4TB   | WD-WX22DA4D94HS | 04/10/2025 | ata-WDC_WD43PURZ-74BWPY0_WD-WX22DA4D94HS      | MOBO (OR)   |     |           | -           |
 
 
 ## Inside Bay

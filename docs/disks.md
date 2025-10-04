@@ -13,7 +13,7 @@
 ```sh
 lsblk
 fdisk -l
-ls /dev/disk/by-label
+ls /dev/disk/by-id
 ```
 
 ## hdparm
