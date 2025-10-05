@@ -1,0 +1,5 @@
+---
+syncthing_enabled: false
+syncthing_port: 8384
+syncthing_uid: 1000
+syncthing_gid: 1000
