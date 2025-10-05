@@ -20,7 +20,7 @@ done <<< "$PROJECTS"
 
 # Create zfs snapshot
 echo -e '\nCreating zfs snapshot...'
-/usr/sbin/zfs snapshot Users/docker@$(date +%Y_%m_%d)
+/usr/sbin/zfs snapshot Storage/System@$(date +%Y_%m_%d)
 
 # Upgrade docker containers using docker compose v2
 echo -e '\nUpgrading docker containers...\n'
@@ -30,7 +30,7 @@ while read -r project status compose_path; do
 done <<< "$PROJECTS"
 
 # Delete old snapshots
-FS="Users/docker"
+FS="Storage/System"
 
 # List snapshots sorted by creation date (oldest first)
 SNAPSHOTS=($(zfs list -t snapshot -o name -s creation | grep "^$FS@"))

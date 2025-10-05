@@ -1,9 +1,9 @@
-# BACKUP DOCKER CONTAINERS FILES
-# TODO LOG cron run
+# Todo make systemd service
 - name: Daily docker sync
   ansible.builtin.cron:
     name: "daily_sync_docker_mounts"
     hour: "04"
     minute: "00"
     user: root
-    job: "rsync -a /srv/Users/docker/ /srv/Storage/Backups/NAS/docker"
+    state: absent
+    job: "rsync -a {{ nas_docker_directory }}/ {{ nas_backup_dir }}/NAS/docker"
