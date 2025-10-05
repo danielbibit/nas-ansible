@@ -29,6 +29,7 @@ arr_stack_enabled: true
 nginx_proxy_manager_enabled: true
 cloudflare_ddns_enabled: true
 jellyfin_enabled: true
+syncthing_enabled: false
 
 backup_immich_photos_path: "{{ nas_photos_dir }}"
 

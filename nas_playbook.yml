@@ -143,3 +143,8 @@
       tags:
         - jellyfin
         - docker
+
+    - role: syncthing
+      tags:
+        - syncthing
+        - docker
