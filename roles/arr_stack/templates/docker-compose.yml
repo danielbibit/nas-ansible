@@ -12,6 +12,7 @@ services:
       - '{{ arr_stack_sonarr_config_dir }}:/config'
       - '{{ arr_stack_series_dir }}:/tv'
       - '{{ arr_stack_downloads_dir }}:/downloads'
+      - '{{ arr_stack_seedbox_downloads_dir }}:/seedbox'
     ports:
       - '{{ arr_stack_sonarr_port }}:8989'
     restart: unless-stopped
@@ -28,6 +29,7 @@ services:
       - '{{ arr_stack_radarr_config_dir }}:/config'
       - '{{ arr_stack_movies_dir }}:/movies'
       - '{{ arr_stack_downloads_dir }}:/downloads'
+      - '{{ arr_stack_seedbox_downloads_dir }}:/seedbox'
     ports:
       - '{{ arr_stack_radarr_port }}:7878'
     restart: unless-stopped
