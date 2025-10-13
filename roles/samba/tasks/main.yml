@@ -4,18 +4,15 @@
       - samba
 
 - name: Copy samba conf with owner and permissions
-  ansible.builtin.copy:
-    src: ../templates/smb.conf
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/smb.conf"
     dest: /etc/samba/smb.conf
     owner: root
     group: root
     mode: '0644'
-  notify: restart_samba
+  notify: Restart samba
 
 - name: Allow samba in firewall
   community.general.ufw:
     rule: allow
     name: samba
-
-
-# TODO SETUP PASSWORDS

@@ -2,3 +2,21 @@ nas_admin: admin_override_example
 
 nas_email_report_to: example1@email.com
 nas_email_send_from: example2@email.com
+
+samba_shares:
+  - name: Daniel
+    path: /srv/Storage/Users/daniel
+    browsable: 'yes'
+    read_only: 'no'
+    guest_ok: 'no'
+    valid_users:
+      - daniel
+
+  - name: Scanner
+    path: /srv/Storage/Scanner
+    browsable: 'yes'
+    read_only: 'no'
+    guest_ok: 'no'
+    valid_users:
+      - daniel
+      - barbara
