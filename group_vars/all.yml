@@ -13,7 +13,7 @@ nas_movie_directory: /srv/Storage/Library/Videos/Movies
 nas_tv_directory: /srv/Storage/Library/Videos/Series
 nas_music_directory: /srv/Storage/Library/Music
 nas_photos_dir: /srv/Storage/Library/Pictures
-nas_download_dir: /srv/Users/daniel/Downloads
+nas_download_dir: /srv/Storage/Users/daniel/Downloads
 
 dex_enabled: true
 immich_enabled: true
