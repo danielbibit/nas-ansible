@@ -12,8 +12,8 @@ adduser nas kvm
 ```
 
 ```sh
-mkdir /srv/Users/vms/hassos
-cd /srv/Users/vms/hassos
+mkdir /srv/Storage/Users/vms/hassos
+cd /srv/Storage/Users/vms/hassos
 ```
 
 ```sh
@@ -23,7 +23,7 @@ mv haos_ova-6.1.qcow2 hassos.qcow2
 ```
 
 ```sh
-virsh pool-create-as --name hassos --type dir --target /srv/Users/vms/hassos
+virsh pool-create-as --name hassos --type dir --target /srv/Storage/Users/vms/hassos
 ```
 
 create bridge adpter using netplan called br0

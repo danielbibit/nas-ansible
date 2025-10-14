@@ -71,9 +71,6 @@ ZFS features are used on some tasks, it will be pretty difficult to use another 
 This project *DO NOT* setup nor manage it, you should take your time to setup it properly,
 before attempting to use this project.
 
-I have setup two separate pools: **Users**, where are stored transitional files and
-data files for the docker containers. And **Storage**, a 14TB pool to store all the rest.
-
 ### Email
 You will need a SMP service that allow using plain text password for authentication,
 I recommend using AWS SES.
