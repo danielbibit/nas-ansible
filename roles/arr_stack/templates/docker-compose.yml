@@ -78,6 +78,15 @@ services:
       - 9696:9696
     restart: unless-stopped
 
+  recomendarr:
+    image: tannermiddleton/recommendarr:latest
+    container_name: recomendarr
+    volumes:
+      - '{{ arr_stack_recomendarr_config_dir }}:/app/server/data'
+    ports:
+      - '{{ arr_stack_recomendarr_port }}:3000'
+    restart: unless-stopped
+
 networks:
   default:
     name: nas
