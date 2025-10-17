@@ -20,3 +20,25 @@ samba_shares:
     valid_users:
       - daniel
       - barbara
+
+rclone_remotes:
+  - |
+    [example_remote]
+    type = sftp
+    host = example.com
+    user = exampleuser
+    key_file = /home/nas/.ssh/id_ed25519
+    shell_type = unix
+    md5sum_command = md5sum
+
+rclone_fstab:
+  - name: example_remote
+    remote: example_remote
+    remote_path: ''
+    mount_point: /mnt/example/remote
+    uid: '{{ nas_docker_uid }}'
+    gid: '{{ nas_docker_gid }}'
+    umask: '0022'
+    options: defaults,_netdev,allow_other,vfs-cache-mode=writes,buffer-size=128M
+    dump: 0
+    pass: 0
