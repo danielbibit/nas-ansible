@@ -11,7 +11,7 @@
 ## Inside Bay
 | Brand   | Model     | Size | Serial          | DateBuy    | Disk id                                  | Controller | APM | Spin Down | Comments     |
 |---------|-----------|------|-----------------|------------|------------------------------------------|------------|-----|-----------|--------------|
-| WD      | Purple    | 1TB  | WD-WCC4J4YR7ATX | ?          | ata-WDC_WD10PURZ-85U8XY0_WD-WCC4J4YR7ATX | MOBO       |     |           | ZFS Users    |
+| WD      | Purple    | 1TB  | WD-WCC4J4YR7ATX | 15/04/2019 | ata-WDC_WD10PURZ-85U8XY0_WD-WCC4J4YR7ATX | MOBO       |     |           | ZFS Users    |
 | WD      | Blue      | 4TB  | WD-WCC7K4JJ13U4 | 15/10/2018 | ata-WDC_WD40EZRZ-22GXCB0_WD-WCC7K4JJ13U4 | MOBO       |     |           | Antigo Data3 |
 | WD      | RED       | 4TB  | WD-WX32D81DELPC | 08/07/2022 | ata-WDC_WD40EFAX-68JH4N1_WD-WX32D81DELPC | MOBO       |     |           | Penultimo    |
 | Seagate | IronWolf  | 4TB  | ZW63GKU6        | 18/07/2025 | ata-ST4000VN006-3CW104_ZW63GKV6          | MOBO       |     |           | RMA          |
