@@ -148,3 +148,7 @@
       tags:
         - syncthing
         - docker
+
+    - role: rclone
+      tags:
+        - rclone

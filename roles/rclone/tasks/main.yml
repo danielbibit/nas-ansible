@@ -1,0 +1,57 @@
+---
+- name: Install rclone
+  when: rclone_enabled is true
+  block:
+    - name: Install rclone
+      ansible.builtin.package:
+        name: rclone
+        state: present
+
+    - name: Template base rclone config file
+      ansible.builtin.template:
+        src: "{{ role_path }}/templates/rclone.conf.j2"
+        dest: "/etc/rclone.conf"
+        owner: 'root'
+        group: 'root'
+        mode: "0600"
+
+    - name: Create symlink for mount.rclone
+      ansible.builtin.file:
+        src: /usr/bin/rclone
+        dest: /sbin/mount.rclone
+        state: link
+
+    - name: Add rclone mount to fstab
+      ansible.builtin.blockinfile:
+        path: /etc/fstab
+        block: "{{ lookup('template', role_path + '/templates/fstab.j2') }}"
+      notify: Reload systemd
+
+    - name: Ensure rclone mount points exist
+      ansible.builtin.file:
+        path: "{{ item.mount_point }}"
+        owner: "{{ item.uid | default('root') }}"
+        group: "{{ item.gid | default('root') }}"
+        mode: '0755'
+        state: directory
+      loop: "{{ rclone_fstab }}"
+
+- name: Remove rclone
+  when: rclone_enabled is false
+  block:
+    - name: Remove rclone package
+      ansible.builtin.package:
+        name: rclone
+        state: absent
+
+    - name: Remove rclone config directory
+      ansible.builtin.file:
+        path: "/etc/rclone.conf"
+        state: absent
+
+    - name: Remove rclone mount from fstab
+      ansible.builtin.blockinfile:
+        path: /etc/fstab
+        block: "{{ lookup('template', role_path + '/templates/fstab.j2') }}"
+        state: absent
+      notify: Reload systemd

@@ -1,0 +1,7 @@
+
+## BEGIN RCLONE ROLE ##
+{% for entry in rclone_fstab %}
+{{ entry.remote }}:{{ entry.remote_path }} {{ entry.mount_point }} rclone config=/etc/rclone.conf,uid={{ entry.uid | default(0) }},gid={{ entry.gid | default(0) }},umask={{ entry.umask | default('0022') }},{{ entry.options }} {{ entry.dump }} {{ entry.pass }}
+{% endfor %}
+## END RCLONE ROLE ##
+
