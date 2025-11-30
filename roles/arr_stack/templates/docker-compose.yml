@@ -106,6 +106,17 @@ services:
     #   retries: 3
     restart: unless-stopped
 
+  profilarr:
+      image: santiagosayshey/profilarr:beta
+      container_name: profilarr
+      ports:
+          - '{{ arr_stack_profilarr_port }}:6868'
+      volumes:
+          - '{{ arr_stack_profilarr_config_dir }}:/config'
+      environment:
+          - TZ={{ arr_stack_timezone }}
+      restart: unless-stopped
+
 networks:
   default:
     name: nas
