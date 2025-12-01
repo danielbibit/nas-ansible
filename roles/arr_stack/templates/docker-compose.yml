@@ -117,6 +117,18 @@ services:
           - TZ={{ arr_stack_timezone }}
       restart: unless-stopped
 
+  autobrr:
+    container_name: autobrr
+    image: ghcr.io/autobrr/autobrr:latest
+    environment:
+      - TZ={{ arr_stack_timezone }}
+    # user: '{{ arr_stack_puid }}:{{ arr_stack_pgid }}'
+    volumes:
+      - '{{ arr_stack_autobrr_config_dir }}:/config'
+    ports:
+      - '{{ arr_stack_autobrr_port }}:7474'
+    restart: unless-stopped
+
 networks:
   default:
     name: nas
