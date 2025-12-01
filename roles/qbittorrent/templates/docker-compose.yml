@@ -10,7 +10,8 @@ services:
       - WEBUI_PORT={{ qbittorrent_webui_port }}
     volumes:
       - "{{ nas_docker_directory }}/qbittorrent:/config"
-      - "{{ nas_download_dir }}:/downloads"
+      - "{{ qbittorrent_download_dir }}:/downloads"
+      - "{{ qbittorrent_permanent_download_dir }}:/permanent_downloads"
 
     ports:
       - 6881:6881
