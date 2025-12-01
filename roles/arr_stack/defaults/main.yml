@@ -24,8 +24,8 @@ arr_stack_seerr_config_dir: "{{ nas_docker_directory }}/seerr"
 arr_stack_profilarr_config_dir: "{{ nas_docker_directory }}/profilarr"
 arr_stack_autobrr_config_dir: "{{ nas_docker_directory }}/autobrr"
 
-arr_stack_series_dir: "{{ nas_tv_directory }}"
-arr_stack_movies_dir: "{{ nas_movie_directory }}"
+arr_stack_series_dir: "{{ nas_library_dir }}"
+arr_stack_movies_dir: "{{ nas_library_dir }}"
 
 arr_stack_downloads_dir: "{{ nas_download_dir }}"
 arr_stack_seedbox_downloads_dir: "{{ seedbox_downloads_dir }}"

@@ -10,7 +10,7 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - '{{ arr_stack_sonarr_config_dir }}:/config'
-      - '{{ arr_stack_series_dir }}:/tv'
+      - '{{ arr_stack_series_dir }}:/library'
       - '{{ arr_stack_downloads_dir }}:/downloads'
       - '{{ arr_stack_seedbox_downloads_dir }}:/seedbox'
     ports:
@@ -27,7 +27,7 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - '{{ arr_stack_radarr_config_dir }}:/config'
-      - '{{ arr_stack_movies_dir }}:/movies'
+      - '{{ arr_stack_movies_dir }}:/library'
       - '{{ arr_stack_downloads_dir }}:/downloads'
       - '{{ arr_stack_seedbox_downloads_dir }}:/seedbox'
     ports:
@@ -43,26 +43,10 @@ services:
       - TZ={{ arr_stack_timezone }}
     volumes:
       - '{{ arr_stack_bazarr_config_dir }}:/config'
-      - '{{ arr_stack_movies_dir }}:/movies'
-      - '{{ arr_stack_series_dir }}:/tv'
+      - '{{ arr_stack_movies_dir }}:/library_movies'
+      - '{{ arr_stack_series_dir }}:/library_tv'
     ports:
       - '{{ arr_stack_bazarr_port }}:6767'
-    restart: unless-stopped
-
-  jackett:
-    image: ghcr.io/linuxserver/jackett:latest
-    container_name: jackett
-    environment:
-      - PUID={{ arr_stack_puid }}
-      - PGID={{ arr_stack_pgid }}
-      - TZ={{ arr_stack_timezone }}
-      - AUTO_UPDATE=true
-    volumes:
-      - '{{ arr_stack_jackett_config_dir }}/config:/config'
-      - '{{ arr_stack_jackett_config_dir }}/download_blackhole:/downloads'
-      - /etc/localtime:/etc/localtime:ro
-    ports:
-      - '{{ arr_stack_jackett_port }}:9117'
     restart: unless-stopped
 
   prowlarr:

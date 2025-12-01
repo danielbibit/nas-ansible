@@ -11,7 +11,7 @@ services:
     volumes:
       - "{{ nas_docker_directory }}/qbittorrent:/config"
       - "{{ qbittorrent_download_dir }}:/downloads"
-      - "{{ qbittorrent_permanent_download_dir }}:/permanent_downloads"
+      - "{{ qbittorrent_library_dir }}:/library"
 
     ports:
       - 6881:6881

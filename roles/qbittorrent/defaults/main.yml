@@ -8,4 +8,4 @@ qbittorrent_webui_port: "1337"
 qbittorrent_umask: "002"
 
 qbittorrent_download_dir: "{{ nas_download_dir }}"
-qbittorrent_permanent_download_dir: "{{ nas_download_perma_dir }}"
+qbittorrent_library_dir: "{{ nas_library_dir }}"
