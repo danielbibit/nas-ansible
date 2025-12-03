@@ -123,6 +123,11 @@
         - qbittorrent
         - docker
 
+    - role: tdarr
+      tags:
+        - tdarr
+        - docker
+
     - role: plex
       tags:
         - plex

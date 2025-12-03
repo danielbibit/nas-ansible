@@ -145,5 +145,4 @@ ansible-playbook nas_playbook.yml -i inventories/nas/inventory.yml --diff --tags
 * Implement grafana alerts
 * Setup local backup (In progress)
 * Setup cloud backup (In progress)
-* Setup tdarr
 * Refactor containers network with traefik ?
