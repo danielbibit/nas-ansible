@@ -1,0 +1,30 @@
+---
+tdarr_enabled: false
+
+tdarr_puid: "{{ nas_docker_uid }}"
+tdarr_pgid: "{{ nas_docker_gid }}"
+tdarr_timezone: "{{ ansible_date_time.tz | default('Etc/UTC') }}"
+tdarr_umask: "002"
+
+tdarr_webui_port: "8265"
+tdarr_server_port: "8266"
+
+tdarr_server_dir: "{{ nas_docker_directory }}/tdarr/server"
+tdarr_configs_dir: "{{ nas_docker_directory }}/tdarr/configs"
+tdarr_media_dir: "{{ nas_docker_directory }}/tdarr/media" # not safe to use nas_library_dir here
+tdarr_logs_dir: "{{ nas_docker_directory }}/tdarr/logs"
+tdarr_transcode_cache: "/transcode_cache"
+
+tdarr_mounts:
+  - "{{ tdarr_server_dir }}:/app/server"
+  - "{{ tdarr_configs_dir }}:/app/configs"
+  - "{{ tdarr_logs_dir }}:/app/logs"
+  - "{{ tdarr_media_dir }}:/media"
+  - "{{ tdarr_transcode_cache }}:/temp"
+
+tdarr_devices:
+  - "/dev/dri:/dev/dri"
+
+tdarr_compose_project: "tdarr"
+tdarr_owner_uid: "{{ tdarr_puid }}"
+tdarr_owner_gid: "{{ tdarr_pgid }}"

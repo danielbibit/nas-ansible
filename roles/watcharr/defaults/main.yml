@@ -1,0 +1,9 @@
+---
+watcharr_enabled: false
+
+watcharr_uid: "{{ nas_docker_uid }}"
+watcharr_gid: "{{ nas_docker_gid }}"
+watcharr_port: "3080"
+
+watcharr_data_dir: "{{ nas_docker_directory }}/watcharr/data"
+watcharr_compose_dir: "{{ nas_docker_compose_dir }}/watcharr"

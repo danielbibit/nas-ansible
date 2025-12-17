@@ -143,8 +143,6 @@ ansible-playbook nas_playbook.yml -i inventories/nas/inventory.yml --diff --tags
 ![ZFS Scrub](assets/reports_zfs_scrub.png)
 ## TODO
 * Implement grafana alerts
-* Add screenshots to the readme
 * Setup local backup (In progress)
 * Setup cloud backup (In progress)
-* Setup tdarr
 * Refactor containers network with traefik ?
