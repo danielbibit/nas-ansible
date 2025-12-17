@@ -14,6 +14,8 @@ services:
     ports:
       - "{{ jellyfin_web_port }}:8096"
       - "{{ jellyfin_https_port }}:8920"
+      # Discovery
+      - "7359:7359/udp"
     devices:
       - /dev/dri:/dev/dri  # For hardware acceleration if available
     restart: unless-stopped
