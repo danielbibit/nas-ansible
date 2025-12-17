@@ -123,6 +123,11 @@
         - qbittorrent
         - docker
 
+    - role: watcharr
+      tags:
+        - watcharr
+        - docker
+
     - role: tdarr
       tags:
         - tdarr
