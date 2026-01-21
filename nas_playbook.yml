@@ -20,17 +20,28 @@
       community.general.cronvar:
         name: MAILTO
         value: "\"\""
-        # value: "danielbibit@gmail.com"
         user: root
+
+    - name: Get system user info
+      ansible.builtin.getent:
+        database: passwd
+        key: "{{ nas_system_user }}"
+      register: nas_user_info
+
+    # SET UID A GID varaibles for nas:users
+    - name: Set nas user and group IDs
+      ansible.builtin.set_fact:
+        nas_uid: "{{ lookup('ansible.builtin.command', 'id -u nas') | int }}"
+        nas_gid: "{{ lookup('ansible.builtin.command', 'getent group users | cut -d: -f3') | int }}"
 
   roles:
     - role: install_packages
       tags:
         - system
 
-    # - role: create_users
-    #   tags:
-    #     - system
+    - role: create_users
+      tags:
+        - system
 
     - role: samba
       tags:
