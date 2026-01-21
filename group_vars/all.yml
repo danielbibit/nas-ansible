@@ -27,7 +27,7 @@ cadvisor_enabled: true
 promtail_enabled: true
 loki_enabled: true
 qbittorrent_enabled: true
-plex_enabled: true
+plex_enabled: false
 arr_stack_enabled: true
 nginx_proxy_manager_enabled: true
 cloudflare_ddns_enabled: true
