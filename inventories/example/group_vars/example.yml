@@ -1,7 +1,14 @@
 nas_admin: admin_override_example
 
-nas_email_report_to: example1@email.com
-nas_email_send_from: example2@email.com
+email_report_to: example1@email.com
+email_send_from: example2@email.com
+email_host:
+email_username:
+email_password:
+
+cloudflare_ddns_api_key: token
+cloudflare_ddns_zone: domain
+cloudflare_ddns_subdomain: subdomain
 
 samba_shares:
   - name: Daniel

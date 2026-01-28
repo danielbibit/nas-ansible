@@ -41,10 +41,16 @@
 - name: Stop stack
   when: syncthing_enabled is false
   block:
+    - name: Check if syncthing directory exists
+      ansible.builtin.stat:
+        path: '{{ nas_docker_compose_dir }}/syncthing'
+      register: watcharr_dir
+
     - name: Tear down existing stack
       community.docker.docker_compose_v2:
         project_src: '{{ nas_docker_compose_dir }}/syncthing'
         state: absent
+      when: watcharr_dir.stat.exists and watcharr_dir.stat.isdir
 
     - name: Remove compose files
       ansible.builtin.file:

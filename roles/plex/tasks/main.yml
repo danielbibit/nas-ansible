@@ -28,10 +28,16 @@
 - name: Stop plex container if disabled
   when: plex_enabled is not true
   block:
+    - name: Check if plex directory exists
+      ansible.builtin.stat:
+        path: '{{ nas_docker_compose_dir }}/plex'
+      register: plex_dir
+
     - name: Stop plex container via docker-compose
       community.docker.docker_compose_v2:
         project_src: '{{ nas_docker_compose_dir }}/plex'
         state: absent
+      when: plex_dir.stat.exists and plex_dir.stat.isdir
 
     - name: Remove plex compose directory
       ansible.builtin.file:
