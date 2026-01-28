@@ -1,26 +1,18 @@
-FROM python:3.12
+FROM python:3.12-slim-trixie
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
 RUN apt update
 
 RUN apt install -y \
-    ansible-lint \
     sshpass
 
-RUN apt remove --purge -y \
-    ansible \
-    ansible-lint \
-    ansible-core
+COPY . /app
 
-RUN apt autoremove -y
+WORKDIR /app
 
-RUN pip install poetry
+RUN uv sync --locked
 
-RUN poetry config virtualenvs.create false
+RUN uv run ansible-galaxy install -r ansible-requirements.yml
 
-COPY . ./
-
-RUN poetry install --no-root
-
-RUN ansible-galaxy collection install prometheus.prometheus
-
+# Disable ssh host verification for ansible
 RUN export ANSIBLE_HOST_KEY_CHECKING=False

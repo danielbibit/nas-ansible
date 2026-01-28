@@ -112,22 +112,27 @@ this way you can edit your files and don't have to worry about setting up ansibl
 If you don't want to use VSCode, you can build the container yourself,
 or setup the project manually using Poetry.
 
+### Notes for MacOS
+* When using docker with OrbStack, force the local network permission by disabling access to container by domain.
+You can re-enable it after.
+* The prometheus installer needs the gnu version o tar, install it with brew and link and add it to path
+
 ### Running a playbook
 ```sh
 # Default playbook for the full NAS server
-ansible-playbook nas_playbook.yml -i inventories/nas/inventory.yml --diff --check
+uv run ansible-playbook nas_playbook.yml -i inventories/nas/inventory.yml --diff --check
 
 # Playbook for obervability nodes
-ansible-playbook exporters_playbook.yml -i inventories/pve/inventory.yml --diff --check
+uv run ansible-playbook exporters_playbook.yml -i inventories/pve/inventory.yml --diff --check
 ```
 
 To run a tag:
 ```sh
 # Single tag
-ansible-playbook nas_playbook.yml -i inventories/nas/inventory.yml --diff --tags docker --check
+uv run ansible-playbook nas_playbook.yml -i inventories/nas/inventory.yml --diff --tags docker --check
 
 # Multiple tags
-ansible-playbook nas_playbook.yml -i inventories/nas/inventory.yml --diff --tags docker,system --check
+uv run ansible-playbook nas_playbook.yml -i inventories/nas/inventory.yml --diff --tags docker,system --check
 ```
 ## Media
 ### Hardware
