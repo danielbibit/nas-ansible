@@ -21,7 +21,7 @@ classifiers = [
 dependencies = [
     "ansible>=11.0.0,<12",
     "ansible-lint>=25.1.3,<26",
-    "grafana-foundation-sdk>=1759918510!10.1.0",
+    "grafana-foundation-sdk==1743724444!11.5.0",
 ]
 
 [dependency-groups]
