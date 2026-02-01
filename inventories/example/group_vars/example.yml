@@ -1,5 +1,41 @@
 nas_admin: admin_override_example
 
+nas_docker_uid: 1001
+nas_docker_gid: 100
+nas_docker_directory: /srv/Storage/System
+nas_docker_compose_dir: /home/nas/containers/compose
+
+nas_library_dir: /srv/Storage/Library
+nas_movie_directory: /srv/Storage/Library/Videos/Movies
+nas_tv_directory: /srv/Storage/Library/Videos/Series
+nas_music_directory: /srv/Storage/Library/Music
+nas_photos_dir: /srv/Storage/Library/Pictures
+nas_download_dir: /srv/Storage/Users/daniel/Downloads
+nas_temp_download_dir: /srv/Users/Downloads/__temp
+nas_backup_dir: /srv/Storage/Backups
+
+seedbox_downloads_dir: /mnt/seedbox
+
+dex_enabled: true
+immich_enabled: true
+grafana_enabled: true
+node_exporter_enabled: true
+prometheus_enabled: true
+cadvisor_enabled: true
+promtail_enabled: true
+loki_enabled: true
+qbittorrent_enabled: true
+plex_enabled: true
+arr_stack_enabled: true
+nginx_proxy_manager_enabled: true
+cloudflare_ddns_enabled: true
+jellyfin_enabled: true
+syncthing_enabled: false
+rclone_enabled: true
+watcharr_enabled: false
+
+backup_immich_photos_path: "{{ nas_photos_dir }}"
+
 email_report_to: example1@email.com
 email_send_from: example2@email.com
 email_host:
@@ -9,6 +45,16 @@ email_password:
 cloudflare_ddns_api_key: token
 cloudflare_ddns_zone: domain
 cloudflare_ddns_subdomain: subdomain
+
+system_groups:
+  - { name: users, gid: 4200 }
+  - { name: docker, gid: 4201 }
+
+system_users:
+  - { name: docker, uid: 1300, group: users }
+  - { name: daniel, uid: 2311, group: users }
+  - { name: valdedi, uid: 5136, group: users }
+  - { name: barbara, uid: 6997, group: users }
 
 samba_shares:
   - name: Daniel
