@@ -89,16 +89,14 @@ inventories/your_inventory/inventory.yml to match your server configuration.
 ```sh
 cp -r invetories/example invetories/your_inventory
 ```
-All the default configuration are stored inside the roles (role_name/defaults/main.yml)
-and in the group_vars directory (group_vars/all.yml).
+All the default configuration are stored inside the roles (role_name/defaults/main.yml).
 
 You can override any of these values in your inventory file, just add the desired
 variable with the new value to your inventories/your_inventory/group_vars/your_inventory.yml
 
 The order of precedence of this projects is:
-1. Inventory group_vars
-2. Project group_vars
-3. Role defaults
+1. Project group_vars
+2. Role defaults
 
 ## Running
 ### Setting up
