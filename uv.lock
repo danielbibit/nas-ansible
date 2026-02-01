@@ -410,6 +410,12 @@ dependencies = [
     { name = "grafana-foundation-sdk" },
 ]
 
+[package.dev-dependencies]
+dev = [
+    { name = "ansible-core" },
+    { name = "ansible-lint" },
+]
+
 [package.metadata]
 requires-dist = [
     { name = "ansible", specifier = ">=11.0.0,<12" },
@@ -418,7 +424,10 @@ requires-dist = [
 ]
 
 [package.metadata.requires-dev]
-dev = []
+dev = [
+    { name = "ansible-core", specifier = ">=2.18.12" },
+    { name = "ansible-lint", specifier = ">=25.12.2" },
+]
 
 [[package]]
 name = "packaging"

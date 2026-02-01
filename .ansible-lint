@@ -1,0 +1,6 @@
+profile: basic
+
+exclude_paths:
+  - "**/docker-compose.yml"
+  - "**/docker-compose.yaml"
+  - ".venv/"

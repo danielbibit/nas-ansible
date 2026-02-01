@@ -120,19 +120,19 @@ You can re-enable it after.
 ### Running a playbook
 ```sh
 # Default playbook for the full NAS server
-uv run ansible-playbook nas_playbook.yml -i inventories/nas/inventory.yml --diff --check
+uv run ansible-playbook playbooks/nas.yml -i inventories/nas/inventory.yml --diff --check
 
 # Playbook for obervability nodes
-uv run ansible-playbook exporters_playbook.yml -i inventories/pve/inventory.yml --diff --check
+uv run ansible-playbook playbooks/exporters.yml -i inventories/pve/inventory.yml --diff --check
 ```
 
 To run a tag:
 ```sh
 # Single tag
-uv run ansible-playbook nas_playbook.yml -i inventories/nas/inventory.yml --diff --tags docker --check
+uv run ansible-playbook playbooks/nas.yml -i inventories/nas/inventory.yml --diff --tags docker --check
 
 # Multiple tags
-uv run ansible-playbook nas_playbook.yml -i inventories/nas/inventory.yml --diff --tags docker,system --check
+uv run ansible-playbook playbooks/nas.yml -i inventories/nas/inventory.yml --diff --tags docker,system --check
 ```
 ## Media
 ### Hardware

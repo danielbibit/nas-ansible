@@ -1,12 +1,9 @@
 ---
 - name: Add exporters to server
-  import_playbook: "exporters_playbook.yml"
+  import_playbook: "exporters.yml"
 
 - name: Nas setup
   hosts: all
-
-  # vars:
-  #   ansible_python_interpreter: /usr/bin/python3
 
   pre_tasks:
     - name: Ensure apt cache is up to date.
@@ -37,7 +34,7 @@
         - samba
         - system
 
-    - role: configure_email
+    - role: email
       tags:
         - email
         - system
