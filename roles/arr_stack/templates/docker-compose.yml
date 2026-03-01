@@ -12,7 +12,7 @@ services:
       - '{{ arr_stack_sonarr_config_dir }}:/config'
       - '{{ arr_stack_series_dir }}:/library'
       - '{{ arr_stack_downloads_dir }}:/downloads'
-      - '{{ arr_stack_seedbox_downloads_dir }}:/seedbox'
+      #- '{{ arr_stack_seedbox_downloads_dir }}:/seedbox'
     ports:
       - '{{ arr_stack_sonarr_port }}:8989'
     restart: unless-stopped
@@ -29,7 +29,7 @@ services:
       - '{{ arr_stack_radarr_config_dir }}:/config'
       - '{{ arr_stack_movies_dir }}:/library'
       - '{{ arr_stack_downloads_dir }}:/downloads'
-      - '{{ arr_stack_seedbox_downloads_dir }}:/seedbox'
+      #- '{{ arr_stack_seedbox_downloads_dir }}:/seedbox'
     ports:
       - '{{ arr_stack_radarr_port }}:7878'
     restart: unless-stopped
@@ -112,6 +112,19 @@ services:
     ports:
       - '{{ arr_stack_autobrr_port }}:7474'
     restart: unless-stopped
+
+  lingarr:
+    image: lingarr/lingarr:latest
+    container_name: lingarr
+    restart: unless-stopped
+    environment:
+      - ASPNETCORE_URLS=http://+:9876
+    ports:
+      - "9876:9876"
+    volumes:
+      - '/srv/Storage/Library:/library'
+      - '/srv/Storage/Library:/tv'
+      - '/srv/Storage/System/lingarr:/app/config'
 
 networks:
   default:

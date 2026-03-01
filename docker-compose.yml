@@ -1,0 +1,13 @@
+---
+services:
+  ansible-nas:
+    container_name: ansible-nas
+    build:
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/app
+      # Don't use external project venv
+      - /app/.venv
+    command: sleep infinity
+    network_mode: bridge
+    restart: no

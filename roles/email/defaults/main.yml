@@ -1,0 +1,8 @@
+---
+email_account: aws
+email_host: email.host.com
+email_port: 587
+
+email_from: "{{ email_send_from }}"
+email_username: foo
+email_password: bar
