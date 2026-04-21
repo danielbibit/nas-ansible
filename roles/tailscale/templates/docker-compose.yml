@@ -1,0 +1,20 @@
+services:
+  tailscale:
+    image: tailscale/tailscale:latest
+    container_name: tailscale
+{% if tailscale_hostname %}
+    hostname: {{ tailscale_hostname }}
+{% endif %}
+    environment:
+      - TS_AUTHKEY={{ tailscale_authkey }}
+      - TS_STATE_DIR=/var/lib/tailscale
+      - TS_ROUTES={{ tailscale_routes }}
+      - TS_EXTRA_ARGS={{ tailscale_extra_args }}
+    volumes:
+      - {{ nas_docker_compose_dir }}/tailscale/state:/var/lib/tailscale
+      - /dev/net/tun:/dev/net/tun
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    restart: unless-stopped
+    network_mode: host
