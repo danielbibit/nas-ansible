@@ -1,4 +1,32 @@
 services:
+{% if qbittorrent_vpn_enabled %}
+  gluetun:
+    image: qmcgaw/gluetun:latest
+    container_name: gluetun
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    environment:
+      - VPN_SERVICE_PROVIDER=protonvpn
+      - VPN_TYPE=wireguard
+      - WIREGUARD_PRIVATE_KEY={{ gluetun_wireguard_private_key }}
+      - SERVER_COUNTRIES={{ gluetun_server_countries }}
+{% if gluetun_server_cities %}
+      - SERVER_CITIES={{ gluetun_server_cities }}
+{% endif %}
+{% if gluetun_port_forwarding %}
+      - VPN_PORT_FORWARDING=on
+      - VPN_PORT_FORWARDING_UP_COMMAND=/bin/sh -c 'wget -O- --retry-connrefused --post-data "json={\"listen_port\":{{ '{{' }}PORTS{{ '}}' }}}" http://127.0.0.1:{{ qbittorrent_webui_port }}/api/v2/app/setPreferences 2>&1'
+{% endif %}
+      - TZ={{ qbittorrent_timezone }}
+    ports:
+      - 6881:6881
+      - 6881:6881/udp
+      - '{{ qbittorrent_webui_port }}:{{ qbittorrent_webui_port }}'
+    restart: unless-stopped
+
+{% endif %}
   qbittorrent:
     image: ghcr.io/linuxserver/qbittorrent
     container_name: qbittorrent
@@ -13,11 +41,16 @@ services:
       - "{{ qbittorrent_temp_download_dir }}:/temp_downloads"
       - "{{ qbittorrent_download_dir }}:/downloads"
       - "{{ qbittorrent_library_dir }}:/library"
-
+{% if qbittorrent_vpn_enabled %}
+    network_mode: "service:gluetun"
+    depends_on:
+      - gluetun
+{% else %}
     ports:
       - 6881:6881
       - 6881:6881/udp
-      - '{{ qbittorrent_webui_port }}:1337'
+      - '{{ qbittorrent_webui_port }}:{{ qbittorrent_webui_port }}'
+{% endif %}
     restart: unless-stopped
 
   qbit_manage:
@@ -33,15 +66,11 @@ services:
     environment:
       - QBT_WEB_SERVER=true
       - QBT_PORT=8080
-
       - TZ={{ qbittorrent_timezone }}
-      # Scheduler Configuration
       - QBT_RUN=false
       - QBT_SCHEDULE=1440
       - QBT_CONFIG_DIR=/config
       - QBT_LOGFILE=qbit_manage.log
-
-      # Logging Configuration
       - QBT_LOG_LEVEL=INFO
       - QBT_LOG_SIZE=10
       - QBT_LOG_COUNT=5

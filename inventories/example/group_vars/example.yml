@@ -24,7 +24,12 @@ prometheus_enabled: true
 cadvisor_enabled: true
 promtail_enabled: true
 loki_enabled: true
+gluetun_wireguard_private_key: ""
+gluetun_server_countries: "Netherlands"
+gluetun_port_forwarding: false
+
 qbittorrent_enabled: true
+qbittorrent_vpn_enabled: false
 plex_enabled: true
 arr_stack_enabled: true
 nginx_proxy_manager_enabled: true
