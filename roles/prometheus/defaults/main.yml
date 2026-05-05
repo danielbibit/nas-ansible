@@ -6,3 +6,4 @@ prometheus_port: 9090
 
 prometheus_hass_token: ""
 prometheus_hass_target: "yourhassdomain.com"
+prometheus_public: false

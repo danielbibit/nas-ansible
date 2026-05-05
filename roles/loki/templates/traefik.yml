@@ -1,0 +1,18 @@
+http:
+  routers:
+    loki:
+      rule: "Host(`loki.{{ traefik_domain }}`)"
+      entryPoints:
+        - websecure
+      service: loki-svc
+      tls:
+        certResolver: cloudflare
+{% if not loki_public | default(false) %}
+      middlewares:
+        - internal-only@file
+{% endif %}
+  services:
+    loki-svc:
+      loadBalancer:
+        servers:
+          - url: "http://loki:3100"

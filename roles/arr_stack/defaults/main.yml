@@ -29,3 +29,13 @@ arr_stack_movies_dir: "{{ nas_library_dir }}"
 
 arr_stack_downloads_dir: "{{ nas_download_dir }}"
 arr_stack_seedbox_downloads_dir: "{{ seedbox_downloads_dir }}"
+
+arr_stack_sonarr_public: false
+arr_stack_radarr_public: false
+arr_stack_bazarr_public: false
+arr_stack_prowlarr_public: false
+arr_stack_seerr_public: false
+arr_stack_recomendarr_public: false
+arr_stack_profilarr_public: false
+arr_stack_autobrr_public: false
+arr_stack_lingarr_public: false

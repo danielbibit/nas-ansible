@@ -1,3 +1,4 @@
 ---
 dex_enabled: false
 dex_port: 8386
+dex_public: false

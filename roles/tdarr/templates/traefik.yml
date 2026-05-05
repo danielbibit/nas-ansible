@@ -1,0 +1,18 @@
+http:
+  routers:
+    tdarr:
+      rule: "Host(`tdarr.{{ traefik_domain }}`)"
+      entryPoints:
+        - websecure
+      service: tdarr-svc
+      tls:
+        certResolver: cloudflare
+{% if not tdarr_public | default(false) %}
+      middlewares:
+        - internal-only@file
+{% endif %}
+  services:
+    tdarr-svc:
+      loadBalancer:
+        servers:
+          - url: "http://tdarr:8265"

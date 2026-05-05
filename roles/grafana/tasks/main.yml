@@ -13,9 +13,9 @@
       notify: Restart grafana
 
     - name: Generate dashboards on host # noqa no-changed-when
-      ansible.builtin.command: "/bin/bash {{ playbook_dir }}/scripts/generate_dashboards.sh"
+      ansible.builtin.command: "/bin/bash {{ playbook_dir }}/../scripts/generate_dashboards.sh"
       args:
-        chdir: "{{ playbook_dir }}/scripts"
+        chdir: "{{ playbook_dir }}/.."
       delegate_to: 127.0.0.1
       tags: grafana_dashboards
 
@@ -60,6 +60,15 @@
         pull: missing
         remove_orphans: true
 
+    - name: Deploy Traefik route for grafana
+      ansible.builtin.template:
+        src: '{{ role_path }}/templates/traefik.yml'
+        dest: '{{ nas_docker_directory }}/traefik/dynamic/grafana.yml'
+        owner: '{{ nas_docker_uid }}'
+        group: '{{ nas_docker_gid }}'
+        mode: "0644"
+      when: traefik_enabled | default(false)
+
 - name: Stop stack
   when: grafana_enabled is false
   block:
@@ -71,4 +80,9 @@
     - name: Remove compose files
       ansible.builtin.file:
         path: '{{ nas_docker_compose_dir }}/grafana'
+        state: absent
+
+    - name: Remove Traefik route for grafana
+      ansible.builtin.file:
+        path: '{{ nas_docker_directory }}/traefik/dynamic/grafana.yml'
         state: absent

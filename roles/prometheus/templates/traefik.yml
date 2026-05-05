@@ -1,0 +1,18 @@
+http:
+  routers:
+    prometheus:
+      rule: "Host(`prometheus.{{ traefik_domain }}`)"
+      entryPoints:
+        - websecure
+      service: prometheus-svc
+      tls:
+        certResolver: cloudflare
+{% if not prometheus_public | default(false) %}
+      middlewares:
+        - internal-only@file
+{% endif %}
+  services:
+    prometheus-svc:
+      loadBalancer:
+        servers:
+          - url: "http://prometheus:9090"

@@ -25,6 +25,15 @@
         pull: missing
         remove_orphans: true
 
+    - name: Deploy Traefik route for loki
+      ansible.builtin.template:
+        src: '{{ role_path }}/templates/traefik.yml'
+        dest: '{{ nas_docker_directory }}/traefik/dynamic/loki.yml'
+        owner: '{{ nas_docker_uid }}'
+        group: '{{ nas_docker_gid }}'
+        mode: "0644"
+      when: traefik_enabled | default(false)
+
 - name: Stop stack
   when: loki_enabled is false
   block:
@@ -36,4 +45,9 @@
     - name: Remove compose files
       ansible.builtin.file:
         path: '{{ nas_docker_compose_dir }}/loki'
+        state: absent
+
+    - name: Remove Traefik route for loki
+      ansible.builtin.file:
+        path: '{{ nas_docker_directory }}/traefik/dynamic/loki.yml'
         state: absent

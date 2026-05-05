@@ -1,0 +1,18 @@
+http:
+  routers:
+    cadvisor:
+      rule: "Host(`cadvisor.{{ traefik_domain }}`)"
+      entryPoints:
+        - websecure
+      service: cadvisor-svc
+      tls:
+        certResolver: cloudflare
+{% if not cadvisor_public | default(false) %}
+      middlewares:
+        - internal-only@file
+{% endif %}
+  services:
+    cadvisor-svc:
+      loadBalancer:
+        servers:
+          - url: "http://cadvisor:8080"

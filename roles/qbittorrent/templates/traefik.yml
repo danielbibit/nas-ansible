@@ -1,0 +1,18 @@
+http:
+  routers:
+    qbittorrent:
+      rule: "Host(`qbittorrent.{{ traefik_domain }}`)"
+      entryPoints:
+        - websecure
+      service: qbittorrent-svc
+      tls:
+        certResolver: cloudflare
+{% if not qbittorrent_public | default(false) %}
+      middlewares:
+        - internal-only@file
+{% endif %}
+  services:
+    qbittorrent-svc:
+      loadBalancer:
+        servers:
+          - url: "http://gluetun:{{ qbittorrent_webui_port }}"

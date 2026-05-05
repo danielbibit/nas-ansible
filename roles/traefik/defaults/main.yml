@@ -1,0 +1,7 @@
+---
+traefik_enabled: true
+traefik_domain: home.moraes.dev.br
+traefik_acme_email: ""
+traefik_cloudflare_api_token: ""
+traefik_http_port: 80
+traefik_https_port: 443

@@ -30,6 +30,15 @@
         pull: missing
         remove_orphans: true
 
+    - name: Deploy Traefik routes for arr_stack
+      ansible.builtin.template:
+        src: '{{ role_path }}/templates/traefik.yml'
+        dest: '{{ nas_docker_directory }}/traefik/dynamic/arr_stack.yml'
+        owner: '{{ nas_docker_uid }}'
+        group: '{{ nas_docker_gid }}'
+        mode: "0644"
+      when: traefik_enabled | default(false)
+
 - name: Stop arr_stack
   when: arr_stack_enabled is false
   block:
@@ -41,4 +50,9 @@
     - name: Remove arr_stack compose directory
       ansible.builtin.file:
         path: '{{ nas_docker_compose_dir }}/arr_stack'
+        state: absent
+
+    - name: Remove Traefik routes for arr_stack
+      ansible.builtin.file:
+        path: '{{ nas_docker_directory }}/traefik/dynamic/arr_stack.yml'
         state: absent

@@ -17,3 +17,4 @@ gluetun_wireguard_private_key: ""
 gluetun_server_countries: "Netherlands"
 gluetun_server_cities: ""
 gluetun_port_forwarding: false
+qbittorrent_public: false

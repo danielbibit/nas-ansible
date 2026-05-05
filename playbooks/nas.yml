@@ -74,6 +74,12 @@
         - containers
         - system
 
+    - role: traefik
+      tags:
+        - traefik
+        - networking
+        - docker
+
     - role: grafana
       tags:
         - grafana

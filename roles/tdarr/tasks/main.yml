@@ -30,6 +30,15 @@
         pull: missing
         remove_orphans: true
 
+    - name: Deploy Traefik route for tdarr
+      ansible.builtin.template:
+        src: '{{ role_path }}/templates/traefik.yml'
+        dest: '{{ nas_docker_directory }}/traefik/dynamic/tdarr.yml'
+        owner: '{{ nas_docker_uid }}'
+        group: '{{ nas_docker_gid }}'
+        mode: "0644"
+      when: traefik_enabled | default(false)
+
 - name: Stop tdarr stack
   when: tdarr_enabled is false
   block:
@@ -41,4 +50,9 @@
     - name: Remove tdarr compose directory
       ansible.builtin.file:
         path: '{{ nas_docker_compose_dir }}/tdarr'
+        state: absent
+
+    - name: Remove Traefik route for tdarr
+      ansible.builtin.file:
+        path: '{{ nas_docker_directory }}/traefik/dynamic/tdarr.yml'
         state: absent

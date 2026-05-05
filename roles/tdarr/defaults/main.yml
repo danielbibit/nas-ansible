@@ -28,3 +28,4 @@ tdarr_devices:
 tdarr_compose_project: "tdarr"
 tdarr_owner_uid: "{{ tdarr_puid }}"
 tdarr_owner_gid: "{{ tdarr_pgid }}"
+tdarr_public: false
