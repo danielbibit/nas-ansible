@@ -60,14 +60,14 @@ http:
         - internal-only@file
 {% endif %}
 
-    recomendarr:
-      rule: "Host(`recomendarr.{{ traefik_domain }}`)"
+    suggestarr:
+      rule: "Host(`suggestarr.{{ traefik_domain }}`)"
       entryPoints:
         - websecure
-      service: recomendarr-svc
+      service: suggestarr-svc
       tls:
         certResolver: cloudflare
-{% if not arr_stack_recomendarr_public | default(false) %}
+{% if not arr_stack_suggestarr_public | default(false) %}
       middlewares:
         - internal-only@file
 {% endif %}
@@ -129,10 +129,10 @@ http:
       loadBalancer:
         servers:
           - url: "http://seerr:5055"
-    recomendarr-svc:
+    suggestarr-svc:
       loadBalancer:
         servers:
-          - url: "http://recomendarr:3000"
+          - url: "http://SuggestArr:5000"
     profilarr-svc:
       loadBalancer:
         servers:

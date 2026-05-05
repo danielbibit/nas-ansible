@@ -9,7 +9,7 @@ arr_stack_radarr_port: "7878"
 arr_stack_bazarr_port: "6767"
 arr_stack_jackett_port: "9117"
 arr_stack_prowlarr_port: "9696"
-arr_stack_recomendarr_port: "3030"
+arr_stack_suggestarr_port: "5000"
 arr_stack_seerr_port: "5055"
 arr_stack_profilarr_port: "6868"
 arr_stack_autobrr_port: "7474"
@@ -19,7 +19,7 @@ arr_stack_radarr_config_dir: "{{ nas_docker_directory }}/radarr"
 arr_stack_bazarr_config_dir: "{{ nas_docker_directory }}/bazarr/config"
 arr_stack_jackett_config_dir: "{{ nas_docker_directory }}/jackett"
 arr_stack_prowlarr_config_dir: "{{ nas_docker_directory }}/prowlarr"
-arr_stack_recomendarr_config_dir: "{{ nas_docker_directory }}/recomendarr"
+arr_stack_suggestarr_config_dir: "{{ nas_docker_directory }}/suggestarr"
 arr_stack_seerr_config_dir: "{{ nas_docker_directory }}/seerr"
 arr_stack_profilarr_config_dir: "{{ nas_docker_directory }}/profilarr"
 arr_stack_autobrr_config_dir: "{{ nas_docker_directory }}/autobrr"
@@ -35,7 +35,7 @@ arr_stack_radarr_public: false
 arr_stack_bazarr_public: false
 arr_stack_prowlarr_public: false
 arr_stack_seerr_public: false
-arr_stack_recomendarr_public: false
+arr_stack_suggestarr_public: false
 arr_stack_profilarr_public: false
 arr_stack_autobrr_public: false
 arr_stack_lingarr_public: false
