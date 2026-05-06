@@ -52,6 +52,21 @@
         group: "{{ nas_docker_gid }}"
         mode: "0644"
 
+    - name: Deploy custom routes file
+      ansible.builtin.template:
+        src: "{{ role_path }}/templates/custom.yml"
+        dest: "{{ nas_docker_directory }}/traefik/dynamic/custom.yml"
+        owner: "{{ nas_docker_uid }}"
+        group: "{{ nas_docker_gid }}"
+        mode: "0644"
+        force: false
+
+    - name: Symlink custom routes to admin home
+      ansible.builtin.file:
+        src: "{{ nas_docker_directory }}/traefik/dynamic/custom.yml"
+        dest: "/home/{{ ansible_user }}/traefik-custom.yml"
+        state: link
+
     - name: Copy Traefik compose file
       ansible.builtin.template:
         src: "{{ role_path }}/templates/docker-compose.yml"

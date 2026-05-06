@@ -1,0 +1,19 @@
+# Custom Traefik routes — edit this file directly without Ansible.
+# Traefik watches this directory and reloads automatically on save.
+#
+# Example: Home Assistant with Cloudflare certificate
+#
+# http:
+#   routers:
+#     hass:
+#       rule: "Host(`hass.home.moraes.dev.br`)"
+#       entryPoints:
+#         - websecure
+#       tls:
+#         certResolver: cloudflare
+#       service: hass
+#   services:
+#     hass:
+#       loadBalancer:
+#         servers:
+#           - url: "http://192.168.1.x:8123"
