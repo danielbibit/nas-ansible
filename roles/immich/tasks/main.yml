@@ -47,10 +47,16 @@
 - name: Stop stack
   when: immich_enabled is false
   block:
+    - name: Check if compose directory exists
+      ansible.builtin.stat:
+        path: '{{ nas_docker_compose_dir }}/immich'
+      register: _immich_dir
+
     - name: Tear down existing stack
       community.docker.docker_compose_v2:
         project_src: '{{ nas_docker_compose_dir }}/immich'
         state: absent
+      when: _immich_dir.stat.exists and _immich_dir.stat.isdir
 
     - name: Remove compose files
       ansible.builtin.file:

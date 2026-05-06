@@ -55,10 +55,16 @@
 - name: Stop stack
   when: prometheus_enabled is false
   block:
+    - name: Check if compose directory exists
+      ansible.builtin.stat:
+        path: '{{ nas_docker_compose_dir }}/prometheus'
+      register: _prometheus_dir
+
     - name: Tear down existing stack
       community.docker.docker_compose_v2:
         project_src: '{{ nas_docker_compose_dir }}/prometheus'
         state: absent
+      when: _prometheus_dir.stat.exists and _prometheus_dir.stat.isdir
 
     - name: Remove compose files
       ansible.builtin.file:

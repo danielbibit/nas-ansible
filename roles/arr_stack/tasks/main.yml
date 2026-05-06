@@ -50,10 +50,16 @@
 - name: Stop arr_stack
   when: arr_stack_enabled is false
   block:
+    - name: Check if compose directory exists
+      ansible.builtin.stat:
+        path: '{{ nas_docker_compose_dir }}/arr_stack'
+      register: _arr_stack_dir
+
     - name: Tear down existing arr_stack stack
       community.docker.docker_compose_v2:
         project_src: '{{ nas_docker_compose_dir }}/arr_stack'
         state: absent
+      when: _arr_stack_dir.stat.exists and _arr_stack_dir.stat.isdir
 
     - name: Remove arr_stack compose directory
       ansible.builtin.file:

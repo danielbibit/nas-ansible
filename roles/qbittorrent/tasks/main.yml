@@ -42,10 +42,16 @@
 - name: Stop qbittorrent stack
   when: qbittorrent_enabled is false
   block:
+    - name: Check if compose directory exists
+      ansible.builtin.stat:
+        path: '{{ nas_docker_compose_dir }}/qbittorrent'
+      register: _qbittorrent_dir
+
     - name: Tear down qbittorrent stack
       community.docker.docker_compose_v2:
         project_src: '{{ nas_docker_compose_dir }}/qbittorrent'
         state: absent
+      when: _qbittorrent_dir.stat.exists and _qbittorrent_dir.stat.isdir
 
     - name: Remove qbittorrent compose directory
       ansible.builtin.file:

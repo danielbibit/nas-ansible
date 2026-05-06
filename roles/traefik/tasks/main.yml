@@ -90,10 +90,16 @@
 - name: Stop Traefik
   when: traefik_enabled is false
   block:
+    - name: Check if compose directory exists
+      ansible.builtin.stat:
+        path: "{{ nas_docker_compose_dir }}/traefik"
+      register: _traefik_dir
+
     - name: Tear down Traefik stack
       community.docker.docker_compose_v2:
         project_src: "{{ nas_docker_compose_dir }}/traefik"
         state: absent
+      when: _traefik_dir.stat.exists and _traefik_dir.stat.isdir
 
     - name: Remove Traefik compose directory
       ansible.builtin.file:

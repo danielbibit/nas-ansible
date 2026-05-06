@@ -37,10 +37,16 @@
 - name: Stop stack
   when: loki_enabled is false
   block:
+    - name: Check if compose directory exists
+      ansible.builtin.stat:
+        path: '{{ nas_docker_compose_dir }}/loki'
+      register: _loki_dir
+
     - name: Tear down existing stack
       community.docker.docker_compose_v2:
         project_src: '{{ nas_docker_compose_dir }}/loki'
         state: absent
+      when: _loki_dir.stat.exists and _loki_dir.stat.isdir
 
     - name: Remove compose files
       ansible.builtin.file:

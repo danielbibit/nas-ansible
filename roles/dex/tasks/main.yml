@@ -42,10 +42,16 @@
 - name: Stop stack
   when: dex_enabled is false
   block:
+    - name: Check if compose directory exists
+      ansible.builtin.stat:
+        path: '{{ nas_docker_compose_dir }}/dex'
+      register: _dex_dir
+
     - name: Tear down existing stack
       community.docker.docker_compose_v2:
         project_src: '{{ nas_docker_compose_dir }}/dex'
         state: absent
+      when: _dex_dir.stat.exists and _dex_dir.stat.isdir
 
     - name: Remove compose files
       ansible.builtin.file:

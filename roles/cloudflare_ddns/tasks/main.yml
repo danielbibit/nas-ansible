@@ -38,10 +38,16 @@
 - name: Stop stack
   when: cloudflare_ddns_enabled is false
   block:
+    - name: Check if compose directory exists
+      ansible.builtin.stat:
+        path: '{{ nas_docker_compose_dir }}/cloudflare_ddns'
+      register: _ddns_dir
+
     - name: Tear down existing stack
       community.docker.docker_compose_v2:
         project_src: '{{ nas_docker_compose_dir }}/cloudflare_ddns'
         state: absent
+      when: _ddns_dir.stat.exists and _ddns_dir.stat.isdir
 
     - name: Remove compose files
       ansible.builtin.file:

@@ -42,10 +42,16 @@
 - name: Stop tdarr stack
   when: tdarr_enabled is false
   block:
+    - name: Check if compose directory exists
+      ansible.builtin.stat:
+        path: '{{ nas_docker_compose_dir }}/tdarr'
+      register: _tdarr_dir
+
     - name: Tear down tdarr stack
       community.docker.docker_compose_v2:
         project_src: '{{ nas_docker_compose_dir }}/tdarr'
         state: absent
+      when: _tdarr_dir.stat.exists and _tdarr_dir.stat.isdir
 
     - name: Remove tdarr compose directory
       ansible.builtin.file:
