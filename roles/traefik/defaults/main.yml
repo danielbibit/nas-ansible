@@ -5,3 +5,4 @@ traefik_acme_email: ""
 traefik_cloudflare_api_token: ""
 traefik_http_port: 80
 traefik_https_port: 443
+traefik_rules: []
