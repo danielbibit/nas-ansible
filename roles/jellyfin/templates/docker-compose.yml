@@ -19,3 +19,8 @@ services:
     devices:
       - /dev/dri:/dev/dri  # For hardware acceleration if available
     restart: unless-stopped
+
+networks:
+  default:
+    name: nas
+    external: true

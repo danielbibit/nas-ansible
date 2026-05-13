@@ -121,6 +121,12 @@
         - networking
         - docker
 
+    - role: cloudflared
+      tags:
+        - cloudflared
+        - networking
+        - docker
+
     - role: tailscale
       tags:
         - tailscale

@@ -1,0 +1,12 @@
+---
+services:
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflared
+    command: tunnel --no-autoupdate run --token {{ cloudflared_token }}
+    restart: unless-stopped
+
+networks:
+  default:
+    name: nas
+    external: true

@@ -11,8 +11,21 @@ http:
       middlewares:
         - internal-only@file
 {% endif %}
+    qbitmanage:
+      rule: "Host(`qbitmanage.{{ traefik_domain }}`)"
+      entryPoints:
+        - websecure
+      service: qbitmanage-svc
+      tls:
+        certResolver: cloudflare
+      middlewares:
+        - internal-only@file
   services:
     qbittorrent-svc:
       loadBalancer:
         servers:
           - url: "http://gluetun:{{ qbittorrent_webui_port }}"
+    qbitmanage-svc:
+      loadBalancer:
+        servers:
+          - url: "http://qbit_manage:8080"

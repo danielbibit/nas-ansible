@@ -1,0 +1,9 @@
+---
+cloudflared_enabled: false
+cloudflared_token: ""
+cloudflared_ingress_service: "https://traefik:443"
+cloudflared_no_tls_verify: true
+cloudflared_internal_domain: "{{ traefik_domain }}"
+cloudflared_cf_api_token: "{{ cloudflare_ddns_api_key }}"
+cloudflared_cf_zone: "{{ cloudflare_ddns_zone }}"
+cloudflared_public_hostnames: []
