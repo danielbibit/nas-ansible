@@ -62,32 +62,37 @@ services:
       - 9696:9696
     restart: unless-stopped
 
-  recomendarr:
-    image: tannermiddleton/recommendarr:latest
-    container_name: recomendarr
-    volumes:
-      - '{{ arr_stack_recomendarr_config_dir }}:/app/server/data'
+  suggestarr:
+    image: ciuse99/suggestarr:latest
+    container_name: SuggestArr
+    restart: always
     ports:
-      - '{{ arr_stack_recomendarr_port }}:3000'
-    restart: unless-stopped
+      - '{{ arr_stack_suggestarr_port }}:{{ arr_stack_suggestarr_port }}'
+    volumes:
+      - '{{ arr_stack_suggestarr_config_dir }}:/app/config/config_files'
+    environment:
+      - LOG_LEVEL={{ arr_stack_suggestarr_log_level | default('info') }}
+      - SUGGESTARR_PORT={{ arr_stack_suggestarr_port }}
 
   seerr:
-    image: ghcr.io/fallenbagel/jellyseerr:latest
+    image: ghcr.io/seerr-team/seerr:latest
     init: true
     container_name: seerr
+    user: "1000:1000"
     environment:
       - LOG_LEVEL=debug
       - TZ={{ arr_stack_timezone }}
+      - PORT={{ arr_stack_seerr_port }}
     ports:
       - '{{ arr_stack_seerr_port }}:5055'
     volumes:
       - '{{ arr_stack_seerr_config_dir }}:/app/config'
-    # healthcheck:
-    #   test: wget --no-verbose --tries=1 --spider http://localhost:5055/api/v1/status || exit 1
-    #   start_period: 20s
-    #   timeout: 3s
-    #   interval: 15s
-    #   retries: 3
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:5055/api/v1/settings/public || exit 1
+      start_period: 20s
+      timeout: 3s
+      interval: 15s
+      retries: 3
     restart: unless-stopped
 
   profilarr:

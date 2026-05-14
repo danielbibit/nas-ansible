@@ -25,15 +25,35 @@
         pull: missing
         remove_orphans: true
 
+    - name: Deploy Traefik route for jellyfin
+      ansible.builtin.template:
+        src: '{{ role_path }}/templates/traefik.yml'
+        dest: '{{ nas_docker_directory }}/traefik/dynamic/jellyfin.yml'
+        owner: '{{ nas_docker_uid }}'
+        group: '{{ nas_docker_gid }}'
+        mode: "0644"
+      when: traefik_enabled | default(false)
+
 - name: Stop jellyfin container if disabled
   when: jellyfin_enabled is not true
   block:
+    - name: Check if compose directory exists
+      ansible.builtin.stat:
+        path: '{{ nas_docker_compose_dir }}/jellyfin'
+      register: _jellyfin_dir
+
     - name: Stop jellyfin container via docker-compose
       community.docker.docker_compose_v2:
         project_src: '{{ nas_docker_compose_dir }}/jellyfin'
         state: absent
+      when: _jellyfin_dir.stat.exists and _jellyfin_dir.stat.isdir
 
     - name: Remove jellyfin compose directory
       ansible.builtin.file:
         path: '{{ nas_docker_compose_dir }}/jellyfin'
+        state: absent
+
+    - name: Remove Traefik route for jellyfin
+      ansible.builtin.file:
+        path: '{{ nas_docker_directory }}/traefik/dynamic/jellyfin.yml'
         state: absent

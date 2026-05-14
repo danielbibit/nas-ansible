@@ -35,15 +35,35 @@
         pull: missing
         remove_orphans: true
 
+    - name: Deploy Traefik route for immich
+      ansible.builtin.template:
+        src: '{{ role_path }}/templates/traefik.yml'
+        dest: '{{ nas_docker_directory }}/traefik/dynamic/immich.yml'
+        owner: '{{ nas_docker_uid }}'
+        group: '{{ nas_docker_gid }}'
+        mode: "0644"
+      when: traefik_enabled | default(false)
+
 - name: Stop stack
   when: immich_enabled is false
   block:
+    - name: Check if compose directory exists
+      ansible.builtin.stat:
+        path: '{{ nas_docker_compose_dir }}/immich'
+      register: _immich_dir
+
     - name: Tear down existing stack
       community.docker.docker_compose_v2:
         project_src: '{{ nas_docker_compose_dir }}/immich'
         state: absent
+      when: _immich_dir.stat.exists and _immich_dir.stat.isdir
 
     - name: Remove compose files
       ansible.builtin.file:
         path: '{{ nas_docker_compose_dir }}/immich'
+        state: absent
+
+    - name: Remove Traefik route for immich
+      ansible.builtin.file:
+        path: '{{ nas_docker_directory }}/traefik/dynamic/immich.yml'
         state: absent

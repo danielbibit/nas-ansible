@@ -1,0 +1,11 @@
+http:
+  routers:
+    traefik-dashboard:
+      rule: "Host(`traefik.{{ traefik_domain }}`)"
+      entryPoints:
+        - websecure
+      service: api@internal
+      tls:
+        certResolver: cloudflare
+      middlewares:
+        - internal-only@file

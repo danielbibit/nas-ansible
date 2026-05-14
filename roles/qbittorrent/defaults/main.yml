@@ -10,3 +10,11 @@ qbittorrent_umask: "002"
 qbittorrent_temp_download_dir: "{{ nas_temp_download_dir }}"
 qbittorrent_download_dir: "{{ nas_download_dir }}"
 qbittorrent_library_dir: "{{ nas_library_dir }}"
+
+qbittorrent_vpn_enabled: false
+
+gluetun_wireguard_private_key: ""
+gluetun_server_countries: "Netherlands"
+gluetun_server_cities: ""
+gluetun_port_forwarding: false
+qbittorrent_public: false

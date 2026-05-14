@@ -30,15 +30,35 @@
         pull: missing
         remove_orphans: true
 
+    - name: Deploy Traefik route for qbittorrent
+      ansible.builtin.template:
+        src: '{{ role_path }}/templates/traefik.yml'
+        dest: '{{ nas_docker_directory }}/traefik/dynamic/qbittorrent.yml'
+        owner: '{{ nas_docker_uid }}'
+        group: '{{ nas_docker_gid }}'
+        mode: "0644"
+      when: traefik_enabled | default(false)
+
 - name: Stop qbittorrent stack
   when: qbittorrent_enabled is false
   block:
+    - name: Check if compose directory exists
+      ansible.builtin.stat:
+        path: '{{ nas_docker_compose_dir }}/qbittorrent'
+      register: _qbittorrent_dir
+
     - name: Tear down qbittorrent stack
       community.docker.docker_compose_v2:
         project_src: '{{ nas_docker_compose_dir }}/qbittorrent'
         state: absent
+      when: _qbittorrent_dir.stat.exists and _qbittorrent_dir.stat.isdir
 
     - name: Remove qbittorrent compose directory
       ansible.builtin.file:
         path: '{{ nas_docker_compose_dir }}/qbittorrent'
+        state: absent
+
+    - name: Remove Traefik route for qbittorrent
+      ansible.builtin.file:
+        path: '{{ nas_docker_directory }}/traefik/dynamic/qbittorrent.yml'
         state: absent

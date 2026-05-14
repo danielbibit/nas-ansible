@@ -26,7 +26,10 @@ to implement a similar server, you can check the pre requisites section to get s
 
 ### Network setup
 * DDNS Cloudflare Auto Update
+* VPN for torrent client
+* Cloudflare tunnel for public services
 * Reverse Proxy NGINX
+* Reverse Proxy with Traefik
 
 ### Media and Downloads
 * qBittorrent - Torrent client
@@ -148,4 +151,3 @@ uv run ansible-playbook playbooks/nas.yml -i inventories/nas/inventory.yml --dif
 * Implement grafana alerts
 * Setup local backup (In progress)
 * Setup cloud backup (In progress)
-* Refactor containers network with traefik ?

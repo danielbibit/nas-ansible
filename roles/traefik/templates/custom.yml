@@ -1,0 +1,25 @@
+# Managed by Ansible — edit traefik_rules in group_vars/nas.yml
+{% if traefik_rules | length > 0 %}
+http:
+  routers:
+{% for rule in traefik_rules %}
+    {{ rule.name }}:
+      rule: "Host(`{{ rule.host }}`)"
+      entryPoints:
+        - websecure
+      service: {{ rule.name }}-svc
+      tls:
+        certResolver: {{ rule.cert_resolver | default('cloudflare') }}
+{% if not (rule.public | default(false)) %}
+      middlewares:
+        - internal-only@file
+{% endif %}
+{% endfor %}
+  services:
+{% for rule in traefik_rules %}
+    {{ rule.name }}-svc:
+      loadBalancer:
+        servers:
+          - url: "{{ rule.url }}"
+{% endfor %}
+{% endif %}

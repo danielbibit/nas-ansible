@@ -1,0 +1,18 @@
+http:
+  routers:
+    dex:
+      rule: "Host(`dex.{{ traefik_domain }}`)"
+      entryPoints:
+        - websecure
+      service: dex-svc
+      tls:
+        certResolver: cloudflare
+{% if not dex_public | default(false) %}
+      middlewares:
+        - internal-only@file
+{% endif %}
+  services:
+    dex-svc:
+      loadBalancer:
+        servers:
+          - url: "http://dex:8080"

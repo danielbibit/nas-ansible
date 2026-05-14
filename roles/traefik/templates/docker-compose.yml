@@ -1,0 +1,20 @@
+---
+services:
+  traefik:
+    image: traefik:latest
+    container_name: traefik
+    ports:
+      - "{{ traefik_http_port }}:80"
+      - "{{ traefik_https_port }}:443"
+    volumes:
+      - "{{ nas_docker_directory }}/traefik/config/traefik.yml:/etc/traefik/traefik.yml:ro"
+      - "{{ nas_docker_directory }}/traefik/dynamic:/etc/traefik/dynamic:ro"
+      - "{{ nas_docker_directory }}/traefik/acme:/etc/traefik/acme"
+    environment:
+      - CF_DNS_API_TOKEN={{ traefik_cloudflare_api_token }}
+    restart: always
+
+networks:
+  default:
+    name: nas
+    external: true

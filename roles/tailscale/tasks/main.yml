@@ -1,0 +1,52 @@
+---
+- name: Start stack
+  when: tailscale_enabled is true
+  block:
+    - name: Make sure compose directory exists
+      ansible.builtin.file:
+        path: '{{ nas_docker_compose_dir }}/tailscale'
+        state: directory
+        owner: '{{ nas_docker_uid }}'
+        group: '{{ nas_docker_gid }}'
+        mode: "0775"
+
+    - name: Make sure state directory exists
+      ansible.builtin.file:
+        path: '{{ nas_docker_compose_dir }}/tailscale/state'
+        state: directory
+        owner: '{{ nas_docker_uid }}'
+        group: '{{ nas_docker_gid }}'
+        mode: "0775"
+
+    - name: Copy compose
+      ansible.builtin.template:
+        src: '{{ role_path }}/templates/docker-compose.yml'
+        dest: '{{ nas_docker_compose_dir }}/tailscale/docker-compose.yml'
+        owner: '{{ nas_docker_uid }}'
+        group: '{{ nas_docker_gid }}'
+        mode: "0775"
+
+    - name: Tear down existing stack
+      community.docker.docker_compose_v2:
+        project_src: '{{ nas_docker_compose_dir }}/tailscale'
+        state: absent
+
+    - name: Start stack
+      community.docker.docker_compose_v2:
+        project_src: '{{ nas_docker_compose_dir }}/tailscale'
+        state: present
+        pull: missing
+        remove_orphans: true
+
+- name: Stop stack
+  when: tailscale_enabled is false
+  block:
+    - name: Tear down existing stack
+      community.docker.docker_compose_v2:
+        project_src: '{{ nas_docker_compose_dir }}/tailscale'
+        state: absent
+
+    - name: Remove compose files
+      ansible.builtin.file:
+        path: '{{ nas_docker_compose_dir }}/tailscale'
+        state: absent

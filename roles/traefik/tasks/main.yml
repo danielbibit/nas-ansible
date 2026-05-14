@@ -1,0 +1,100 @@
+---
+- name: Start Traefik
+  when: traefik_enabled is true
+  block:
+    - name: Make sure nas default network exists
+      community.docker.docker_network:
+        name: nas
+        state: present
+
+    - name: Make sure Traefik directories exist
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        owner: "{{ nas_docker_uid }}"
+        group: "{{ nas_docker_gid }}"
+        mode: "0775"
+      loop:
+        - "{{ nas_docker_directory }}/traefik/config"
+        - "{{ nas_docker_directory }}/traefik/dynamic"
+        - "{{ nas_docker_directory }}/traefik/acme"
+        - "{{ nas_docker_compose_dir }}/traefik"
+
+    - name: Ensure acme.json exists with correct permissions
+      ansible.builtin.file:
+        path: "{{ nas_docker_directory }}/traefik/acme/acme.json"
+        state: touch
+        owner: "{{ nas_docker_uid }}"
+        group: "{{ nas_docker_gid }}"
+        mode: "0600"
+
+    - name: Deploy Traefik static config
+      ansible.builtin.template:
+        src: "{{ role_path }}/templates/traefik.yml"
+        dest: "{{ nas_docker_directory }}/traefik/config/traefik.yml"
+        owner: "{{ nas_docker_uid }}"
+        group: "{{ nas_docker_gid }}"
+        mode: "0644"
+
+    - name: Deploy internal-only middleware
+      ansible.builtin.template:
+        src: "{{ role_path }}/templates/middleware.yml"
+        dest: "{{ nas_docker_directory }}/traefik/dynamic/middleware.yml"
+        owner: "{{ nas_docker_uid }}"
+        group: "{{ nas_docker_gid }}"
+        mode: "0644"
+
+    - name: Deploy Traefik dashboard route
+      ansible.builtin.template:
+        src: "{{ role_path }}/templates/dashboard.yml"
+        dest: "{{ nas_docker_directory }}/traefik/dynamic/dashboard.yml"
+        owner: "{{ nas_docker_uid }}"
+        group: "{{ nas_docker_gid }}"
+        mode: "0644"
+
+    - name: Deploy custom routes file
+      ansible.builtin.template:
+        src: "{{ role_path }}/templates/custom.yml"
+        dest: "{{ nas_docker_directory }}/traefik/dynamic/custom.yml"
+        owner: "{{ nas_docker_uid }}"
+        group: "{{ nas_docker_gid }}"
+        mode: "0644"
+
+    - name: Copy Traefik compose file
+      ansible.builtin.template:
+        src: "{{ role_path }}/templates/docker-compose.yml"
+        dest: "{{ nas_docker_compose_dir }}/traefik/docker-compose.yml"
+        owner: "{{ nas_docker_uid }}"
+        group: "{{ nas_docker_gid }}"
+        mode: "0775"
+
+    - name: Tear down existing Traefik stack
+      community.docker.docker_compose_v2:
+        project_src: "{{ nas_docker_compose_dir }}/traefik"
+        state: absent
+
+    - name: Start Traefik stack
+      community.docker.docker_compose_v2:
+        project_src: "{{ nas_docker_compose_dir }}/traefik"
+        state: present
+        pull: missing
+        remove_orphans: true
+
+- name: Stop Traefik
+  when: traefik_enabled is false
+  block:
+    - name: Check if compose directory exists
+      ansible.builtin.stat:
+        path: "{{ nas_docker_compose_dir }}/traefik"
+      register: _traefik_dir
+
+    - name: Tear down Traefik stack
+      community.docker.docker_compose_v2:
+        project_src: "{{ nas_docker_compose_dir }}/traefik"
+        state: absent
+      when: _traefik_dir.stat.exists and _traefik_dir.stat.isdir
+
+    - name: Remove Traefik compose directory
+      ansible.builtin.file:
+        path: "{{ nas_docker_compose_dir }}/traefik"
+        state: absent

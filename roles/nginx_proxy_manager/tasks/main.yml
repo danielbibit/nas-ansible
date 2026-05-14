@@ -38,10 +38,16 @@
 - name: Stop stack
   when: nginx_proxy_manager_enabled is false
   block:
+    - name: Check if compose directory exists
+      ansible.builtin.stat:
+        path: '{{ nas_docker_compose_dir }}/nginx_proxy_manager'
+      register: _npm_dir
+
     - name: Tear down existing stack
       community.docker.docker_compose_v2:
         project_src: '{{ nas_docker_compose_dir }}/nginx_proxy_manager'
         state: absent
+      when: _npm_dir.stat.exists and _npm_dir.stat.isdir
 
     - name: Remove compose files
       ansible.builtin.file:

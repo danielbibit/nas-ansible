@@ -1,0 +1,7 @@
+---
+tailscale_enabled: false
+
+tailscale_authkey: ""
+tailscale_hostname: ""
+tailscale_routes: ""
+tailscale_extra_args: ""

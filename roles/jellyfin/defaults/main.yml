@@ -11,3 +11,4 @@ jellyfin_cache_dir: "{{ nas_docker_directory }}/jellyfin/cache"
 jellyfin_web_port: 8096
 jellyfin_https_port: 8920
 jellyfin_quick_sync: true
+jellyfin_public: false

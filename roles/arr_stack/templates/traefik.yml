@@ -1,0 +1,147 @@
+http:
+  routers:
+    sonarr:
+      rule: "Host(`sonarr.{{ traefik_domain }}`)"
+      entryPoints:
+        - websecure
+      service: sonarr-svc
+      tls:
+        certResolver: cloudflare
+{% if not arr_stack_sonarr_public | default(false) %}
+      middlewares:
+        - internal-only@file
+{% endif %}
+
+    radarr:
+      rule: "Host(`radarr.{{ traefik_domain }}`)"
+      entryPoints:
+        - websecure
+      service: radarr-svc
+      tls:
+        certResolver: cloudflare
+{% if not arr_stack_radarr_public | default(false) %}
+      middlewares:
+        - internal-only@file
+{% endif %}
+
+    bazarr:
+      rule: "Host(`bazarr.{{ traefik_domain }}`)"
+      entryPoints:
+        - websecure
+      service: bazarr-svc
+      tls:
+        certResolver: cloudflare
+{% if not arr_stack_bazarr_public | default(false) %}
+      middlewares:
+        - internal-only@file
+{% endif %}
+
+    prowlarr:
+      rule: "Host(`prowlarr.{{ traefik_domain }}`)"
+      entryPoints:
+        - websecure
+      service: prowlarr-svc
+      tls:
+        certResolver: cloudflare
+{% if not arr_stack_prowlarr_public | default(false) %}
+      middlewares:
+        - internal-only@file
+{% endif %}
+
+    seerr:
+      rule: "Host(`seerr.{{ traefik_domain }}`)"
+      entryPoints:
+        - websecure
+      service: seerr-svc
+      tls:
+        certResolver: cloudflare
+{% if not arr_stack_seerr_public | default(false) %}
+      middlewares:
+        - internal-only@file
+{% endif %}
+
+    suggestarr:
+      rule: "Host(`suggestarr.{{ traefik_domain }}`)"
+      entryPoints:
+        - websecure
+      service: suggestarr-svc
+      tls:
+        certResolver: cloudflare
+{% if not arr_stack_suggestarr_public | default(false) %}
+      middlewares:
+        - internal-only@file
+{% endif %}
+
+    profilarr:
+      rule: "Host(`profilarr.{{ traefik_domain }}`)"
+      entryPoints:
+        - websecure
+      service: profilarr-svc
+      tls:
+        certResolver: cloudflare
+{% if not arr_stack_profilarr_public | default(false) %}
+      middlewares:
+        - internal-only@file
+{% endif %}
+
+    autobrr:
+      rule: "Host(`autobrr.{{ traefik_domain }}`)"
+      entryPoints:
+        - websecure
+      service: autobrr-svc
+      tls:
+        certResolver: cloudflare
+{% if not arr_stack_autobrr_public | default(false) %}
+      middlewares:
+        - internal-only@file
+{% endif %}
+
+    lingarr:
+      rule: "Host(`lingarr.{{ traefik_domain }}`)"
+      entryPoints:
+        - websecure
+      service: lingarr-svc
+      tls:
+        certResolver: cloudflare
+{% if not arr_stack_lingarr_public | default(false) %}
+      middlewares:
+        - internal-only@file
+{% endif %}
+
+  services:
+    sonarr-svc:
+      loadBalancer:
+        servers:
+          - url: "http://sonarr:8989"
+    radarr-svc:
+      loadBalancer:
+        servers:
+          - url: "http://radarr:7878"
+    bazarr-svc:
+      loadBalancer:
+        servers:
+          - url: "http://bazarr:6767"
+    prowlarr-svc:
+      loadBalancer:
+        servers:
+          - url: "http://prowlarr:9696"
+    seerr-svc:
+      loadBalancer:
+        servers:
+          - url: "http://seerr:5055"
+    suggestarr-svc:
+      loadBalancer:
+        servers:
+          - url: "http://SuggestArr:5000"
+    profilarr-svc:
+      loadBalancer:
+        servers:
+          - url: "http://profilarr:6868"
+    autobrr-svc:
+      loadBalancer:
+        servers:
+          - url: "http://autobrr:7474"
+    lingarr-svc:
+      loadBalancer:
+        servers:
+          - url: "http://lingarr:9876"

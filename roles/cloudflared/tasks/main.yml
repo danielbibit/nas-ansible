@@ -1,0 +1,128 @@
+---
+- name: Start cloudflared
+  when: cloudflared_enabled is true
+  block:
+    - name: Create DNS CNAME records for public services
+      community.general.cloudflare_dns:
+        zone: "{{ cloudflared_cf_zone }}"
+        record: "{{ item }}"
+        type: CNAME
+        value: "{{ (cloudflared_token | b64decode | from_json).t }}.cfargotunnel.com"
+        proxied: true
+        api_token: "{{ cloudflared_cf_api_token }}"
+        state: present
+      loop: "{{ cloudflared_public_hostnames }}"
+
+    - name: Get Cloudflare zone ID
+      ansible.builtin.uri:
+        url: "https://api.cloudflare.com/client/v4/zones?name={{ cloudflared_cf_zone }}"
+        method: GET
+        headers:
+          Authorization: "Bearer {{ cloudflared_cf_api_token }}"
+        status_code: 200
+      register: _cf_zone
+
+    - name: Enable Always Use HTTPS
+      ansible.builtin.uri:
+        url: "https://api.cloudflare.com/client/v4/zones/{{ _cf_zone.json.result[0].id }}/settings/always_use_https"
+        method: PATCH
+        headers:
+          Authorization: "Bearer {{ cloudflared_cf_api_token }}"
+          Content-Type: "application/json"
+        body_format: json
+        body:
+          value: "on"
+        status_code: 200
+
+    - name: Set SSL mode to Full
+      ansible.builtin.uri:
+        url: "https://api.cloudflare.com/client/v4/zones/{{ _cf_zone.json.result[0].id }}/settings/ssl"
+        method: PATCH
+        headers:
+          Authorization: "Bearer {{ cloudflared_cf_api_token }}"
+          Content-Type: "application/json"
+        body_format: json
+        body:
+          value: "full"
+        status_code: 200
+
+    - name: Reset ingress rules
+      ansible.builtin.set_fact:
+        _cloudflared_ingress: []
+
+    - name: Build ingress rules
+      ansible.builtin.set_fact:
+        _cloudflared_ingress: "{{ _cloudflared_ingress + [_rule] }}"
+      vars:
+        _rule:
+          hostname: "{{ item }}.{{ cloudflared_cf_zone }}"
+          service: "{{ cloudflared_ingress_service }}"
+          originRequest:
+            noTLSVerify: "{{ cloudflared_no_tls_verify }}"
+            httpHostHeader: "{{ item }}.{{ cloudflared_internal_domain }}"
+      loop: "{{ cloudflared_public_hostnames }}"
+
+    - name: Configure tunnel ingress rules
+      ansible.builtin.uri:
+        url: "https://api.cloudflare.com/client/v4/accounts/{{ _token.a }}/cfd_tunnel/{{ _token.t }}/configurations"
+        method: PUT
+        headers:
+          Authorization: "Bearer {{ cloudflared_cf_api_token }}"
+          Content-Type: "application/json"
+        body_format: json
+        body:
+          config:
+            ingress: "{{ _cloudflared_ingress + [{'service': 'http_status:404'}] }}"
+        status_code: 200
+      vars:
+        _token: "{{ cloudflared_token | b64decode | from_json }}"
+
+    - name: Make sure compose directory exists
+      ansible.builtin.file:
+        path: "{{ nas_docker_compose_dir }}/cloudflared"
+        state: directory
+        owner: "{{ nas_docker_uid }}"
+        group: "{{ nas_docker_gid }}"
+        mode: "0775"
+
+    - name: Copy compose file
+      ansible.builtin.template:
+        src: "{{ role_path }}/templates/docker-compose.yml"
+        dest: "{{ nas_docker_compose_dir }}/cloudflared/docker-compose.yml"
+        owner: "{{ nas_docker_uid }}"
+        group: "{{ nas_docker_gid }}"
+        mode: "0775"
+
+    - name: Tear down existing cloudflared stack
+      community.docker.docker_compose_v2:
+        project_src: "{{ nas_docker_compose_dir }}/cloudflared"
+        state: absent
+
+    - name: Start cloudflared stack
+      community.docker.docker_compose_v2:
+        project_src: "{{ nas_docker_compose_dir }}/cloudflared"
+        state: present
+        pull: missing
+        remove_orphans: true
+
+- name: Stop cloudflared
+  when: cloudflared_enabled is false
+  block:
+    - name: Tear down cloudflared stack
+      community.docker.docker_compose_v2:
+        project_src: "{{ nas_docker_compose_dir }}/cloudflared"
+        state: absent
+
+    - name: Remove cloudflared compose directory
+      ansible.builtin.file:
+        path: "{{ nas_docker_compose_dir }}/cloudflared"
+        state: absent
+
+    - name: Remove DNS CNAME records for public services
+      community.general.cloudflare_dns:
+        zone: "{{ cloudflared_cf_zone }}"
+        record: "{{ item }}"
+        type: CNAME
+        api_token: "{{ cloudflared_cf_api_token }}"
+        state: absent
+      loop: "{{ cloudflared_public_hostnames }}"

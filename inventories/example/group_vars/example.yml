@@ -1,3 +1,4 @@
+# === System ===
 nas_admin: admin_override_example
 
 nas_docker_uid: 1001
@@ -5,6 +6,7 @@ nas_docker_gid: 100
 nas_docker_directory: /srv/Storage/System
 nas_docker_compose_dir: /home/nas/containers/compose
 
+# === Storage Paths ===
 nas_library_dir: /srv/Storage/Library
 nas_movie_directory: /srv/Storage/Library/Videos/Movies
 nas_tv_directory: /srv/Storage/Library/Videos/Series
@@ -16,36 +18,7 @@ nas_backup_dir: /srv/Storage/Backups
 
 seedbox_downloads_dir: /mnt/seedbox
 
-dex_enabled: true
-immich_enabled: true
-grafana_enabled: true
-node_exporter_enabled: true
-prometheus_enabled: true
-cadvisor_enabled: true
-promtail_enabled: true
-loki_enabled: true
-qbittorrent_enabled: true
-plex_enabled: true
-arr_stack_enabled: true
-nginx_proxy_manager_enabled: true
-cloudflare_ddns_enabled: true
-jellyfin_enabled: true
-syncthing_enabled: false
-rclone_enabled: true
-watcharr_enabled: false
-
-backup_immich_photos_path: "{{ nas_photos_dir }}"
-
-email_report_to: example1@email.com
-email_send_from: example2@email.com
-email_host:
-email_username:
-email_password:
-
-cloudflare_ddns_api_key: token
-cloudflare_ddns_zone: domain
-cloudflare_ddns_subdomain: subdomain
-
+# === create_users ===
 system_groups:
   - { name: users, gid: 4200 }
   - { name: docker, gid: 4201 }
@@ -56,6 +29,96 @@ system_users:
   - { name: valdedi, uid: 5136, group: users }
   - { name: barbara, uid: 6997, group: users }
 
+# === email ===
+email_report_to: example1@email.com
+email_send_from: example2@email.com
+email_account:
+email_host:
+email_username:
+email_password:
+
+# === cloudflare_ddns ===
+cloudflare_ddns_enabled: true
+cloudflare_ddns_api_key: token
+cloudflare_ddns_zone: domain
+cloudflare_ddns_subdomain: subdomain
+
+# === dex ===
+dex_enabled: true
+
+# === Monitoring ===
+grafana_enabled: true
+node_exporter_enabled: true
+prometheus_enabled: true
+cadvisor_enabled: true
+promtail_enabled: true
+loki_enabled: true
+
+prometheus_hass_token:
+prometheus_hass_target:
+
+# === qbittorrent ===
+qbittorrent_enabled: true
+qbittorrent_vpn_enabled: false
+
+gluetun_wireguard_private_key: ""
+gluetun_server_countries: "Netherlands"
+gluetun_port_forwarding: false
+
+# === plex ===
+plex_enabled: true
+
+# === jellyfin ===
+jellyfin_enabled: true
+jellyfin_public: false
+
+# === arr_stack ===
+arr_stack_enabled: true
+
+# === nginx_proxy_manager ===
+nginx_proxy_manager_enabled: true
+
+# === traefik ===
+traefik_enabled: false
+traefik_domain: example.com
+traefik_acme_email: example@email.com
+traefik_cloudflare_api_token: "{{ cloudflare_ddns_api_key }}"
+traefik_http_port: 80
+traefik_https_port: 443
+traefik_rules:
+  - name: example-service
+    host: service.example.com
+    url: http://192.168.1.10:8080
+    public: false
+
+# === tailscale ===
+tailscale_enabled: false
+tailscale_authkey:
+tailscale_routes:
+
+# === cloudflared ===
+cloudflared_enabled: false
+cloudflared_token:
+cloudflared_public_hostnames: []
+
+# === syncthing ===
+syncthing_enabled: false
+
+# === immich ===
+immich_enabled: true
+immich_public: false
+
+# === backup_immich ===
+backup_immich_photos_path: "{{ nas_photos_dir }}"
+backup_immich_aws_access_key_id:
+backup_immich_aws_secret_access_key:
+backup_immich_restic_repository_path:
+backup_immich_restic_password:
+
+# === watcharr ===
+watcharr_enabled: false
+
+# === samba ===
 samba_shares:
   - name: Daniel
     path: /srv/Storage/Users/daniel
@@ -73,6 +136,9 @@ samba_shares:
     valid_users:
       - daniel
       - barbara
+
+# === rclone ===
+rclone_enabled: true
 
 rclone_remotes:
   - |
