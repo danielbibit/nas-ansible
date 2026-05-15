@@ -24,6 +24,10 @@ services:
       - 6881:6881
       - 6881:6881/udp
       - '{{ qbittorrent_webui_port }}:{{ qbittorrent_webui_port }}'
+    networks:
+      default:
+        aliases:
+          - qbittorrent
     restart: unless-stopped
 
 {% endif %}
