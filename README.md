@@ -86,6 +86,23 @@ to access the whole server online, I strongly recommend setting up a VPN (Wiregu
 
 ### Hardware
 
+#### My Setup
+
+- **Case:** Fractal Design Define R5
+- **Motherboard:** ASRock B250M-HDV
+- **CPU:** Intel Pentium G4560 @ 3.50GHz (2 cores / 4 threads)
+- **RAM:** 20GB DDR4 (16GB + 4GB mixed sticks)
+- **Boot/OS drive:** Samsung SSD 850 120GB
+- **Storage pool (`Storage`):** 4x mirrored pairs of 4TB drives (WD Purple, WD Red, Seagate IronWolf, Seagate Barracuda) → ~14.5TB usable
+
+#### Minimum Requirements
+
+- **CPU:** Any x86-64 processor (low-power preferred, Intel N-series, Celeron, or Pentium work great)
+- **RAM:** 8GB minimum, 16GB+ recommended (Plex transcoding and containers are memory-hungry)
+- **OS drive:** Dedicated SSD, 120GB or more
+- **Storage:** At least 2 drives for ZFS mirroring. This project relies on ZFS features
+- **SATA ports:** Enough for your drive count; check your motherboard specs before buying drives
+
 ## Configuration
 Make a copy of the example inventory, and change the values in
 inventories/your_inventory/inventory.yml to match your server configuration.
