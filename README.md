@@ -1,20 +1,20 @@
 # Daniel's NAS
 ## About
-NAS (Network Attached Storage) is a type of server that primarily serves the purpose
-of serving files on the network, but in the context of home users usually has many more features.
+NAS (Network Attached Storage) is a type of server primarily used for file sharing on the network,
+but in the context of home users usually has many more features.
 
 In this context, for the last 5 years I have managed my own home server,
-having a linux machine on 24/7 is really useful, not only I can share all my files across my devices,
+having a linux machine on 24/7 is really useful, not only can I share all my files across my devices,
 I have Virtual machines running automation stuff and work related environments.
 On top of all that, you can have a really nice media center,
 having your movies, music, shows and photos being served on the network is really cool.
 
 This project has had many prior iterations, starting with OpenMediaVault, a Linux distro specifically
-tailored to NAS, to the final decision of me managing my own linux install.
+tailored to NAS, to the final decision to manage my own linux install.
 
 This current iteration uses ansible to manage the server,
 serving as a tool to deploy changes and save the server definitions as code.
-Although this project is tailored made for my need, I believe it can be very useful as a boilerplate
+Although this project is tailor-made for my needs, I believe it can be very useful as a boilerplate
 to implement a similar server, you can check the pre requisites section to get started.
 
 ## Features
@@ -73,9 +73,9 @@ in `dashboards_python/` and `alerts_python/`. The grafana role generates them
 with `scripts/generate_dashboards.sh` and `scripts/generate_alerts.sh`,
 and the generated JSON is committed in `roles/grafana/files/`.
 
-## Pre requisites
+## Prerequisites
 ### OS setup - Ubuntu
-This project run against a physical machine running the latest Ubuntu LTS version.
+This project runs against a physical machine running the latest Ubuntu LTS version.
 Make sure you have a clean install, and have SSH access on your local network.
 
 ### Filesystem setup - ZFS
@@ -84,7 +84,7 @@ This project *DO NOT* setup nor manage it, you should take your time to setup it
 before attempting to use this project.
 
 ### Email
-You will need a SMTP service that allow using plain text password for authentication,
+You will need an SMTP service that allows using a plain text password for authentication,
 I recommend using AWS SES.
 
 ### Network
@@ -106,14 +106,14 @@ All the default configuration are stored inside the roles (role_name/defaults/ma
 You can override any of these values in your inventory file, just add the desired
 variable with the new value to your inventories/your_inventory/group_vars/your_inventory.yml
 
-The order of precedence of this projects is:
+The order of precedence of this project is:
 1. Project group_vars
 2. Role defaults
 
 ## Running
 ### Setting up
 The recommended way to run this project is using VSCode Dev Container feature,
-this way you can edit your files and don't have to worry about setting up ansible.
+this way you can edit your files, and don't have to worry about setting up ansible.
 
 1. Clone or Fork this repository
 2. Open project with VSCode
