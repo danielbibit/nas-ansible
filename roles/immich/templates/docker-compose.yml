@@ -1,6 +1,6 @@
 services:
   immich:
-    image: ghcr.io/imagegenius/immich:latest
+    image: ghcr.io/imagegenius/immich:{{ immich_image_tag }}
     container_name: immich
     environment:
       - PUID={{ immich_puid }}
@@ -30,11 +30,13 @@ services:
 
   immich_postgres:
     container_name: immich-postgres
-    image: tensorchord/pgvecto-rs:pg14-v0.2.0
+    image: {{ immich_postgres_image }}
+    shm_size: 128mb
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: immich
+      POSTGRES_INITDB_ARGS: '--data-checksums'
     volumes:
       - '{{ immich_postgres_data_dir }}:/var/lib/postgresql/data'
     restart: unless-stopped

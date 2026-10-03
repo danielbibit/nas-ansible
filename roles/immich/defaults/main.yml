@@ -4,6 +4,20 @@ immich_puid: "{{ nas_docker_uid }}"
 immich_pgid: "{{ nas_docker_gid }}"
 immich_timezone: Etc/UTC
 
+# Updating immich:
+# Immich sometimes needs a staged upgrade, e.g. 3.x dropped pgvecto.rs, so the DB had
+# to be migrated to VectorChord by a 2.x release first. Check the release notes before
+# pulling a new major version. If a migration is needed:
+#   1. Back up the DB: docker exec immich-postgres pg_dumpall -U postgres | gzip > backup.sql.gz
+#   2. Pin immich_image_tag in the inventory to the last compatible ghcr.io/imagegenius/immich
+#      tag (e.g. v2.7.5-ig458) and set immich_postgres_image if the release requires a new one
+#   3. Run the immich tag and wait for the migration to finish in `docker logs immich`
+#   4. Remove the pin and run the immich tag again to move to latest
+# Keep immich_postgres_image in sync with the database image in the upstream compose file:
+# https://github.com/immich-app/immich/blob/main/docker/docker-compose.yml
+immich_image_tag: latest
+immich_postgres_image: ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvectors0.2.0
+
 immich_port: "8089"
 
 immich_ml_host: "0.0.0.0"
