@@ -4,6 +4,13 @@ datasources:
   - name: TestData
     type: testdata
 
+  - name: Prometheus
+    type: prometheus
+    uid: Ao-uhfy7k
+    url: http://prometheus:9090
+    access: proxy
+    isDefault: true
+
   - name: Loki
     type: loki
     uid: fZfR0nKVk

@@ -1,0 +1,12 @@
+---
+apiVersion: 1
+contactPoints:
+  - orgId: 1
+    name: email
+    receivers:
+      - uid: email
+        type: email
+        settings:
+          addresses: "{{ grafana_alert_email_to }}"
+          singleEmail: true
+        disableResolveMessage: false

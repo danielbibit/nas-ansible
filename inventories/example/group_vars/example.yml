@@ -48,6 +48,7 @@ dex_enabled: true
 
 # === Monitoring ===
 grafana_enabled: true
+grafana_alerts_enabled: true
 node_exporter_enabled: true
 prometheus_enabled: true
 cadvisor_enabled: true

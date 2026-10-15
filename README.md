@@ -62,7 +62,7 @@ The following are backed up:
 * Prometheus
 * Loki
 * Grafana - Dashboards for containers and nodes
-* Grafana - Alerts
+* Grafana - Email alerts for nodes and containers
 
 ## Pre requisites
 ### OS setup - Ubuntu
@@ -148,6 +148,5 @@ uv run ansible-playbook playbooks/nas.yml -i inventories/nas/inventory.yml --dif
 ![Drive Failure](assets/reports_drive_failed.png)
 ![ZFS Scrub](assets/reports_zfs_scrub.png)
 ## TODO
-* Implement grafana alerts
 * Setup local backup (In progress)
 * Setup cloud backup (In progress)

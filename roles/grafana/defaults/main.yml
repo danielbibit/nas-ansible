@@ -4,3 +4,13 @@ grafana_enabled: false
 grafana_data_directory: '{{ nas_docker_directory }}/grafana'
 grafana_port: 3000
 grafana_public: false
+
+grafana_alerts_enabled: true
+grafana_alert_email_to: '{{ email_report_to }}'
+grafana_alert_repeat_interval: 12h
+grafana_alert_critical_repeat_interval: 2h
+
+grafana_smtp_host: '{{ email_host }}:{{ email_port | default(587) }}'
+grafana_smtp_user: '{{ email_username }}'
+grafana_smtp_password: '{{ email_password }}'
+grafana_smtp_from: '{{ email_send_from }}'
