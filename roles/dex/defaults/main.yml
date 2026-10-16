@@ -1,4 +1,7 @@
 ---
 dex_enabled: false
+
+# Pinned by digest, it has full access to the docker socket and comes from a single maintainer
+dex_version: "0.0.73@sha256:fe2146cb9ebd887d180f0399cc96b32702399956c3a04c8fd391b94d4b6b485f"
 dex_port: 8386
 dex_public: false
