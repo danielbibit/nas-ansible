@@ -1,0 +1,15 @@
+---
+# Installs Tailscale from the official apt repository and runs it on the host (kernel mode),
+# for machines without Docker such as Proxmox hosts
+tailscale_native_enabled: true
+
+# Only used to log in the first time, see https://login.tailscale.com/admin/settings/keys
+tailscale_native_authkey: ""
+# Defaults to the machine hostname when empty
+tailscale_native_hostname: ""
+# Subnets to share with the tailnet, e.g. ["192.168.10.0/24"]
+tailscale_native_advertise_routes: []
+tailscale_native_accept_routes: false
+
+tailscale_native_repo_url: "https://pkgs.tailscale.com/stable/{{ ansible_facts['distribution'] | lower }}"
+tailscale_native_keyring: /usr/share/keyrings/tailscale-archive-keyring.gpg
