@@ -43,9 +43,6 @@ cloudflare_ddns_api_key: token
 cloudflare_ddns_zone: domain
 cloudflare_ddns_subdomain: subdomain
 
-# === dex ===
-dex_enabled: true
-
 # === Monitoring ===
 grafana_enabled: true
 grafana_alerts_enabled: true

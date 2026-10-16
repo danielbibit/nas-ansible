@@ -158,12 +158,6 @@
         - arr_stack
         - docker
 
-    - role: dex
-      tags:
-        - dex
-        - monitoring
-        - docker
-
     - role: jellyfin
       tags:
         - jellyfin

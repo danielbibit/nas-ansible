@@ -55,16 +55,9 @@ builder = (
         .title('CPU Usage')
         .with_target(
             prometheus.Dataquery()
-            .expr('100 * sum(rate(container_cpu_system_seconds_total{name=~"$container"}[$__rate_interval])) by (name)')
+            .expr('100 * sum(rate(container_cpu_usage_seconds_total{name=~"$container"}[$__rate_interval])) by (name)')
             .interval(time_series_min_step)
             .legend_format('{{name}}')
-            .hide(True) # Cadvisor has a bug that does not report CPU usage for child processes on cgroup v2
-        )
-        .with_target(
-            prometheus.Dataquery()
-            .expr('100 * sum(rate(dex_cpu_utilization_seconds_total{container_name=~"$container"}[$__rate_interval])) by (container_name)')
-            .interval(time_series_min_step)
-            .legend_format('{{container_name}}')
         )
         .legend(set_legend_on_side())
         .unit('%')
