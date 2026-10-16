@@ -19,13 +19,16 @@ rules = [
     prometheus_rule(
         uid='node_high_memory',
         title='High memory usage',
-        query='(1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) * 100',
+        # The ZFS ARC is released under pressure, so it is not counted as used
+        query='(node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes'
+              ' - (node_zfs_arc_size or node_memory_MemTotal_bytes * 0))'
+              ' / node_memory_MemTotal_bytes * 100',
         operator='gt',
         threshold=90,
         for_='10m',
         severity='warning',
         summary='Memory usage on {{ $labels.instance }} is above 90%',
-        description='Memory usage is {{ printf "%.1f" $values.A.Value }}%.',
+        description='Memory used by applications, excluding the ZFS ARC, is {{ printf "%.1f" $values.A.Value }}%.',
     ),
 
     prometheus_rule(

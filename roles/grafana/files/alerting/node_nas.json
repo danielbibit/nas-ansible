@@ -59,7 +59,7 @@
         },
         {
           "annotations": {
-            "description": "Memory usage is {{ printf \"%.1f\" $values.A.Value }}%.",
+            "description": "Memory used by applications, excluding the ZFS ARC, is {{ printf \"%.1f\" $values.A.Value }}%.",
             "summary": "Memory usage on {{ $labels.instance }} is above 90%"
           },
           "condition": "B",
@@ -67,7 +67,7 @@
             {
               "datasourceUid": "Ao-uhfy7k",
               "model": {
-                "expr": "(1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) * 100",
+                "expr": "(node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes - (node_zfs_arc_size or node_memory_MemTotal_bytes * 0)) / node_memory_MemTotal_bytes * 100",
                 "instant": true,
                 "range": false,
                 "refId": "A"
