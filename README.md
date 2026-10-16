@@ -80,7 +80,7 @@ Make sure you have a clean install, and have SSH access on your local network.
 
 ### Filesystem setup - ZFS
 ZFS features are used on some tasks, it will be pretty difficult to use another filesystem.
-This project *DO NOT* setup nor manage it, you should take your time to setup it properly,
+This project *DOES NOT* set up or manage it, you should take your time to set it up properly,
 before attempting to use this project.
 
 ### Email
@@ -92,6 +92,7 @@ I recommend using AWS SES.
 * This projects comes with a reverse proxy and DDNS updates, but **BE CAREFUL**,
 it's not a good idea to expose services that you don't need online, if you want
 to access the whole server online, I strongly recommend setting up a VPN (Wireguard, OpenVPN).
+* See [docs/network.md](docs/network.md) for details on DDNS, Cloudflare Tunnel and Tailscale.
 
 ### Hardware
 

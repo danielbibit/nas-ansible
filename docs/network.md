@@ -15,8 +15,7 @@ graph TD
     Cloudflared -->|https://traefik:443| Traefik
     Traefik --> Services[Internal Services]
 
-    User -->|WireGuard VPN| Tailscale_Net[Tailscale Network]
-    Tailscale_Net -->|host network| NAS_Host[NAS Host]
+    User -->|WireGuard, peer-to-peer| NAS_Host[NAS Host]
     NAS_Host --> Services
 ```
 
@@ -67,9 +66,19 @@ Exposes selected services publicly without opening any firewall ports. Traffic f
 graph TD
     Playbook[cloudflared role] -->|Cloudflare API| CNAME[Create CNAME records\nsubdomain → tunnel-id.cfargotunnel.com]
     Playbook -->|Cloudflare API| SSL[Enforce Always Use HTTPS\n+ SSL mode Full]
-    Playbook --> Config[Write tunnel config\ningress rules → https://traefik:443]
+    Playbook -->|Cloudflare API| Config[Set remote tunnel config\ningress rules → https://traefik:443]
     Playbook --> Container[Deploy cloudflared container]
 ```
+
+The tunnel is remotely managed: no config file is written on the NAS. The role pushes the ingress
+rules to the Cloudflare API, one rule per public hostname, followed by a catch-all `http_status:404`.
+Each rule rewrites the `Host` header to `<subdomain>.<cloudflared_internal_domain>`, so Traefik
+matches the request against its usual internal routes.
+
+> **Note:** "Always Use HTTPS" and SSL mode "Full" are zone-wide settings, they apply to every
+> record in `cloudflared_cf_zone`, not only to the tunnel hostnames.
+
+When `cloudflared_enabled` is `false`, the role tears down the container and removes the CNAME records.
 
 ### Traffic flow
 
@@ -87,7 +96,7 @@ graph LR
 |---|---|
 | `cloudflared_enabled` | Enable the role (default: `false`) |
 | `cloudflared_token` | Tunnel token (base64-encoded JSON, see below) |
-| `cloudflared_public_hostnames` | List of hostnames to expose via the tunnel |
+| `cloudflared_public_hostnames` | List of subdomains to expose via the tunnel (e.g. `["jellyfin"]`, not FQDNs) |
 | `cloudflared_ingress_service` | Backend for tunnel ingress (default: `https://traefik:443`) |
 | `cloudflared_no_tls_verify` | Skip TLS verification toward Traefik (default: `true`) |
 | `cloudflared_cf_zone` | Cloudflare zone for DNS automation (defaults to `cloudflare_ddns_zone`) |
@@ -107,16 +116,22 @@ The token is issued from the Cloudflare Zero Trust dashboard when creating a tun
 
 ## Tailscale
 
-**Role:** `roles/tailscale/`
+**Roles:** `roles/tailscale/` (NAS, Docker) and `roles/tailscale_native/` (Proxmox hosts, no Docker)
 
 Provides private WireGuard-based VPN access to the NAS. No services are exposed publicly; access is restricted to devices enrolled in the same Tailscale network.
 
 ```mermaid
 graph LR
-    Device[User device\nTailscale client] -->|WireGuard| TS[Tailscale coordination network]
-    TS -->|host network| NAS[NAS host]
+    Device[User device\nTailscale client] -->|WireGuard, peer-to-peer or DERP relay| NAS[NAS host]
+    Coord[Tailscale coordination server] -.->|keys and peer discovery| Device
+    Coord -.->|keys and peer discovery| NAS
     NAS --> Services[All internal services]
 ```
+
+Data flows directly between devices over WireGuard; the coordination server only exchanges keys and
+endpoints, falling back to a DERP relay when a direct connection is not possible.
+
+### Docker role (NAS)
 
 The container runs with `network_mode: host`, giving it direct access to the NAS network stack. It requires the `NET_ADMIN` and `NET_RAW` capabilities and the `/dev/net/tun` device.
 
@@ -129,3 +144,18 @@ The container runs with `network_mode: host`, giving it direct access to the NAS
 | `tailscale_hostname` | Hostname advertised to the Tailscale network |
 | `tailscale_routes` | Subnet routes to advertise (e.g. `192.168.1.0/24`) |
 | `tailscale_extra_args` | Additional arguments passed to `tailscale up` |
+
+### Native role (Proxmox hosts)
+
+`roles/tailscale_native/` is used by `playbooks/proxmox.yml` for machines without Docker. It installs
+Tailscale from the official apt repository, runs `tailscaled` on the host, and logs in with
+`tailscale up` only when the node is not already connected. IP forwarding is enabled automatically
+when routes are advertised.
+
+| Variable | Description |
+|---|---|
+| `tailscale_native_enabled` | Enable the role (default: `true`) |
+| `tailscale_native_authkey` | Auth key, only used for the first login |
+| `tailscale_native_hostname` | Hostname advertised to the Tailscale network (defaults to the machine hostname) |
+| `tailscale_native_advertise_routes` | List of subnets to advertise (e.g. `["192.168.10.0/24"]`) |
+| `tailscale_native_accept_routes` | Accept routes advertised by other nodes (default: `false`) |
