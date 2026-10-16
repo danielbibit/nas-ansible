@@ -1,0 +1,22 @@
+---
+# Grafana Alloy pushes metrics and logs to the NAS, for hosts the NAS cannot scrape
+alloy_enabled: true
+
+# Value of the instance label on metrics and the host label on logs
+alloy_instance: "{{ ansible_facts['hostname'] }}"
+
+# Prometheus needs --web.enable-remote-write-receiver
+alloy_prometheus_url: ""
+alloy_loki_url: ""
+
+alloy_node_exporter_target: "localhost:9100"
+alloy_scrape_interval: 1m
+
+alloy_logs_enabled: true
+alloy_log_paths: /var/log/*.log
+alloy_journal_max_age: 48h
+
+# Alloy replaces promtail for log shipping
+alloy_disable_promtail: true
+
+alloy_keyring: /etc/apt/keyrings/grafana.asc

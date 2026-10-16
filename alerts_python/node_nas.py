@@ -16,6 +16,20 @@ rules = [
         no_data_state='Alerting',
     ),
 
+    # Pushed hosts send nothing when they go down, so `up` never reaches 0 for them
+    prometheus_rule(
+        uid='node_push_stopped',
+        title='Host stopped reporting',
+        query='count by (instance) (max_over_time(up{collector="alloy"}[1d]))'
+              ' unless count by (instance) (count_over_time(up{collector="alloy"}[5m]))',
+        operator='gt',
+        threshold=0,
+        for_='0m',
+        severity='critical',
+        summary='{{ $labels.instance }} stopped pushing metrics',
+        description='No metrics from {{ $labels.instance }} for 5 minutes, the host or Alloy may be down.',
+    ),
+
     prometheus_rule(
         uid='node_high_memory',
         title='High memory usage',

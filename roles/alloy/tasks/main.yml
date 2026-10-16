@@ -1,0 +1,101 @@
+---
+- name: Install alloy
+  when: alloy_enabled is true
+  block:
+    - name: Check push targets are set
+      ansible.builtin.assert:
+        that:
+          - alloy_prometheus_url | length > 0
+          - not alloy_logs_enabled or alloy_loki_url | length > 0
+        fail_msg: Set alloy_prometheus_url, and alloy_loki_url when alloy_logs_enabled is true
+
+    - name: Make sure keyrings directory exists
+      ansible.builtin.file:
+        path: "{{ alloy_keyring | dirname }}"
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+
+    - name: Add grafana apt key
+      ansible.builtin.get_url:
+        url: https://apt.grafana.com/gpg.key
+        dest: "{{ alloy_keyring }}"
+        owner: root
+        group: root
+        mode: "0644"
+
+    - name: Add grafana apt repository
+      ansible.builtin.apt_repository:
+        repo: "deb [signed-by={{ alloy_keyring }}] https://apt.grafana.com stable main"
+        filename: grafana
+        state: present
+
+    - name: Install alloy
+      ansible.builtin.apt:
+        name: alloy
+        state: present
+        update_cache: true
+
+    - name: Allow alloy to read logs
+      ansible.builtin.user:
+        name: alloy
+        groups:
+          - adm
+          - systemd-journal
+        append: true
+      notify: Restart alloy
+
+    - name: Template alloy config
+      ansible.builtin.template:
+        src: "{{ role_path }}/templates/config.alloy.j2"
+        dest: /etc/alloy/config.alloy
+        owner: root
+        group: alloy
+        mode: "0640"
+        validate: alloy fmt %s
+      notify: Restart alloy
+
+    - name: Enable alloy service
+      ansible.builtin.systemd:
+        name: alloy
+        enabled: true
+        state: started
+
+    - name: Check if promtail is installed
+      ansible.builtin.stat:
+        path: /etc/systemd/system/multi-user.target.wants/promtail.service
+      register: alloy_promtail_service
+      when: alloy_disable_promtail
+
+    - name: Stop and disable promtail
+      ansible.builtin.systemd:
+        name: promtail
+        state: stopped
+        enabled: false
+      register: alloy_promtail_stopped
+      when: alloy_disable_promtail and alloy_promtail_service.stat.exists
+
+    # Promtail can time out while stopping, which leaves the unit in failed state
+    - name: Clear promtail failed state # noqa no-handler
+      ansible.builtin.command: systemctl reset-failed promtail
+      changed_when: false
+      failed_when: false
+      when: alloy_promtail_stopped is changed
+
+- name: Remove alloy
+  when: alloy_enabled is false
+  block:
+    - name: Uninstall alloy
+      ansible.builtin.apt:
+        name: alloy
+        state: absent
+        purge: true
+
+    - name: Remove grafana apt repository and key
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - /etc/apt/sources.list.d/grafana.list
+        - "{{ alloy_keyring }}"

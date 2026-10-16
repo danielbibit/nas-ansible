@@ -1,0 +1,14 @@
+---
+- name: Setup proxmox hosts
+  hosts: all
+
+  roles:
+    - role: tailscale_native
+      tags:
+        - tailscale
+        - network
+
+    - role: alloy
+      tags:
+        - alloy
+        - monitoring
