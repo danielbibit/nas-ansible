@@ -5,10 +5,13 @@ grafana_data_directory: '{{ nas_docker_directory }}/grafana'
 grafana_port: 3000
 grafana_public: false
 
+# Public URL used in links, such as the ones in alert emails
+grafana_root_url: "{{ 'https://grafana.' ~ traefik_domain if traefik_enabled | default(false) else 'http://' ~ inventory_hostname ~ ':' ~ grafana_port }}"
+
 grafana_alerts_enabled: true
 grafana_alert_email_to: '{{ email_report_to }}'
-grafana_alert_repeat_interval: 12h
-grafana_alert_critical_repeat_interval: 2h
+grafana_alert_repeat_interval: 168h
+grafana_alert_critical_repeat_interval: 24h
 
 grafana_smtp_host: '{{ email_host }}:{{ email_port | default(587) }}'
 grafana_smtp_user: '{{ email_username }}'
