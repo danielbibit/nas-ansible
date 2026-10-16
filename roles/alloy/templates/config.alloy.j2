@@ -1,6 +1,38 @@
 // Managed by Ansible
 
+{% if alloy_metrics_enabled %}
 // === Metrics ===
+{% if alloy_builtin_exporter %}
+// Built-in node_exporter, same node_* metrics as the standalone one
+prometheus.exporter.unix "node" {
+  enable_collectors = ["systemd"]
+{% if alloy_textfile_directory %}
+
+  textfile {
+    directory = "{{ alloy_textfile_directory }}"
+  }
+{% endif %}
+}
+
+// Keep the labels the standalone node_exporter had, dashboards and alerts rely on them
+discovery.relabel "node" {
+  targets = prometheus.exporter.unix.node.targets
+
+  rule {
+    target_label = "instance"
+    replacement  = "{{ alloy_instance }}"
+  }
+
+  rule {
+    target_label = "job"
+    replacement  = "{{ alloy_instance }}_exporter"
+  }
+}
+
+// Scrape the built-in exporter and push to the NAS Prometheus
+prometheus.scrape "node" {
+  targets         = discovery.relabel.node.output
+{% else %}
 // Scrape the local node_exporter and push to the NAS Prometheus
 prometheus.scrape "node" {
   targets = [
@@ -9,6 +41,7 @@ prometheus.scrape "node" {
       instance    = "{{ alloy_instance }}",
     },
   ]
+{% endif %}
   job_name        = "{{ alloy_instance }}_exporter"
   scrape_interval = "{{ alloy_scrape_interval }}"
   forward_to      = [prometheus.remote_write.nas.receiver]
@@ -24,6 +57,7 @@ prometheus.remote_write "nas" {
     collector = "alloy",
   }
 }
+{% endif %}
 {% if alloy_logs_enabled %}
 
 // === Logs ===
@@ -41,6 +75,8 @@ local.file_match "varlogs" {
 loki.source.file "varlogs" {
   targets    = local.file_match.varlogs.targets
   forward_to = [loki.process.varlogs.receiver]
+  // Without a saved position start at the end, the previous agent already shipped older lines
+  tail_from_end = true
 }
 
 // Keep only the file name without extension, like promtail did
@@ -78,6 +114,34 @@ loki.source.journal "journal" {
   forward_to    = [loki.write.nas.receiver]
 }
 
+{% if alloy_ship_docker_logs %}
+discovery.docker "containers" {
+  host             = "unix://{{ alloy_docker_socket }}"
+  refresh_interval = "15s"
+}
+
+discovery.relabel "containers" {
+  targets = discovery.docker.containers.targets
+
+  rule {
+    source_labels = ["__meta_docker_container_name"]
+    regex         = "/(.*)"
+    target_label  = "container"
+  }
+
+  rule {
+    target_label = "host"
+    replacement  = "{{ alloy_instance }}"
+  }
+}
+
+loki.source.docker "containers" {
+  host       = "unix://{{ alloy_docker_socket }}"
+  targets    = discovery.relabel.containers.output
+  forward_to = [loki.write.nas.receiver]
+}
+
+{% endif %}
 loki.write "nas" {
   endpoint {
     url = "{{ alloy_loki_url }}"

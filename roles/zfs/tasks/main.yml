@@ -29,6 +29,12 @@
 - name: Setup ZFS metrics
   when: zfs_metrics_enabled is true
   block:
+    - name: Make sure textfile directory exists
+      ansible.builtin.file:
+        path: "{{ zfs_textfile_directory }}"
+        state: directory
+        mode: "0755"
+
     - name: Copy ZFS metrics script
       ansible.builtin.template:
         src: "{{ role_path }}/templates/zfs_metrics.py"

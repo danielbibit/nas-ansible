@@ -30,6 +30,7 @@ to implement a similar server, you can check the pre requisites section to get s
 * Cloudflare tunnel for public services
 * Reverse Proxy NGINX
 * Reverse Proxy with Traefik
+* Tailscale - Remote access, the NAS also routes its local network
 
 ### Media and Downloads
 * qBittorrent - Torrent client
@@ -53,16 +54,24 @@ The following are backed up:
 
 ### Monitoring and reports
 #### All nodes
-* Promtail - Log collection
-* Node Exporter - System metrics
+* Grafana Alloy - System metrics (built-in node_exporter) and logs, pushed to the NAS
+
+#### Proxmox nodes
+* Tailscale - Lets nodes on other networks push to the NAS
 
 #### NAS
 * Smartmon disk monitoring with daily tests and monthly email report
-* ZFS monitoring
-* Prometheus
-* Loki
-* Grafana - Dashboards for containers and nodes
+* ZFS monitoring - Pool, disk, scrub and dataset metrics
+* Prometheus - Receives the metrics pushed by Alloy
+* Loki - Receives the logs pushed by Alloy
+* Grafana - Dashboards for nodes, containers and ZFS
 * Grafana - Email alerts for nodes and containers
+
+Dashboards and alerts are written in Python with the
+[Grafana Foundation SDK](https://github.com/grafana/grafana-foundation-sdk),
+in `dashboards_python/` and `alerts_python/`. The grafana role generates them
+with `scripts/generate_dashboards.sh` and `scripts/generate_alerts.sh`,
+and the generated JSON is committed in `roles/grafana/files/`.
 
 ## Pre requisites
 ### OS setup - Ubuntu
@@ -75,7 +84,7 @@ This project *DO NOT* setup nor manage it, you should take your time to setup it
 before attempting to use this project.
 
 ### Email
-You will need a SMP service that allow using plain text password for authentication,
+You will need a SMTP service that allow using plain text password for authentication,
 I recommend using AWS SES.
 
 ### Network
@@ -87,10 +96,10 @@ to access the whole server online, I strongly recommend setting up a VPN (Wiregu
 ### Hardware
 
 ## Configuration
-Make a copy of the example invetory, and change the values in
+Make a copy of the example inventory, and change the values in
 inventories/your_inventory/inventory.yml to match your server configuration.
 ```sh
-cp -r invetories/example invetories/your_inventory
+cp -r inventories/example inventories/your_inventory
 ```
 All the default configuration are stored inside the roles (role_name/defaults/main.yml).
 
@@ -111,20 +120,22 @@ this way you can edit your files and don't have to worry about setting up ansibl
 3. Open in Container
 
 If you don't want to use VSCode, you can build the container yourself,
-or setup the project manually using Poetry.
+or setup the project manually using uv (`uv sync`).
 
 ### Notes for MacOS
 * When using docker with OrbStack, force the local network permission by disabling access to container by domain.
 You can re-enable it after.
-* The prometheus installer needs the gnu version o tar, install it with brew and link and add it to path
 
 ### Running a playbook
 ```sh
 # Default playbook for the full NAS server
 uv run ansible-playbook playbooks/nas.yml -i inventories/nas/inventory.yml --diff --check
 
-# Playbook for obervability nodes
-uv run ansible-playbook playbooks/exporters.yml -i inventories/pve/inventory.yml --diff --check
+# Playbook for observability nodes, installs Alloy
+uv run ansible-playbook playbooks/exporters.yml -i inventories/nas/inventory.yml --diff --check
+
+# Playbook for Proxmox hosts, installs Tailscale and Alloy
+uv run ansible-playbook playbooks/proxmox.yml -i inventories/proxmox/inventory.yml --diff --check
 ```
 
 To run a tag:

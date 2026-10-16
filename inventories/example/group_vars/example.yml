@@ -52,7 +52,12 @@ grafana_alerts_enabled: true
 node_exporter_enabled: true
 prometheus_enabled: true
 cadvisor_enabled: true
-promtail_enabled: true
+
+# === alloy ===
+# Ships logs to Loki, set alloy_metrics_enabled and alloy_prometheus_url to push metrics too
+alloy_enabled: true
+alloy_metrics_enabled: false
+alloy_loki_url: http://localhost:3100/loki/api/v1/push
 loki_enabled: true
 
 prometheus_hass_token:

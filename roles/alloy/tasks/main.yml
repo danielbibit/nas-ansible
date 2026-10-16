@@ -5,9 +5,18 @@
     - name: Check push targets are set
       ansible.builtin.assert:
         that:
-          - alloy_prometheus_url | length > 0
+          - not alloy_metrics_enabled or alloy_prometheus_url | length > 0
           - not alloy_logs_enabled or alloy_loki_url | length > 0
-        fail_msg: Set alloy_prometheus_url, and alloy_loki_url when alloy_logs_enabled is true
+        fail_msg: Set alloy_prometheus_url when alloy_metrics_enabled, and alloy_loki_url when alloy_logs_enabled
+
+    - name: Check if docker is installed
+      ansible.builtin.stat:
+        path: "{{ alloy_docker_socket }}"
+      register: alloy_docker_socket_stat
+
+    - name: Set docker logs fact
+      ansible.builtin.set_fact:
+        alloy_ship_docker_logs: "{{ alloy_logs_enabled and alloy_docker_logs and alloy_docker_socket_stat.stat.exists }}"
 
     - name: Make sure keyrings directory exists
       ansible.builtin.file:
@@ -40,9 +49,7 @@
     - name: Allow alloy to read logs
       ansible.builtin.user:
         name: alloy
-        groups:
-          - adm
-          - systemd-journal
+        groups: "{{ ['adm', 'systemd-journal'] + (['docker'] if alloy_ship_docker_logs else []) }}"
         append: true
       notify: Restart alloy
 
@@ -61,6 +68,39 @@
         name: alloy
         enabled: true
         state: started
+
+    - name: Remove standalone node_exporter
+      when: alloy_metrics_enabled and alloy_builtin_exporter and alloy_remove_node_exporter
+      block:
+        # Switch Alloy to the built-in exporter before node_exporter goes away
+        - name: Apply alloy config
+          ansible.builtin.meta: flush_handlers
+
+        - name: Check if node_exporter is installed
+          ansible.builtin.stat:
+            path: /etc/systemd/system/node_exporter.service
+          register: alloy_node_exporter_service
+
+        - name: Stop and disable node_exporter
+          ansible.builtin.systemd:
+            name: node_exporter
+            state: stopped
+            enabled: false
+          when: alloy_node_exporter_service.stat.exists
+
+        - name: Remove node_exporter files
+          ansible.builtin.file:
+            path: "{{ item }}"
+            state: absent
+          loop:
+            - /etc/systemd/system/node_exporter.service
+            - /usr/local/bin/node_exporter
+          register: alloy_node_exporter_removed
+
+        - name: Reload systemd # noqa no-handler
+          ansible.builtin.systemd:
+            daemon_reload: true
+          when: alloy_node_exporter_removed is changed
 
     - name: Check if promtail is installed
       ansible.builtin.stat:
