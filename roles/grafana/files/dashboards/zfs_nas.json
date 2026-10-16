@@ -1,0 +1,1282 @@
+{
+  "annotations": {},
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": "single",
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 0,
+      "panels": [],
+      "title": "Pools",
+      "type": "row"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            {
+              "options": {
+                "0": {
+                  "color": "green",
+                  "index": 0,
+                  "text": "ONLINE"
+                },
+                "1": {
+                  "color": "orange",
+                  "index": 1,
+                  "text": "DEGRADED"
+                },
+                "2": {
+                  "color": "red",
+                  "index": 2,
+                  "text": "FAILED"
+                }
+              },
+              "type": "value"
+            }
+          ]
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 0,
+        "y": 1
+      },
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": []
+        },
+        "showPercentChange": false,
+        "textMode": "value_and_name",
+        "wideLayout": true
+      },
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "expr": "max by (zpool) (zfs_zpool_health{instance=~\"$host\", zpool=~\"$pool\", state=\"online\"} * 0 or zfs_zpool_health{instance=~\"$host\", zpool=~\"$pool\", state=\"degraded\"} or zfs_zpool_health{instance=~\"$host\", zpool=~\"$pool\", state!~\"online|degraded\"} * 2)",
+          "instant": true,
+          "legendFormat": "{{zpool}}",
+          "range": false,
+          "refId": ""
+        }
+      ],
+      "title": "Health",
+      "transparent": false,
+      "type": "stat"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "max": 100.0,
+          "min": 0.0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "yellow",
+                "value": 80
+              },
+              {
+                "color": "red",
+                "value": 90
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 5,
+        "x": 4,
+        "y": 1
+      },
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "expr": "100 * zfs_zpool_allocated_bytes{instance=~\"$host\", zpool=~\"$pool\"} / zfs_zpool_size_bytes{instance=~\"$host\", zpool=~\"$pool\"}",
+          "instant": true,
+          "legendFormat": "{{zpool}}",
+          "range": false,
+          "refId": ""
+        }
+      ],
+      "title": "Capacity",
+      "transparent": false,
+      "type": "gauge"
+    },
+    {
+      "description": "Space the datasets can still write, after the space ZFS keeps in reserve",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": 0
+              },
+              {
+                "color": "yellow",
+                "value": 107374182400
+              },
+              {
+                "color": "green",
+                "value": 536870912000
+              }
+            ]
+          },
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 5,
+        "x": 9,
+        "y": 1
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": []
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "expr": "zfs_dataset_available_bytes{instance=~\"$host\", zpool=~\"$pool\"} and on(instance, dataset) label_replace(zfs_zpool_size_bytes{instance=~\"$host\", zpool=~\"$pool\"}, \"dataset\", \"$1\", \"zpool\", \"(.*)\")",
+          "instant": true,
+          "legendFormat": "{{zpool}}",
+          "range": false,
+          "refId": ""
+        }
+      ],
+      "title": "Usable free",
+      "transparent": false,
+      "type": "stat"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "yellow",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 70
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 5,
+        "x": 14,
+        "y": 1
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": []
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "expr": "100 * zfs_zpool_fragmentation_ratio{instance=~\"$host\", zpool=~\"$pool\"}",
+          "instant": true,
+          "legendFormat": "{{zpool}}",
+          "range": false,
+          "refId": ""
+        }
+      ],
+      "title": "Fragmentation",
+      "transparent": false,
+      "type": "stat"
+    },
+    {
+      "description": "Files with permanent errors, list them with zpool status -v",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 5,
+        "x": 19,
+        "y": 1
+      },
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": []
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "expr": "zfs_zpool_data_errors{instance=~\"$host\", zpool=~\"$pool\"}",
+          "instant": true,
+          "legendFormat": "{{zpool}}",
+          "range": false,
+          "refId": ""
+        }
+      ],
+      "title": "Data errors",
+      "transparent": false,
+      "type": "stat"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "yellow",
+                "value": 3024000
+              },
+              {
+                "color": "red",
+                "value": 3888000
+              }
+            ]
+          },
+          "unit": "dtdurations"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 8,
+        "x": 0,
+        "y": 6
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": []
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "expr": "time() - zfs_zpool_scan_last_end_timestamp_seconds{instance=~\"$host\", zpool=~\"$pool\", function=\"scrub\"}",
+          "instant": true,
+          "legendFormat": "{{zpool}}",
+          "range": false,
+          "refId": ""
+        }
+      ],
+      "title": "Last scrub",
+      "transparent": false,
+      "type": "stat"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 8,
+        "x": 8,
+        "y": 6
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": []
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "expr": "zfs_zpool_scan_last_errors{instance=~\"$host\", zpool=~\"$pool\", function=\"scrub\"}",
+          "instant": true,
+          "legendFormat": "{{zpool}}",
+          "range": false,
+          "refId": ""
+        }
+      ],
+      "title": "Last scrub errors",
+      "transparent": false,
+      "type": "stat"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "Idle",
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 8,
+        "x": 16,
+        "y": 6
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": []
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "expr": "100 * zfs_zpool_scan_progress_ratio{instance=~\"$host\", zpool=~\"$pool\"}",
+          "instant": true,
+          "legendFormat": "{{zpool}}",
+          "range": false,
+          "refId": ""
+        }
+      ],
+      "title": "Scrub / resilver progress",
+      "transparent": false,
+      "type": "stat"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "max": 100.0,
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 10
+      },
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "expr": "100 * zfs_zpool_allocated_bytes{instance=~\"$host\", zpool=~\"$pool\"} / zfs_zpool_size_bytes{instance=~\"$host\", zpool=~\"$pool\"}",
+          "interval": "1m",
+          "legendFormat": "{{zpool}}",
+          "refId": ""
+        }
+      ],
+      "title": "Capacity over time",
+      "transparent": false,
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 18
+      },
+      "id": 0,
+      "panels": [],
+      "title": "Disks",
+      "type": "row"
+    },
+    {
+      "description": "Error counters are cumulative since the last zpool clear",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "transparent",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "State"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "options": {
+                      "degraded": {
+                        "color": "orange",
+                        "index": 1,
+                        "text": "DEGRADED"
+                      },
+                      "faulted": {
+                        "color": "red",
+                        "index": 2,
+                        "text": "FAULTED"
+                      },
+                      "offline": {
+                        "color": "red",
+                        "index": 3,
+                        "text": "OFFLINE"
+                      },
+                      "online": {
+                        "color": "green",
+                        "index": 0,
+                        "text": "ONLINE"
+                      },
+                      "removed": {
+                        "color": "red",
+                        "index": 5,
+                        "text": "REMOVED"
+                      },
+                      "suspended": {
+                        "color": "red",
+                        "index": 6,
+                        "text": "SUSPENDED"
+                      },
+                      "unavail": {
+                        "color": "red",
+                        "index": 4,
+                        "text": "UNAVAIL"
+                      }
+                    },
+                    "type": "value"
+                  }
+                ]
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "basic",
+                  "type": "color-background"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Read errors"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "basic",
+                  "type": "color-background"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Write errors"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "basic",
+                  "type": "color-background"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Checksum errors"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "basic",
+                  "type": "color-background"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 19
+      },
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "expr": "zfs_vdev_read_errors{instance=~\"$host\", zpool=~\"$pool\", leaf=\"true\"} * on(instance, zpool, vdev) group_left(state) zfs_vdev_state{instance=~\"$host\", zpool=~\"$pool\", leaf=\"true\"}",
+          "format": "table",
+          "instant": true,
+          "range": false,
+          "refId": ""
+        },
+        {
+          "expr": "zfs_vdev_write_errors{instance=~\"$host\", zpool=~\"$pool\", leaf=\"true\"} * on(instance, zpool, vdev) group_left(state) zfs_vdev_state{instance=~\"$host\", zpool=~\"$pool\", leaf=\"true\"}",
+          "format": "table",
+          "instant": true,
+          "range": false,
+          "refId": ""
+        },
+        {
+          "expr": "zfs_vdev_checksum_errors{instance=~\"$host\", zpool=~\"$pool\", leaf=\"true\"} * on(instance, zpool, vdev) group_left(state) zfs_vdev_state{instance=~\"$host\", zpool=~\"$pool\", leaf=\"true\"}",
+          "format": "table",
+          "instant": true,
+          "range": false,
+          "refId": ""
+        }
+      ],
+      "title": "Devices",
+      "transformations": [
+        {
+          "id": "merge",
+          "options": null
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "__name__": true,
+              "instance": true,
+              "job": true,
+              "leaf": true
+            },
+            "renameByName": {
+              "Value #A": "Read errors",
+              "Value #B": "Write errors",
+              "Value #C": "Checksum errors",
+              "parent": "Vdev",
+              "state": "State",
+              "vdev": "Device",
+              "zpool": "Pool"
+            }
+          }
+        }
+      ],
+      "transparent": false,
+      "type": "table"
+    },
+    {
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 29
+      },
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "expr": "zfs_vdev_read_errors{instance=~\"$host\", zpool=~\"$pool\", leaf=\"true\"} + zfs_vdev_write_errors{instance=~\"$host\", zpool=~\"$pool\", leaf=\"true\"} + zfs_vdev_checksum_errors{instance=~\"$host\", zpool=~\"$pool\", leaf=\"true\"}",
+          "interval": "1m",
+          "legendFormat": "{{vdev}}",
+          "refId": ""
+        }
+      ],
+      "title": "Device errors over time",
+      "transparent": false,
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 37
+      },
+      "id": 0,
+      "panels": [],
+      "title": "Datasets",
+      "type": "row"
+    },
+    {
+      "description": "Used includes children and snapshots, referenced is the data of the dataset itself",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Snapshots"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "none"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Compression"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "suffix:x"
+              },
+              {
+                "id": "decimals",
+                "value": 2
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 14,
+        "x": 0,
+        "y": 38
+      },
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "reducer": [],
+          "show": false
+        },
+        "frameIndex": 0,
+        "showHeader": true,
+        "showTypeIcons": false,
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "Used"
+          }
+        ]
+      },
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "expr": "zfs_dataset_used_bytes{instance=~\"$host\", zpool=~\"$pool\"}",
+          "format": "table",
+          "instant": true,
+          "range": false,
+          "refId": ""
+        },
+        {
+          "expr": "zfs_dataset_referenced_bytes{instance=~\"$host\", zpool=~\"$pool\"}",
+          "format": "table",
+          "instant": true,
+          "range": false,
+          "refId": ""
+        },
+        {
+          "expr": "zfs_dataset_available_bytes{instance=~\"$host\", zpool=~\"$pool\"}",
+          "format": "table",
+          "instant": true,
+          "range": false,
+          "refId": ""
+        },
+        {
+          "expr": "zfs_dataset_used_by_snapshots_bytes{instance=~\"$host\", zpool=~\"$pool\"}",
+          "format": "table",
+          "instant": true,
+          "range": false,
+          "refId": ""
+        },
+        {
+          "expr": "zfs_dataset_snapshots{instance=~\"$host\", zpool=~\"$pool\"}",
+          "format": "table",
+          "instant": true,
+          "range": false,
+          "refId": ""
+        },
+        {
+          "expr": "zfs_dataset_compress_ratio{instance=~\"$host\", zpool=~\"$pool\"}",
+          "format": "table",
+          "instant": true,
+          "range": false,
+          "refId": ""
+        }
+      ],
+      "title": "Datasets",
+      "transformations": [
+        {
+          "id": "merge",
+          "options": null
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "__name__": true,
+              "instance": true,
+              "job": true,
+              "leaf": true
+            },
+            "renameByName": {
+              "Value #A": "Used",
+              "Value #B": "Referenced",
+              "Value #C": "Available",
+              "Value #D": "Snapshots size",
+              "Value #E": "Snapshots",
+              "Value #F": "Compression",
+              "dataset": "Dataset",
+              "zpool": "Pool"
+            }
+          }
+        }
+      ],
+      "transparent": false,
+      "type": "table"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 10,
+        "x": 14,
+        "y": 38
+      },
+      "options": {
+        "displayMode": "basic",
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "maxVizHeight": 300,
+        "minVizHeight": 16,
+        "minVizWidth": 8,
+        "namePlacement": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": []
+        },
+        "showUnfilled": true,
+        "sizing": "auto",
+        "valueMode": "color"
+      },
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "expr": "zfs_dataset_referenced_bytes{instance=~\"$host\", zpool=~\"$pool\"} > 1024 * 1024",
+          "instant": true,
+          "legendFormat": "{{dataset}}",
+          "range": false,
+          "refId": ""
+        }
+      ],
+      "title": "Data by dataset",
+      "transparent": false,
+      "type": "bargauge"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 48
+      },
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "expr": "zfs_dataset_referenced_bytes{instance=~\"$host\", zpool=~\"$pool\"} > 1024 * 1024",
+          "interval": "1m",
+          "legendFormat": "{{dataset}}",
+          "refId": ""
+        }
+      ],
+      "title": "Dataset size over time",
+      "transparent": false,
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 56
+      },
+      "id": 0,
+      "panels": [],
+      "title": "I/O",
+      "type": "row"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "unit": "Bps"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 12,
+        "x": 0,
+        "y": 57
+      },
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "expr": "rate(node_zfs_zpool_dataset_nread{instance=~\"$host\", zpool=~\"$pool\"}[$__rate_interval])",
+          "interval": "1m",
+          "legendFormat": "{{dataset}} read",
+          "refId": ""
+        },
+        {
+          "expr": "-rate(node_zfs_zpool_dataset_nwritten{instance=~\"$host\", zpool=~\"$pool\"}[$__rate_interval])",
+          "interval": "1m",
+          "legendFormat": "{{dataset}} write",
+          "refId": ""
+        }
+      ],
+      "title": "Dataset throughput (read + / write -)",
+      "transparent": false,
+      "type": "timeseries"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "unit": "iops"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 12,
+        "x": 12,
+        "y": 57
+      },
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "expr": "rate(node_zfs_zpool_dataset_reads{instance=~\"$host\", zpool=~\"$pool\"}[$__rate_interval])",
+          "interval": "1m",
+          "legendFormat": "{{dataset}} read",
+          "refId": ""
+        },
+        {
+          "expr": "-rate(node_zfs_zpool_dataset_writes{instance=~\"$host\", zpool=~\"$pool\"}[$__rate_interval])",
+          "interval": "1m",
+          "legendFormat": "{{dataset}} write",
+          "refId": ""
+        }
+      ],
+      "title": "Dataset operations (read + / write -)",
+      "transparent": false,
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 67
+      },
+      "id": 0,
+      "panels": [],
+      "title": "ARC",
+      "type": "row"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 0,
+        "y": 68
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": []
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "expr": "node_zfs_arc_size{instance=~\"$host\"}",
+          "refId": ""
+        }
+      ],
+      "title": "ARC size",
+      "transparent": false,
+      "type": "stat"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 6,
+        "y": 68
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": []
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "expr": "node_zfs_arc_c_max{instance=~\"$host\"}",
+          "refId": ""
+        }
+      ],
+      "title": "ARC max",
+      "transparent": false,
+      "type": "stat"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 1,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": 0
+              },
+              {
+                "color": "yellow",
+                "value": 80
+              },
+              {
+                "color": "green",
+                "value": 90
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 12,
+        "y": 68
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": []
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "expr": "\n                100 * increase(node_zfs_arc_hits{instance=~\"$host\"}[$__range])\n                / (\n                    increase(node_zfs_arc_hits{instance=~\"$host\"}[$__range])\n                    + increase(node_zfs_arc_misses{instance=~\"$host\"}[$__range])\n                )\n                ",
+          "instant": true,
+          "range": false,
+          "refId": ""
+        }
+      ],
+      "title": "Hit ratio",
+      "transparent": false,
+      "type": "stat"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 18,
+        "y": 68
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": []
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "expr": "node_zfs_arc_l2_size{instance=~\"$host\"}",
+          "refId": ""
+        }
+      ],
+      "title": "L2ARC size",
+      "transparent": false,
+      "type": "stat"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 72
+      },
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "expr": "node_zfs_arc_size{instance=~\"$host\"}",
+          "interval": "1m",
+          "legendFormat": "size",
+          "refId": ""
+        },
+        {
+          "expr": "node_zfs_arc_c{instance=~\"$host\"}",
+          "interval": "1m",
+          "legendFormat": "target",
+          "refId": ""
+        },
+        {
+          "expr": "node_zfs_arc_c_max{instance=~\"$host\"}",
+          "interval": "1m",
+          "legendFormat": "max",
+          "refId": ""
+        }
+      ],
+      "title": "ARC size",
+      "transparent": false,
+      "type": "timeseries"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "max": 100.0,
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 72
+      },
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "expr": "\n                100 * rate(node_zfs_arc_hits{instance=~\"$host\"}[$__rate_interval])\n                / (\n                    rate(node_zfs_arc_hits{instance=~\"$host\"}[$__rate_interval])\n                    + rate(node_zfs_arc_misses{instance=~\"$host\"}[$__rate_interval])\n                )\n                ",
+          "interval": "1m",
+          "legendFormat": "hit ratio",
+          "refId": ""
+        }
+      ],
+      "title": "ARC hit ratio",
+      "transparent": false,
+      "type": "timeseries"
+    }
+  ],
+  "schemaVersion": 39,
+  "templating": {
+    "list": [
+      {
+        "allowCustomValue": true,
+        "auto": false,
+        "auto_count": 30,
+        "auto_min": "10s",
+        "includeAll": false,
+        "label": "host",
+        "multi": false,
+        "name": "host",
+        "query": "label_values(zfs_zpool_size_bytes, instance)",
+        "refresh": 2,
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "allowCustomValue": true,
+        "auto": false,
+        "auto_count": 30,
+        "auto_min": "10s",
+        "current": {
+          "selected": true,
+          "text": "All",
+          "value": "$__all"
+        },
+        "includeAll": true,
+        "label": "pool",
+        "multi": true,
+        "name": "pool",
+        "query": "label_values(zfs_zpool_size_bytes{instance=~\"$host\"}, zpool)",
+        "refresh": 2,
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      }
+    ]
+  },
+  "timezone": "browser",
+  "title": "ZFS - nas",
+  "uid": "zfs_nas"
+}
