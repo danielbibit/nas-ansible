@@ -1,6 +1,9 @@
 ---
 qbittorrent_enabled: false
 
+# Pinned until qbit_manage supports qBittorrent > 5.2.3, then set back to "latest"
+qbittorrent_version: "5.2.3"
+
 qbittorrent_uid: "{{ nas_docker_uid }}"
 qbittorrent_gid: "{{ nas_docker_gid }}"
 qbittorrent_timezone: "America/Sao_Paulo"
