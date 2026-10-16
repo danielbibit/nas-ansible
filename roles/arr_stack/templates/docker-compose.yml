@@ -96,7 +96,7 @@ services:
     restart: unless-stopped
 
   profilarr:
-      image: santiagosayshey/profilarr:beta
+      image: ghcr.io/dictionarry-hub/profilarr:latest
       container_name: profilarr
       ports:
           - '{{ arr_stack_profilarr_port }}:6868'
@@ -104,6 +104,8 @@ services:
           - '{{ arr_stack_profilarr_config_dir }}:/config'
       environment:
           - TZ={{ arr_stack_timezone }}
+          - AUTH=off
+          - ORIGIN=https://profilarr.{{ traefik_domain }}
       restart: unless-stopped
 
   autobrr:
@@ -124,6 +126,7 @@ services:
     restart: unless-stopped
     environment:
       - ASPNETCORE_URLS=http://+:9876
+      - DB_CONNECTION=sqlite
     ports:
       - "9876:9876"
     volumes:

@@ -11,11 +11,30 @@ docker image list --digests | awk '{print $1 "   " $3}' >> /home/nas/scripts/doc
 # Compute project list using docker compose ls (without jq)
 PROJECTS=$(docker compose ls | tail -n +2)
 
-# Pull new images using docker compose v2 and specifying file path
+# Pull images one service at a time, so a registry error (e.g. rate limit)
+# on one image doesn't interrupt the pulls of the whole project
+PULL_RETRIES=3
+PULL_RETRY_DELAY=60
+FAILED_PULLS=()
+
+pull_service() {
+    local project=$1 compose_path=$2 service=$3
+    for ((attempt=1; attempt<=PULL_RETRIES; attempt++)); do
+        if docker compose -p "$project" -f "$compose_path" pull --ignore-buildable "$service"; then
+            return 0
+        fi
+        echo "Pull of $project/$service failed (attempt $attempt/$PULL_RETRIES)"
+        [ "$attempt" -lt "$PULL_RETRIES" ] && sleep "$PULL_RETRY_DELAY"
+    done
+    return 1
+}
+
 echo -e '\nPulling new images...\n'
 while read -r project status compose_path; do
     echo "Pulling images for project $project from $compose_path"
-    docker compose -p $project -f $compose_path pull
+    for service in $(docker compose -p "$project" -f "$compose_path" config --services); do
+        pull_service "$project" "$compose_path" "$service" || FAILED_PULLS+=("$project/$service")
+    done
 done <<< "$PROJECTS"
 
 # Create zfs snapshot
@@ -49,3 +68,10 @@ if [ "$NUM_SNAPSHOTS" -gt 4 ]; then
 else
     echo "No snapshots to delete. Keeping all $NUM_SNAPSHOTS snapshots."
 fi
+
+# Report pull failures, those services are still running their old images
+if [ "${#FAILED_PULLS[@]}" -gt 0 ]; then
+    echo -e "\nERROR: failed to pull images for: ${FAILED_PULLS[*]}"
+    exit 1
+fi
+echo -e '\nAll images pulled successfully.'
