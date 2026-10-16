@@ -32,7 +32,7 @@ services:
 
 {% endif %}
   qbittorrent:
-    image: ghcr.io/linuxserver/qbittorrent
+    image: ghcr.io/linuxserver/qbittorrent:{{ qbittorrent_version }}
     container_name: qbittorrent
     environment:
       - PUID={{ qbittorrent_uid }}

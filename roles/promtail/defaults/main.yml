@@ -5,7 +5,7 @@ promtail_port: 9080
 promtail_dir: "{{ nas_docker_directory }}/promtail"
 promtail_config_dir: "/etc/promtail"
 promtail_cache_dir: "/var/cache/promtail"
-promtail_loki_target: "http://192.168.1.11:3100/loki/api/v1/push"
+promtail_loki_target: "http://192.168.18.18:3100/loki/api/v1/push"
 
 __promtail_arch_map:
   x86_64: 'amd64'

@@ -3,8 +3,20 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": "single",
-  "id": "node_nas_1",
   "panels": [
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 0,
+      "panels": [],
+      "title": "Overview",
+      "type": "row"
+    },
     {
       "fieldConfig": {
         "defaults": {
@@ -20,7 +32,7 @@
         "h": 4,
         "w": 4,
         "x": 0,
-        "y": 0
+        "y": 1
       },
       "options": {
         "colorMode": "value",
@@ -39,6 +51,8 @@
       "targets": [
         {
           "expr": "time() - node_boot_time_seconds{instance=~\"$host\"}",
+          "instant": true,
+          "range": false,
           "refId": ""
         }
       ],
@@ -52,11 +66,57 @@
           "max": 100.0,
           "min": 0.0,
           "thresholds": {
-            "mode": "percentage",
+            "mode": "absolute",
             "steps": [
               {
                 "color": "green",
+                "value": 0
+              },
+              {
+                "color": "yellow",
                 "value": 70
+              },
+              {
+                "color": "red",
+                "value": 90
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 4,
+        "y": 1
+      },
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "expr": "100 * (1 - avg(rate(node_cpu_seconds_total{mode=\"idle\", instance=~\"$host\"}[5m])))",
+          "instant": true,
+          "range": false,
+          "refId": ""
+        }
+      ],
+      "title": "CPU Usage",
+      "transparent": false,
+      "type": "gauge"
+    },
+    {
+      "description": "Memory used by applications, the ZFS ARC is excluded because it is released under pressure",
+      "fieldConfig": {
+        "defaults": {
+          "max": 100.0,
+          "min": 0.0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
               },
               {
                 "color": "yellow",
@@ -75,13 +135,15 @@
       "gridPos": {
         "h": 4,
         "w": 4,
-        "x": 4,
-        "y": 0
+        "x": 8,
+        "y": 1
       },
       "repeatDirection": "h",
       "targets": [
         {
-          "expr": "(node_memory_MemTotal_bytes{instance=~\"$host\"} - node_memory_MemAvailable_bytes{instance=~\"$host\"}) / node_memory_MemTotal_bytes{instance=~\"$host\"} * 100",
+          "expr": "100 * (node_memory_MemTotal_bytes{instance=~\"$host\"} - node_memory_MemAvailable_bytes{instance=~\"$host\"} - (node_zfs_arc_size{instance=~\"$host\"} or node_memory_MemTotal_bytes{instance=~\"$host\"} * 0)) / node_memory_MemTotal_bytes{instance=~\"$host\"}",
+          "instant": true,
+          "range": false,
           "refId": ""
         }
       ],
@@ -90,11 +152,26 @@
       "type": "gauge"
     },
     {
+      "description": "Load average divided by the number of CPUs, above 1 means tasks are waiting",
       "fieldConfig": {
         "defaults": {
-          "custom": {
-            "align": "left",
-            "inspect": false
+          "decimals": 2,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "yellow",
+                "value": 0.7
+              },
+              {
+                "color": "red",
+                "value": 1
+              }
+            ]
           }
         },
         "overrides": []
@@ -102,76 +179,49 @@
       "gridPos": {
         "h": 4,
         "w": 4,
-        "x": 8,
-        "y": 0
+        "x": 12,
+        "y": 1
       },
       "options": {
-        "cellHeight": "sm",
-        "footer": {
-          "countRows": false,
-          "reducer": [],
-          "show": false
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": []
         },
-        "frameIndex": 0,
-        "showHeader": false,
-        "showTypeIcons": false
+        "showPercentChange": false,
+        "textMode": "value_and_name",
+        "wideLayout": true
       },
       "repeatDirection": "h",
       "targets": [
         {
-          "expr": "node_load1{instance=~\"$host\"}",
-          "format": "table",
+          "expr": "node_load1{instance=~\"$host\"} / scalar(count(node_cpu_seconds_total{mode=\"idle\", instance=~\"$host\"}))",
           "instant": true,
+          "legendFormat": "1m",
           "range": false,
           "refId": ""
         },
         {
-          "expr": "node_load5{instance=~\"$host\"}",
-          "format": "table",
+          "expr": "node_load5{instance=~\"$host\"} / scalar(count(node_cpu_seconds_total{mode=\"idle\", instance=~\"$host\"}))",
           "instant": true,
+          "legendFormat": "5m",
           "range": false,
           "refId": ""
         },
         {
-          "expr": "node_load15{instance=~\"$host\"}",
-          "format": "table",
+          "expr": "node_load15{instance=~\"$host\"} / scalar(count(node_cpu_seconds_total{mode=\"idle\", instance=~\"$host\"}))",
           "instant": true,
+          "legendFormat": "15m",
           "range": false,
           "refId": ""
         }
       ],
-      "title": "System Load",
-      "transformations": [
-        {
-          "id": "merge",
-          "options": null
-        },
-        {
-          "id": "calculateField",
-          "options": {
-            "include": [
-              "Value #A",
-              "Value #B",
-              "Value #C"
-            ],
-            "mode": "reduceRow",
-            "reducer": "sum"
-          }
-        },
-        {
-          "id": "filterFieldsByName",
-          "options": {
-            "include": {
-              "names": [
-                "__name__",
-                "Total"
-              ]
-            }
-          }
-        }
-      ],
+      "title": "Load per CPU",
       "transparent": false,
-      "type": "table"
+      "type": "stat"
     },
     {
       "fieldConfig": {
@@ -182,6 +232,10 @@
               {
                 "color": "red",
                 "value": 0
+              },
+              {
+                "color": "yellow",
+                "value": 5368709120
               },
               {
                 "color": "green",
@@ -196,32 +250,8 @@
       "gridPos": {
         "h": 4,
         "w": 4,
-        "x": 12,
-        "y": 0
-      },
-      "repeatDirection": "h",
-      "targets": [
-        {
-          "expr": "node_filesystem_free_bytes{mountpoint=\"/\", instance=~\"$host\"}",
-          "refId": ""
-        }
-      ],
-      "title": "Free Disk root",
-      "transparent": false,
-      "type": "stat"
-    },
-    {
-      "fieldConfig": {
-        "defaults": {
-          "unit": "celsius"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 4,
-        "w": 4,
         "x": 16,
-        "y": 0
+        "y": 1
       },
       "options": {
         "colorMode": "value",
@@ -239,72 +269,385 @@
       "repeatDirection": "h",
       "targets": [
         {
-          "expr": "node_hwmon_temp_celsius{instance=~\"$host\", sensor=~\"temp1\"}",
+          "expr": "node_filesystem_avail_bytes{mountpoint=\"/\", instance=~\"$host\"}",
+          "instant": true,
+          "range": false,
           "refId": ""
         }
       ],
-      "title": "Temperature",
+      "title": "Root Free",
       "transparent": false,
       "type": "stat"
     },
     {
       "fieldConfig": {
         "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "yellow",
+                "value": 70
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
           "unit": "celsius"
         },
         "overrides": []
       },
       "gridPos": {
         "h": 4,
-        "w": 4,
+        "w": 2,
         "x": 20,
-        "y": 0
+        "y": 1
       },
       "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": false
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": []
         },
-        "tooltip": {
-          "mode": "single",
-          "sort": "asc"
-        }
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
       "repeatDirection": "h",
       "targets": [
         {
-          "expr": "node_hwmon_temp_celsius{instance=~\"$host\", sensor=~\"temp1\"}",
+          "expr": "max(node_hwmon_temp_celsius{instance=~\"$host\"})",
+          "instant": true,
+          "range": false,
           "refId": ""
         }
       ],
-      "title": "Temperature",
+      "title": "Max Temp",
       "transparent": false,
-      "type": "timeseries"
+      "type": "stat"
     },
     {
+      "description": "systemd units in failed state, listed in the System row",
       "fieldConfig": {
         "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 2,
+        "x": 22,
+        "y": 1
+      },
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": []
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "expr": "count(node_systemd_unit_state{state=\"failed\", instance=~\"$host\"} == 1) or vector(0)",
+          "instant": true,
+          "range": false,
+          "refId": ""
+        }
+      ],
+      "title": "Failed Units",
+      "transparent": false,
+      "type": "stat"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 5
+      },
+      "id": 0,
+      "panels": [],
+      "title": "CPU",
+      "type": "row"
+    },
+    {
+      "description": "iowait is time spent waiting on disks",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 30,
+            "stacking": {
+              "mode": "normal"
+            }
+          },
+          "max": 100.0,
+          "min": 0.0,
           "unit": "percent"
         },
         "overrides": []
       },
       "gridPos": {
-        "h": 10,
-        "w": 12,
+        "h": 9,
+        "w": 16,
         "x": 0,
-        "y": 4
+        "y": 6
       },
       "repeatDirection": "h",
       "targets": [
         {
-          "expr": "\n                100 * sum(\n                    rate(node_cpu_seconds_total{ mode=~\"system|user\", instance=~\"$host\" }[$__rate_interval])\n                )\n                /\n                count(\n                    node_cpu_seconds_total{ mode=\"user\", instance=~\"$host\" }\n                )\n                ",
+          "expr": "sum by (mode) (rate(node_cpu_seconds_total{mode!=\"idle\", instance=~\"$host\"}[$__rate_interval])) * 100 / scalar(count(node_cpu_seconds_total{mode=\"idle\", instance=~\"$host\"}))",
           "interval": "1m",
+          "legendFormat": "{{mode}}",
           "refId": ""
         }
       ],
-      "title": "CPU",
+      "title": "CPU Usage by Mode",
+      "transparent": false,
+      "type": "timeseries"
+    },
+    {
+      "description": "Share of time at least one task was waiting for a CPU",
+      "fieldConfig": {
+        "defaults": {
+          "min": 0.0,
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 8,
+        "x": 16,
+        "y": 6
+      },
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "expr": "rate(node_pressure_cpu_waiting_seconds_total{instance=~\"$host\"}[$__rate_interval]) * 100",
+          "interval": "1m",
+          "legendFormat": "waiting",
+          "refId": ""
+        }
+      ],
+      "title": "CPU Pressure",
+      "transparent": false,
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 15
+      },
+      "id": 0,
+      "panels": [],
+      "title": "Memory",
+      "type": "row"
+    },
+    {
+      "description": "Available includes page cache that can be reclaimed",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 30,
+            "stacking": {
+              "mode": "normal"
+            }
+          },
+          "min": 0.0,
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 16
+      },
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "expr": "(node_memory_MemTotal_bytes{instance=~\"$host\"} - node_memory_MemAvailable_bytes{instance=~\"$host\"} - (node_zfs_arc_size{instance=~\"$host\"} or node_memory_MemTotal_bytes{instance=~\"$host\"} * 0))",
+          "interval": "1m",
+          "legendFormat": "applications",
+          "refId": ""
+        },
+        {
+          "expr": "(node_zfs_arc_size{instance=~\"$host\"} or node_memory_MemTotal_bytes{instance=~\"$host\"} * 0)",
+          "interval": "1m",
+          "legendFormat": "ZFS ARC",
+          "refId": ""
+        },
+        {
+          "expr": "node_memory_MemAvailable_bytes{instance=~\"$host\"}",
+          "interval": "1m",
+          "legendFormat": "available",
+          "refId": ""
+        }
+      ],
+      "title": "Memory",
+      "transparent": false,
+      "type": "timeseries"
+    },
+    {
+      "description": "Waiting: some tasks stalled on memory, stalled: all tasks stalled on memory",
+      "fieldConfig": {
+        "defaults": {
+          "min": 0.0,
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 8,
+        "x": 12,
+        "y": 16
+      },
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "expr": "rate(node_pressure_memory_waiting_seconds_total{instance=~\"$host\"}[$__rate_interval]) * 100",
+          "interval": "1m",
+          "legendFormat": "waiting",
+          "refId": ""
+        },
+        {
+          "expr": "rate(node_pressure_memory_stalled_seconds_total{instance=~\"$host\"}[$__rate_interval]) * 100",
+          "interval": "1m",
+          "legendFormat": "stalled",
+          "refId": ""
+        }
+      ],
+      "title": "Memory Pressure",
+      "transparent": false,
+      "type": "timeseries"
+    },
+    {
+      "description": "Processes killed by the kernel for lack of memory in the selected time range",
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 4,
+        "x": 20,
+        "y": 16
+      },
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": []
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "expr": "increase(node_vmstat_oom_kill{instance=~\"$host\"}[$__range])",
+          "instant": true,
+          "range": false,
+          "refId": ""
+        }
+      ],
+      "title": "OOM Kills",
+      "transparent": false,
+      "type": "stat"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 25
+      },
+      "id": 0,
+      "panels": [],
+      "title": "Disks",
+      "type": "row"
+    },
+    {
+      "description": "Share of time the disk was busy, a single disk stuck near 100% is a sign of trouble",
+      "fieldConfig": {
+        "defaults": {
+          "max": 100.0,
+          "min": 0.0,
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 26
+      },
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "expr": "rate(node_disk_io_time_seconds_total{instance=~\"$host\", device=~\"sd.*|nvme.*|vd.*|hd.*\"}[$__rate_interval]) * 100 * on(instance, device) group_left(serial) node_disk_info{instance=~\"$host\"}",
+          "interval": "1m",
+          "legendFormat": "{{device}} {{serial}}",
+          "refId": ""
+        }
+      ],
+      "title": "Disk Utilisation",
       "transparent": false,
       "type": "timeseries"
     },
@@ -316,45 +659,194 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 10,
+        "h": 9,
         "w": 12,
         "x": 12,
-        "y": 4
+        "y": 26
       },
       "repeatDirection": "h",
       "targets": [
         {
-          "expr": "-sum(rate(node_disk_written_bytes_total{instance=~\"$host\"}[$__rate_interval]))",
+          "expr": "rate(node_disk_read_bytes_total{instance=~\"$host\", device=~\"sd.*|nvme.*|vd.*|hd.*\"}[$__rate_interval]) * on(instance, device) group_left(serial) node_disk_info{instance=~\"$host\"}",
           "interval": "1m",
+          "legendFormat": "{{device}} {{serial}} read",
           "refId": ""
         },
         {
-          "expr": "sum(rate(node_disk_read_bytes_total{instance=~\"$host\"}[$__rate_interval]))",
+          "expr": "-rate(node_disk_written_bytes_total{instance=~\"$host\", device=~\"sd.*|nvme.*|vd.*|hd.*\"}[$__rate_interval]) * on(instance, device) group_left(serial) node_disk_info{instance=~\"$host\"}",
           "interval": "1m",
+          "legendFormat": "{{device}} {{serial}} write",
           "refId": ""
         }
       ],
-      "title": "Disk IO",
+      "title": "Disk Throughput (read + / write -)",
       "transparent": false,
       "type": "timeseries"
     },
     {
       "fieldConfig": {
         "defaults": {
+          "min": 0.0,
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 35
+      },
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "expr": "(rate(node_disk_read_time_seconds_total{instance=~\"$host\", device=~\"sd.*|nvme.*|vd.*|hd.*\"}[$__rate_interval]) / rate(node_disk_reads_completed_total{instance=~\"$host\", device=~\"sd.*|nvme.*|vd.*|hd.*\"}[$__rate_interval])) * on(instance, device) group_left(serial) node_disk_info{instance=~\"$host\"}",
+          "interval": "1m",
+          "legendFormat": "{{device}} {{serial}}",
+          "refId": ""
+        }
+      ],
+      "title": "Disk Read Latency",
+      "transparent": false,
+      "type": "timeseries"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "min": 0.0,
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 35
+      },
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "expr": "(rate(node_disk_write_time_seconds_total{instance=~\"$host\", device=~\"sd.*|nvme.*|vd.*|hd.*\"}[$__rate_interval]) / rate(node_disk_writes_completed_total{instance=~\"$host\", device=~\"sd.*|nvme.*|vd.*|hd.*\"}[$__rate_interval])) * on(instance, device) group_left(serial) node_disk_info{instance=~\"$host\"}",
+          "interval": "1m",
+          "legendFormat": "{{device}} {{serial}}",
+          "refId": ""
+        }
+      ],
+      "title": "Disk Write Latency",
+      "transparent": false,
+      "type": "timeseries"
+    },
+    {
+      "description": "Waiting: some tasks stalled on I/O, stalled: all tasks stalled on I/O",
+      "fieldConfig": {
+        "defaults": {
+          "min": 0.0,
           "unit": "percent"
         },
         "overrides": []
       },
       "gridPos": {
-        "h": 10,
-        "w": 12,
+        "h": 8,
+        "w": 8,
         "x": 0,
-        "y": 14
+        "y": 44
       },
       "repeatDirection": "h",
       "targets": [
         {
-          "expr": "\n                100 - (\n                    node_filesystem_avail_bytes{\n                        device != \"tmpfs\",\n                        instance=~\"$host\"\n                    } * 100\n                ) /\n                node_filesystem_size_bytes{\n                    device != \"tmpfs\",\n                    instance=~\"$host\"\n                }\n                ",
+          "expr": "rate(node_pressure_io_waiting_seconds_total{instance=~\"$host\"}[$__rate_interval]) * 100",
+          "interval": "1m",
+          "legendFormat": "waiting",
+          "refId": ""
+        },
+        {
+          "expr": "rate(node_pressure_io_stalled_seconds_total{instance=~\"$host\"}[$__rate_interval]) * 100",
+          "interval": "1m",
+          "legendFormat": "stalled",
+          "refId": ""
+        }
+      ],
+      "title": "I/O Pressure",
+      "transparent": false,
+      "type": "timeseries"
+    },
+    {
+      "description": "ZFS datasets are on the ZFS dashboard",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Used"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "percent"
+              },
+              {
+                "id": "decimals",
+                "value": 1
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green",
+                      "value": null
+                    },
+                    {
+                      "color": "yellow",
+                      "value": 80
+                    },
+                    {
+                      "color": "red",
+                      "value": 90
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "basic",
+                  "type": "color-background"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 10,
+        "x": 8,
+        "y": 44
+      },
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "expr": "node_filesystem_size_bytes{instance=~\"$host\", fstype!~\"tmpfs|ramfs|overlay|squashfs|nsfs|zfs|fuse.*\", device!=\"tmpfs\"}",
+          "format": "table",
+          "instant": true,
+          "range": false,
+          "refId": ""
+        },
+        {
+          "expr": "node_filesystem_avail_bytes{instance=~\"$host\", fstype!~\"tmpfs|ramfs|overlay|squashfs|nsfs|zfs|fuse.*\", device!=\"tmpfs\"}",
+          "format": "table",
+          "instant": true,
+          "range": false,
+          "refId": ""
+        },
+        {
+          "expr": "100 * (1 - node_filesystem_avail_bytes{instance=~\"$host\", fstype!~\"tmpfs|ramfs|overlay|squashfs|nsfs|zfs|fuse.*\", device!=\"tmpfs\"} / node_filesystem_size_bytes{instance=~\"$host\", fstype!~\"tmpfs|ramfs|overlay|squashfs|nsfs|zfs|fuse.*\", device!=\"tmpfs\"})",
           "format": "table",
           "instant": true,
           "range": false,
@@ -364,21 +856,106 @@
       "title": "File Systems",
       "transformations": [
         {
-          "id": "filterFieldsByName",
+          "id": "merge",
+          "options": null
+        },
+        {
+          "id": "organize",
           "options": {
-            "include": {
-              "names": [
-                "device",
-                "fstype",
-                "mountpoint",
-                "Value"
-              ]
+            "excludeByName": {
+              "Time": true,
+              "__name__": true,
+              "instance": true,
+              "job": true
+            },
+            "indexByName": {
+              "device": 1,
+              "fstype": 2,
+              "mountpoint": 0
+            },
+            "renameByName": {
+              "Value #A": "Size",
+              "Value #B": "Available",
+              "Value #C": "Used",
+              "device": "Device",
+              "fstype": "Type",
+              "mountpoint": "Mount"
             }
           }
         }
       ],
       "transparent": false,
       "type": "table"
+    },
+    {
+      "description": "Linear forecast from the last 7 days, 0 or less means / fills up within 30 days",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": 0
+              },
+              {
+                "color": "yellow",
+                "value": 5368709120
+              },
+              {
+                "color": "green",
+                "value": 10737418240
+              }
+            ]
+          },
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 18,
+        "y": 44
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": []
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "expr": "predict_linear(node_filesystem_avail_bytes{mountpoint=\"/\", instance=~\"$host\"}[7d], 30 * 86400)",
+          "instant": true,
+          "range": false,
+          "refId": ""
+        }
+      ],
+      "title": "Root Free in 30 Days",
+      "transparent": false,
+      "type": "stat"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 52
+      },
+      "id": 0,
+      "panels": [],
+      "title": "Network",
+      "type": "row"
     },
     {
       "fieldConfig": {
@@ -388,29 +965,148 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 10,
-        "w": 12,
-        "x": 12,
-        "y": 14
+        "h": 9,
+        "w": 16,
+        "x": 0,
+        "y": 53
       },
       "repeatDirection": "h",
       "targets": [
         {
-          "expr": "rate(node_network_transmit_bytes_total{instance=~\"$host\"}[$__rate_interval])",
+          "expr": "rate(node_network_transmit_bytes_total{instance=~\"$host\", device!~\"lo|veth.*|docker.*|br.*|virbr.*|vmbr.*|tailscale.*|tap.*|fw.*\"}[$__rate_interval])",
           "interval": "1m",
-          "legendFormat": "{{device}}",
+          "legendFormat": "{{device}} transmit",
           "refId": ""
         },
         {
-          "expr": "-rate(node_network_receive_bytes_total{instance=~\"$host\"}[$__rate_interval])",
+          "expr": "-rate(node_network_receive_bytes_total{instance=~\"$host\", device!~\"lo|veth.*|docker.*|br.*|virbr.*|vmbr.*|tailscale.*|tap.*|fw.*\"}[$__rate_interval])",
           "interval": "1m",
-          "legendFormat": "{{device}}",
+          "legendFormat": "{{device}} receive",
           "refId": ""
         }
       ],
-      "title": "Network Usage",
+      "title": "Network Usage (transmit + / receive -)",
       "transparent": false,
       "type": "timeseries"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "min": 0.0,
+          "unit": "pps"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 8,
+        "x": 16,
+        "y": 53
+      },
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "expr": "rate(node_network_receive_errs_total{instance=~\"$host\", device!~\"lo|veth.*|docker.*|br.*|virbr.*|vmbr.*|tailscale.*|tap.*|fw.*\"}[$__rate_interval]) + rate(node_network_transmit_errs_total{instance=~\"$host\", device!~\"lo|veth.*|docker.*|br.*|virbr.*|vmbr.*|tailscale.*|tap.*|fw.*\"}[$__rate_interval])",
+          "interval": "1m",
+          "legendFormat": "{{device}} errors",
+          "refId": ""
+        },
+        {
+          "expr": "rate(node_network_receive_drop_total{instance=~\"$host\", device!~\"lo|veth.*|docker.*|br.*|virbr.*|vmbr.*|tailscale.*|tap.*|fw.*\"}[$__rate_interval]) + rate(node_network_transmit_drop_total{instance=~\"$host\", device!~\"lo|veth.*|docker.*|br.*|virbr.*|vmbr.*|tailscale.*|tap.*|fw.*\"}[$__rate_interval])",
+          "interval": "1m",
+          "legendFormat": "{{device}} drops",
+          "refId": ""
+        }
+      ],
+      "title": "Network Errors and Drops",
+      "transparent": false,
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 62
+      },
+      "id": 0,
+      "panels": [],
+      "title": "System",
+      "type": "row"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "unit": "celsius"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 16,
+        "x": 0,
+        "y": 63
+      },
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "expr": "node_hwmon_temp_celsius{instance=~\"$host\"} * on(instance, chip, sensor) group_left(label) node_hwmon_sensor_label{instance=~\"$host\"} or on(instance, chip, sensor) label_replace(node_hwmon_temp_celsius{instance=~\"$host\"}, \"label\", \"$1\", \"sensor\", \"(.*)\")",
+          "interval": "1m",
+          "legendFormat": "{{chip}} {{label}}",
+          "refId": ""
+        }
+      ],
+      "title": "Temperature",
+      "transparent": false,
+      "type": "timeseries"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "None"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 63
+      },
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "expr": "node_systemd_unit_state{state=\"failed\", instance=~\"$host\"} == 1",
+          "format": "table",
+          "instant": true,
+          "range": false,
+          "refId": ""
+        }
+      ],
+      "title": "Failed Units",
+      "transformations": [
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "include": {
+              "names": [
+                "name"
+              ]
+            }
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "renameByName": {
+              "name": "Unit"
+            }
+          }
+        }
+      ],
+      "transparent": false,
+      "type": "table"
     }
   ],
   "schemaVersion": 39,
@@ -434,5 +1130,6 @@
     ]
   },
   "timezone": "browser",
-  "title": "Node Stats - nas"
+  "title": "Node Stats - nas",
+  "uid": "aei8y7ipetnuoc"
 }

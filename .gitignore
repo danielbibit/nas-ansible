@@ -2,3 +2,4 @@
 roles/containers/files/compose/private
 inventories/*
 !inventories/example/
+__pycache__/

@@ -29,6 +29,58 @@
         mode: "0775"
       tags: grafana_dashboards
 
+    - name: Generate alert rules on host # noqa no-changed-when
+      ansible.builtin.command: "/bin/bash {{ playbook_dir }}/../scripts/generate_alerts.sh"
+      args:
+        chdir: "{{ playbook_dir }}/.."
+      delegate_to: 127.0.0.1
+      when: grafana_alerts_enabled
+      tags: grafana_alerts
+
+    - name: Make sure alerting provisioning directory exists
+      ansible.builtin.file:
+        path: '{{ grafana_data_directory }}/provisioning/alerting'
+        state: directory
+        owner: '{{ nas_docker_uid }}'
+        group: '{{ nas_docker_gid }}'
+        mode: "0775"
+      when: grafana_alerts_enabled
+      tags: grafana_alerts
+
+    - name: Copy alert rules
+      ansible.builtin.copy:
+        src: "{{ role_path }}/files/alerting/"
+        dest: '{{ grafana_data_directory }}/provisioning/alerting'
+        force: true
+        owner: '{{ nas_docker_uid }}'
+        group: '{{ nas_docker_gid }}'
+        mode: "0775"
+      when: grafana_alerts_enabled
+      notify: Restart grafana
+      tags: grafana_alerts
+
+    - name: Copy alert contact points and notification policies
+      ansible.builtin.template:
+        src: '{{ role_path }}/templates/alerting/{{ item }}'
+        dest: '{{ grafana_data_directory }}/provisioning/alerting/{{ item }}'
+        owner: '{{ nas_docker_uid }}'
+        group: '{{ nas_docker_gid }}'
+        mode: "0660"
+      loop:
+        - contact_points.yml
+        - policies.yml
+      when: grafana_alerts_enabled
+      notify: Restart grafana
+      tags: grafana_alerts
+
+    - name: Remove alerting provisioning
+      ansible.builtin.file:
+        path: '{{ grafana_data_directory }}/provisioning/alerting'
+        state: absent
+      when: not grafana_alerts_enabled
+      notify: Restart grafana
+      tags: grafana_alerts
+
 - name: Start stack
   when: grafana_enabled is true
   block:

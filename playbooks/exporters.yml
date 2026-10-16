@@ -3,12 +3,7 @@
   hosts: all
 
   roles:
-    - role: prometheus.prometheus.node_exporter
+    - role: alloy
       tags:
-        - node_exporter
-        - monitoring
-
-    - role: promtail
-      tags:
-        - promtail
+        - alloy
         - monitoring

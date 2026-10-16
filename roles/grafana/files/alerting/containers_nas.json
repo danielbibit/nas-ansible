@@ -1,0 +1,63 @@
+{
+  "apiVersion": 1,
+  "groups": [
+    {
+      "folder": "NAS",
+      "interval": "1m",
+      "name": "Containers",
+      "orgId": 1,
+      "rules": [
+        {
+          "annotations": {
+            "description": "{{ $labels.name }} restarted {{ $values.A.Value }} times in the last 15 minutes.",
+            "summary": "Container {{ $labels.name }} is restarting"
+          },
+          "condition": "B",
+          "data": [
+            {
+              "datasourceUid": "Ao-uhfy7k",
+              "model": {
+                "expr": "changes(container_start_time_seconds{name!=\"\"}[15m])",
+                "instant": true,
+                "range": false,
+                "refId": "A"
+              },
+              "refId": "A",
+              "relativeTimeRange": {
+                "from": 600,
+                "to": 0
+              }
+            },
+            {
+              "datasourceUid": "__expr__",
+              "model": {
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "params": [
+                        2
+                      ],
+                      "type": "gt"
+                    }
+                  }
+                ],
+                "expression": "A",
+                "refId": "B",
+                "type": "threshold"
+              },
+              "refId": "B"
+            }
+          ],
+          "execErrState": "Error",
+          "for": "0m",
+          "labels": {
+            "severity": "critical"
+          },
+          "noDataState": "OK",
+          "title": "Container restarting",
+          "uid": "containers_restart_loop"
+        }
+      ]
+    }
+  ]
+}

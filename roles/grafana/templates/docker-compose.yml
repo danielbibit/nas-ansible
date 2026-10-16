@@ -6,6 +6,14 @@ services:
     user: "{{ nas_docker_uid }}"
     environment:
       - "GF_AUTH_ANONYMOUS_ENABLED=true"
+      - "GF_SERVER_ROOT_URL={{ grafana_root_url }}"
+{% if grafana_alerts_enabled %}
+      - "GF_SMTP_ENABLED=true"
+      - "GF_SMTP_HOST={{ grafana_smtp_host }}"
+      - "GF_SMTP_USER={{ grafana_smtp_user }}"
+      - "GF_SMTP_PASSWORD={{ grafana_smtp_password }}"
+      - "GF_SMTP_FROM_ADDRESS={{ grafana_smtp_from }}"
+{% endif %}
     ports:
       - "{{ grafana_port }}:3000"
     volumes:

@@ -25,6 +25,51 @@
     name: zfs-zed
     enabled: true
 
+# Export ZFS metrics to node_exporter's textfile collector
+- name: Setup ZFS metrics
+  when: zfs_metrics_enabled is true
+  block:
+    - name: Make sure textfile directory exists
+      ansible.builtin.file:
+        path: "{{ zfs_textfile_directory }}"
+        state: directory
+        mode: "0755"
+
+    - name: Copy ZFS metrics script
+      ansible.builtin.template:
+        src: "{{ role_path }}/templates/zfs_metrics.py"
+        dest: /usr/local/bin/zfs_metrics.py
+        owner: root
+        group: root
+        mode: '0755'
+      register: _zfs_metrics_script
+
+    - name: Export ZFS metrics every minute
+      ansible.builtin.cron:
+        name: "Export ZFS metrics"
+        job: "/usr/local/bin/zfs_metrics.py"
+
+    - name: Export ZFS metrics now # noqa no-handler
+      ansible.builtin.command: /usr/local/bin/zfs_metrics.py
+      changed_when: false
+      when: _zfs_metrics_script.changed
+
+- name: Remove ZFS metrics
+  when: zfs_metrics_enabled is false
+  block:
+    - name: Remove ZFS metrics cron
+      ansible.builtin.cron:
+        name: "Export ZFS metrics"
+        state: absent
+
+    - name: Remove ZFS metrics files
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - /usr/local/bin/zfs_metrics.py
+        - "{{ zfs_textfile_directory }}/zfs.prom"
+
 ## HOW TO TEST ZED
 # systemctl status zfs-zed.service
 

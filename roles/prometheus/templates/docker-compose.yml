@@ -8,6 +8,8 @@ services:
       - "--storage.tsdb.path=/prometheus"
       - "--web.console.libraries=/usr/share/prometheus/console_libraries"
       - "--web.console.templates=/usr/share/prometheus/consoles"
+      # Hosts the NAS cannot reach push their metrics with Alloy
+      - "--web.enable-remote-write-receiver"
     ports:
       - "{{ prometheus_port }}:9090"
     volumes:

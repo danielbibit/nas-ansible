@@ -1,0 +1,3 @@
+---
+zfs_metrics_enabled: true
+zfs_textfile_directory: /var/lib/node_exporter

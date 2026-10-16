@@ -1,0 +1,363 @@
+{
+  "apiVersion": 1,
+  "groups": [
+    {
+      "folder": "NAS",
+      "interval": "1m",
+      "name": "Node",
+      "orgId": 1,
+      "rules": [
+        {
+          "annotations": {
+            "description": "Prometheus could not scrape job {{ $labels.job }} for more than 2 minutes.",
+            "summary": "{{ $labels.job }} on {{ $labels.instance }} is down"
+          },
+          "condition": "B",
+          "data": [
+            {
+              "datasourceUid": "Ao-uhfy7k",
+              "model": {
+                "expr": "up",
+                "instant": true,
+                "range": false,
+                "refId": "A"
+              },
+              "refId": "A",
+              "relativeTimeRange": {
+                "from": 600,
+                "to": 0
+              }
+            },
+            {
+              "datasourceUid": "__expr__",
+              "model": {
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "params": [
+                        1
+                      ],
+                      "type": "lt"
+                    }
+                  }
+                ],
+                "expression": "A",
+                "refId": "B",
+                "type": "threshold"
+              },
+              "refId": "B"
+            }
+          ],
+          "execErrState": "Error",
+          "for": "2m",
+          "labels": {
+            "severity": "critical"
+          },
+          "noDataState": "Alerting",
+          "title": "Scrape target down",
+          "uid": "node_target_down"
+        },
+        {
+          "annotations": {
+            "description": "No metrics from {{ $labels.instance }} for 5 minutes, the host or Alloy may be down.",
+            "summary": "{{ $labels.instance }} stopped pushing metrics"
+          },
+          "condition": "B",
+          "data": [
+            {
+              "datasourceUid": "Ao-uhfy7k",
+              "model": {
+                "expr": "count by (instance) (max_over_time(up{collector=\"alloy\"}[1d])) unless count by (instance) (count_over_time(up{collector=\"alloy\"}[5m]))",
+                "instant": true,
+                "range": false,
+                "refId": "A"
+              },
+              "refId": "A",
+              "relativeTimeRange": {
+                "from": 600,
+                "to": 0
+              }
+            },
+            {
+              "datasourceUid": "__expr__",
+              "model": {
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "params": [
+                        0
+                      ],
+                      "type": "gt"
+                    }
+                  }
+                ],
+                "expression": "A",
+                "refId": "B",
+                "type": "threshold"
+              },
+              "refId": "B"
+            }
+          ],
+          "execErrState": "Error",
+          "for": "0m",
+          "labels": {
+            "severity": "critical"
+          },
+          "noDataState": "OK",
+          "title": "Host stopped reporting",
+          "uid": "node_push_stopped"
+        },
+        {
+          "annotations": {
+            "description": "Memory used by applications, excluding the ZFS ARC, is {{ printf \"%.1f\" $values.A.Value }}%.",
+            "summary": "Memory usage on {{ $labels.instance }} is above 90%"
+          },
+          "condition": "B",
+          "data": [
+            {
+              "datasourceUid": "Ao-uhfy7k",
+              "model": {
+                "expr": "(node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes - (node_zfs_arc_size or node_memory_MemTotal_bytes * 0)) / node_memory_MemTotal_bytes * 100",
+                "instant": true,
+                "range": false,
+                "refId": "A"
+              },
+              "refId": "A",
+              "relativeTimeRange": {
+                "from": 600,
+                "to": 0
+              }
+            },
+            {
+              "datasourceUid": "__expr__",
+              "model": {
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "params": [
+                        90
+                      ],
+                      "type": "gt"
+                    }
+                  }
+                ],
+                "expression": "A",
+                "refId": "B",
+                "type": "threshold"
+              },
+              "refId": "B"
+            }
+          ],
+          "execErrState": "Error",
+          "for": "10m",
+          "labels": {
+            "severity": "warning"
+          },
+          "noDataState": "OK",
+          "title": "High memory usage",
+          "uid": "node_high_memory"
+        },
+        {
+          "annotations": {
+            "description": "Only {{ printf \"%.1f\" $values.A.Value }}% free on {{ $labels.mountpoint }} ({{ $labels.device }}).",
+            "summary": "{{ $labels.mountpoint }} on {{ $labels.instance }} has less than 10% free"
+          },
+          "condition": "B",
+          "data": [
+            {
+              "datasourceUid": "Ao-uhfy7k",
+              "model": {
+                "expr": "100 * node_filesystem_avail_bytes{fstype!~\"tmpfs|ramfs|overlay|squashfs|nsfs|fuse.*\"} / node_filesystem_size_bytes{fstype!~\"tmpfs|ramfs|overlay|squashfs|nsfs|fuse.*\"}",
+                "instant": true,
+                "range": false,
+                "refId": "A"
+              },
+              "refId": "A",
+              "relativeTimeRange": {
+                "from": 600,
+                "to": 0
+              }
+            },
+            {
+              "datasourceUid": "__expr__",
+              "model": {
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "params": [
+                        10
+                      ],
+                      "type": "lt"
+                    }
+                  }
+                ],
+                "expression": "A",
+                "refId": "B",
+                "type": "threshold"
+              },
+              "refId": "B"
+            }
+          ],
+          "execErrState": "Error",
+          "for": "10m",
+          "labels": {
+            "severity": "warning"
+          },
+          "noDataState": "OK",
+          "title": "Filesystem space low",
+          "uid": "node_filesystem_low"
+        },
+        {
+          "annotations": {
+            "description": "Only {{ printf \"%.1f\" $values.A.Value }}% free on {{ $labels.mountpoint }} ({{ $labels.device }}).",
+            "summary": "{{ $labels.mountpoint }} on {{ $labels.instance }} has less than 5% free"
+          },
+          "condition": "B",
+          "data": [
+            {
+              "datasourceUid": "Ao-uhfy7k",
+              "model": {
+                "expr": "100 * node_filesystem_avail_bytes{fstype!~\"tmpfs|ramfs|overlay|squashfs|nsfs|fuse.*\"} / node_filesystem_size_bytes{fstype!~\"tmpfs|ramfs|overlay|squashfs|nsfs|fuse.*\"}",
+                "instant": true,
+                "range": false,
+                "refId": "A"
+              },
+              "refId": "A",
+              "relativeTimeRange": {
+                "from": 600,
+                "to": 0
+              }
+            },
+            {
+              "datasourceUid": "__expr__",
+              "model": {
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "params": [
+                        5
+                      ],
+                      "type": "lt"
+                    }
+                  }
+                ],
+                "expression": "A",
+                "refId": "B",
+                "type": "threshold"
+              },
+              "refId": "B"
+            }
+          ],
+          "execErrState": "Error",
+          "for": "5m",
+          "labels": {
+            "severity": "critical"
+          },
+          "noDataState": "OK",
+          "title": "Filesystem almost full",
+          "uid": "node_filesystem_critical"
+        },
+        {
+          "annotations": {
+            "description": "Temperature is {{ printf \"%.1f\" $values.A.Value }}\u00b0C.",
+            "summary": "{{ $labels.chip }} on {{ $labels.instance }} is above 80\u00b0C"
+          },
+          "condition": "B",
+          "data": [
+            {
+              "datasourceUid": "Ao-uhfy7k",
+              "model": {
+                "expr": "node_hwmon_temp_celsius{sensor=\"temp1\"}",
+                "instant": true,
+                "range": false,
+                "refId": "A"
+              },
+              "refId": "A",
+              "relativeTimeRange": {
+                "from": 600,
+                "to": 0
+              }
+            },
+            {
+              "datasourceUid": "__expr__",
+              "model": {
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "params": [
+                        80
+                      ],
+                      "type": "gt"
+                    }
+                  }
+                ],
+                "expression": "A",
+                "refId": "B",
+                "type": "threshold"
+              },
+              "refId": "B"
+            }
+          ],
+          "execErrState": "Error",
+          "for": "5m",
+          "labels": {
+            "severity": "critical"
+          },
+          "noDataState": "OK",
+          "title": "High temperature",
+          "uid": "node_high_temperature"
+        },
+        {
+          "annotations": {
+            "description": "15 minute load per CPU is {{ printf \"%.2f\" $values.A.Value }}.",
+            "summary": "Load on {{ $labels.instance }} is above 1.5 per CPU"
+          },
+          "condition": "B",
+          "data": [
+            {
+              "datasourceUid": "Ao-uhfy7k",
+              "model": {
+                "expr": "node_load15 / on(instance) count by (instance) (node_cpu_seconds_total{mode=\"idle\"})",
+                "instant": true,
+                "range": false,
+                "refId": "A"
+              },
+              "refId": "A",
+              "relativeTimeRange": {
+                "from": 600,
+                "to": 0
+              }
+            },
+            {
+              "datasourceUid": "__expr__",
+              "model": {
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "params": [
+                        1.5
+                      ],
+                      "type": "gt"
+                    }
+                  }
+                ],
+                "expression": "A",
+                "refId": "B",
+                "type": "threshold"
+              },
+              "refId": "B"
+            }
+          ],
+          "execErrState": "Error",
+          "for": "15m",
+          "labels": {
+            "severity": "warning"
+          },
+          "noDataState": "OK",
+          "title": "High system load",
+          "uid": "node_high_load"
+        }
+      ]
+    }
+  ]
+}

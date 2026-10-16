@@ -1,0 +1,32 @@
+---
+# Grafana Alloy pushes metrics and logs to the NAS, for hosts the NAS cannot scrape
+alloy_enabled: true
+
+# Value of the instance label on metrics and the host label on logs
+alloy_instance: "{{ ansible_facts['hostname'] }}"
+
+# Push node_exporter metrics, not needed when Prometheus can scrape the host
+alloy_metrics_enabled: true
+# Prometheus needs --web.enable-remote-write-receiver
+alloy_prometheus_url: ""
+alloy_node_exporter_target: "localhost:9100"
+# Collect host metrics with Alloy's built-in node_exporter, false to scrape a separate one
+alloy_builtin_exporter: true
+# Stop and remove the standalone node_exporter when using the built-in one
+alloy_remove_node_exporter: true
+# node_exporter textfile collector directory, empty to disable
+alloy_textfile_directory: ""
+alloy_scrape_interval: 1m
+
+alloy_logs_enabled: true
+alloy_loki_url: ""
+alloy_log_paths: /var/log/*.log
+alloy_journal_max_age: 48h
+# Ship container logs when the host runs Docker
+alloy_docker_logs: true
+alloy_docker_socket: /var/run/docker.sock
+
+# Alloy replaces promtail for log shipping
+alloy_disable_promtail: true
+
+alloy_keyring: /etc/apt/keyrings/grafana.asc
