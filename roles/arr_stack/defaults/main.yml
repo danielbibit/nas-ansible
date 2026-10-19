@@ -4,6 +4,10 @@ arr_stack_puid: "{{ nas_docker_uid }}"
 arr_stack_pgid: "{{ nas_docker_gid }}"
 arr_stack_timezone: "America/Sao_Paulo"
 
+# Image tags, e.g. "4.0.20.3014-ls329". Updates can change auth behaviour, see arr_stack_disable_auth
+arr_stack_sonarr_version: "latest"
+arr_stack_radarr_version: "latest"
+
 arr_stack_sonarr_port: "8989"
 arr_stack_radarr_port: "7878"
 arr_stack_bazarr_port: "6767"
@@ -23,6 +27,10 @@ arr_stack_suggestarr_config_dir: "{{ nas_docker_directory }}/suggestarr"
 arr_stack_seerr_config_dir: "{{ nas_docker_directory }}/seerr"
 arr_stack_profilarr_config_dir: "{{ nas_docker_directory }}/profilarr"
 arr_stack_autobrr_config_dir: "{{ nas_docker_directory }}/autobrr"
+
+# Turn off the Sonarr and Radarr login, only safe while they are not public. Since Sonarr 4.0.19 and
+# Radarr 6.4.3 "Disabled for Local Addresses" asks for a login through Traefik, as it ignores X-Forwarded-For
+arr_stack_disable_auth: true
 
 arr_stack_series_dir: "{{ nas_library_dir }}"
 arr_stack_movies_dir: "{{ nas_library_dir }}"

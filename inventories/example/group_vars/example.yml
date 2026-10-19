@@ -99,6 +99,9 @@ tailscale_enabled: false
 tailscale_authkey:
 tailscale_routes:
 
+# Tailscale installed on the host (kernel mode) instead of, or next to, the container
+tailscale_native_enabled: false
+
 # === cloudflared ===
 cloudflared_enabled: false
 cloudflared_token:

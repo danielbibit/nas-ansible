@@ -133,6 +133,11 @@
         - networking
         - docker
 
+    - role: tailscale_native
+      tags:
+        - tailscale_native
+        - networking
+
     - role: qbittorrent
       tags:
         - qbittorrent
