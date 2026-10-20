@@ -1,0 +1,1230 @@
+{
+  "annotations": {},
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": "single",
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 0,
+      "panels": [],
+      "title": "Overview",
+      "type": "row"
+    },
+    {
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 0,
+        "y": 1
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": []
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "expr": "count(smartctl_device{instance=~\"$host\", device=~\"$disk\"})",
+          "instant": true,
+          "range": false,
+          "refId": ""
+        }
+      ],
+      "title": "Disks",
+      "transparent": false,
+      "type": "stat"
+    },
+    {
+      "description": "Disks whose overall self-assessment is not PASSED",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "transparent",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 4,
+        "y": 1
+      },
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": []
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "expr": "count(smartctl_device_smart_status{instance=~\"$host\", device=~\"$disk\"} == 0) or vector(0)",
+          "instant": true,
+          "range": false,
+          "refId": ""
+        }
+      ],
+      "title": "SMART failed",
+      "transparent": false,
+      "type": "stat"
+    },
+    {
+      "description": "Reallocated, pending or offline uncorrectable sectors above zero",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "transparent",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 8,
+        "y": 1
+      },
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": []
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "expr": "count(sum by (instance, device) (smartctl_device_attribute{instance=~\"$host\", device=~\"$disk\", attribute_id=\"5\", attribute_value_type=\"raw\"} or smartctl_device_attribute{instance=~\"$host\", device=~\"$disk\", attribute_id=\"197\", attribute_value_type=\"raw\"} or smartctl_device_attribute{instance=~\"$host\", device=~\"$disk\", attribute_id=\"198\", attribute_value_type=\"raw\"}) > 0) or vector(0)",
+          "instant": true,
+          "range": false,
+          "refId": ""
+        }
+      ],
+      "title": "Disks with bad sectors",
+      "transparent": false,
+      "type": "stat"
+    },
+    {
+      "description": "smartctl failed to read the disk (exit status bits 0-2)",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "transparent",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 12,
+        "y": 1
+      },
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": []
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "expr": "count(smartctl_device_smartctl_exit_status{instance=~\"$host\", device=~\"$disk\"} % 8 > 0) or vector(0)",
+          "instant": true,
+          "range": false,
+          "refId": ""
+        }
+      ],
+      "title": "Unreachable disks",
+      "transparent": false,
+      "type": "stat"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "yellow",
+                "value": 45
+              },
+              {
+                "color": "red",
+                "value": 50
+              }
+            ]
+          },
+          "unit": "celsius"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 16,
+        "y": 1
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": []
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "expr": "max(smartctl_device_temperature{instance=~\"$host\", device=~\"$disk\", temperature_type=\"current\"})",
+          "instant": true,
+          "range": false,
+          "refId": ""
+        }
+      ],
+      "title": "Hottest disk",
+      "transparent": false,
+      "type": "stat"
+    },
+    {
+      "description": "Power-on time, not age since purchase",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "yellow",
+                "value": 157788000.0
+              },
+              {
+                "color": "red",
+                "value": 220903200.0
+              }
+            ]
+          },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 20,
+        "y": 1
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": []
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "expr": "max(smartctl_device_power_on_seconds{instance=~\"$host\", device=~\"$disk\"})",
+          "instant": true,
+          "range": false,
+          "refId": ""
+        }
+      ],
+      "title": "Oldest disk",
+      "transparent": false,
+      "type": "stat"
+    },
+    {
+      "description": "SMART counters are lifetime values from the disk, ZFS errors are cumulative since the last zpool clear. Pending and offline uncorrectable sectors can drop back to zero once rewritten, check the history below.",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Disk"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 380
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Power on"
+            },
+            "properties": [
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "transparent",
+                      "value": 0
+                    },
+                    {
+                      "color": "yellow",
+                      "value": 157788000.0
+                    },
+                    {
+                      "color": "red",
+                      "value": 220903200.0
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "basic",
+                  "type": "color-background"
+                }
+              },
+              {
+                "id": "unit",
+                "value": "s"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "SMART"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "options": {
+                      "0": {
+                        "color": "red",
+                        "index": 0,
+                        "text": "FAILED"
+                      },
+                      "1": {
+                        "color": "green",
+                        "index": 1,
+                        "text": "PASSED"
+                      }
+                    },
+                    "type": "value"
+                  }
+                ]
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "basic",
+                  "type": "color-background"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Temp"
+            },
+            "properties": [
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "transparent",
+                      "value": 0
+                    },
+                    {
+                      "color": "yellow",
+                      "value": 45
+                    },
+                    {
+                      "color": "red",
+                      "value": 50
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "basic",
+                  "type": "color-background"
+                }
+              },
+              {
+                "id": "unit",
+                "value": "celsius"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Reallocated"
+            },
+            "properties": [
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "transparent",
+                      "value": 0
+                    },
+                    {
+                      "color": "red",
+                      "value": 1
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "basic",
+                  "type": "color-background"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Pending"
+            },
+            "properties": [
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "transparent",
+                      "value": 0
+                    },
+                    {
+                      "color": "red",
+                      "value": 1
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "basic",
+                  "type": "color-background"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Uncorrectable"
+            },
+            "properties": [
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "transparent",
+                      "value": 0
+                    },
+                    {
+                      "color": "red",
+                      "value": 1
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "basic",
+                  "type": "color-background"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "CRC errors"
+            },
+            "properties": [
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "transparent",
+                      "value": 0
+                    },
+                    {
+                      "color": "yellow",
+                      "value": 1
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "basic",
+                  "type": "color-background"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Load cycles"
+            },
+            "properties": [
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "transparent",
+                      "value": 0
+                    },
+                    {
+                      "color": "yellow",
+                      "value": 300000
+                    },
+                    {
+                      "color": "red",
+                      "value": 600000
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "basic",
+                  "type": "color-background"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "ZFS errors"
+            },
+            "properties": [
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "transparent",
+                      "value": 0
+                    },
+                    {
+                      "color": "red",
+                      "value": 1
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "basic",
+                  "type": "color-background"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 12,
+        "w": 24,
+        "x": 0,
+        "y": 5
+      },
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "reducer": [],
+          "show": false
+        },
+        "frameIndex": 0,
+        "showHeader": true,
+        "showTypeIcons": false,
+        "sortBy": [
+          {
+            "desc": false,
+            "displayName": "Pool"
+          }
+        ]
+      },
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "expr": "(smartctl_device_power_on_seconds{instance=~\"$host\", device=~\"$disk\"} * on(instance, device) group_left(model_name, serial_number) smartctl_device{instance=~\"$host\", device=~\"$disk\"}) * on(instance, device) group_left(zpool, parent) max by (instance, device, zpool, parent) (label_replace(zfs_vdev_state{instance=~\"$host\", leaf=\"true\"}, \"device\", \"$1\", \"vdev\", \"(.*)\")) or on(instance, device) (smartctl_device_power_on_seconds{instance=~\"$host\", device=~\"$disk\"} * on(instance, device) group_left(model_name, serial_number) smartctl_device{instance=~\"$host\", device=~\"$disk\"})",
+          "format": "table",
+          "instant": true,
+          "range": false,
+          "refId": "A"
+        },
+        {
+          "expr": "max by (instance, device) (smartctl_device_smart_status{instance=~\"$host\", device=~\"$disk\"})",
+          "format": "table",
+          "instant": true,
+          "range": false,
+          "refId": "B"
+        },
+        {
+          "expr": "max by (instance, device) (smartctl_device_temperature{instance=~\"$host\", device=~\"$disk\", temperature_type=\"current\"})",
+          "format": "table",
+          "instant": true,
+          "range": false,
+          "refId": "C"
+        },
+        {
+          "expr": "max by (instance, device) (smartctl_device_attribute{instance=~\"$host\", device=~\"$disk\", attribute_id=\"5\", attribute_value_type=\"raw\"})",
+          "format": "table",
+          "instant": true,
+          "range": false,
+          "refId": "D"
+        },
+        {
+          "expr": "max by (instance, device) (smartctl_device_attribute{instance=~\"$host\", device=~\"$disk\", attribute_id=\"197\", attribute_value_type=\"raw\"})",
+          "format": "table",
+          "instant": true,
+          "range": false,
+          "refId": "E"
+        },
+        {
+          "expr": "max by (instance, device) (smartctl_device_attribute{instance=~\"$host\", device=~\"$disk\", attribute_id=\"198\", attribute_value_type=\"raw\"})",
+          "format": "table",
+          "instant": true,
+          "range": false,
+          "refId": "F"
+        },
+        {
+          "expr": "max by (instance, device) (smartctl_device_attribute{instance=~\"$host\", device=~\"$disk\", attribute_id=\"199\", attribute_value_type=\"raw\"})",
+          "format": "table",
+          "instant": true,
+          "range": false,
+          "refId": "G"
+        },
+        {
+          "expr": "max by (instance, device) (smartctl_device_attribute{instance=~\"$host\", device=~\"$disk\", attribute_id=\"193\", attribute_value_type=\"raw\"})",
+          "format": "table",
+          "instant": true,
+          "range": false,
+          "refId": "H"
+        },
+        {
+          "expr": "max by (instance, device) (label_replace(zfs_vdev_read_errors{instance=~\"$host\", leaf=\"true\"}, \"device\", \"$1\", \"vdev\", \"(.*)\") + label_replace(zfs_vdev_write_errors{instance=~\"$host\", leaf=\"true\"}, \"device\", \"$1\", \"vdev\", \"(.*)\") + label_replace(zfs_vdev_checksum_errors{instance=~\"$host\", leaf=\"true\"}, \"device\", \"$1\", \"vdev\", \"(.*)\"))",
+          "format": "table",
+          "instant": true,
+          "range": false,
+          "refId": "I"
+        }
+      ],
+      "title": "Disks",
+      "transformations": [
+        {
+          "id": "merge",
+          "options": null
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "__name__": true,
+              "instance": true,
+              "job": true
+            },
+            "indexByName": {
+              "Value #A": 5,
+              "Value #B": 6,
+              "Value #C": 7,
+              "Value #D": 8,
+              "Value #E": 9,
+              "Value #F": 10,
+              "Value #G": 11,
+              "Value #H": 12,
+              "Value #I": 13,
+              "device": 0,
+              "model_name": 1,
+              "parent": 4,
+              "serial_number": 2,
+              "zpool": 3
+            },
+            "renameByName": {
+              "Value #A": "Power on",
+              "Value #B": "SMART",
+              "Value #C": "Temp",
+              "Value #D": "Reallocated",
+              "Value #E": "Pending",
+              "Value #F": "Uncorrectable",
+              "Value #G": "CRC errors",
+              "Value #H": "Load cycles",
+              "Value #I": "ZFS errors",
+              "device": "Disk",
+              "model_name": "Model",
+              "parent": "Vdev",
+              "serial_number": "Serial",
+              "zpool": "Pool"
+            }
+          }
+        }
+      ],
+      "transparent": false,
+      "type": "table"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 17
+      },
+      "id": 0,
+      "panels": [],
+      "title": "History",
+      "type": "row"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "unit": "celsius"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 18
+      },
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "expr": "smartctl_device_temperature{instance=~\"$host\", device=~\"$disk\", temperature_type=\"current\"}",
+          "interval": "5m",
+          "legendFormat": "{{device}}",
+          "refId": ""
+        }
+      ],
+      "title": "Temperature",
+      "transparent": false,
+      "type": "timeseries"
+    },
+    {
+      "description": "Reallocated + pending + offline uncorrectable sectors",
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 0,
+          "min": 0.0
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 18
+      },
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "expr": "sum by (instance, device) (smartctl_device_attribute{instance=~\"$host\", device=~\"$disk\", attribute_id=\"5\", attribute_value_type=\"raw\"} or smartctl_device_attribute{instance=~\"$host\", device=~\"$disk\", attribute_id=\"197\", attribute_value_type=\"raw\"} or smartctl_device_attribute{instance=~\"$host\", device=~\"$disk\", attribute_id=\"198\", attribute_value_type=\"raw\"})",
+          "interval": "5m",
+          "legendFormat": "{{device}}",
+          "refId": ""
+        }
+      ],
+      "title": "Bad sectors",
+      "transparent": false,
+      "type": "timeseries"
+    },
+    {
+      "description": "Errors on the SATA link, usually a bad cable, backplane slot or controller port",
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 0,
+          "min": 0.0
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 27
+      },
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "expr": "max by (device) (smartctl_device_attribute{instance=~\"$host\", device=~\"$disk\", attribute_id=\"199\", attribute_value_type=\"raw\"})",
+          "interval": "5m",
+          "legendFormat": "{{device}}",
+          "refId": ""
+        }
+      ],
+      "title": "Interface CRC errors",
+      "transparent": false,
+      "type": "timeseries"
+    },
+    {
+      "description": "Head parking, aggressive idle timers wear the drive out",
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 0,
+          "min": 0.0
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 27
+      },
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "expr": "max by (device) (increase(smartctl_device_attribute{instance=~\"$host\", device=~\"$disk\", attribute_id=\"193\", attribute_value_type=\"raw\"}[1d]))",
+          "interval": "5m",
+          "legendFormat": "{{device}}",
+          "refId": ""
+        }
+      ],
+      "title": "Load cycles per day",
+      "transparent": false,
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 36
+      },
+      "id": 0,
+      "panels": [],
+      "title": "SSD",
+      "type": "row"
+    },
+    {
+      "description": "Samsung Wear_Leveling_Count, normalized from 100 (new) to 0 (rated endurance reached)",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "yellow",
+                "value": 70
+              },
+              {
+                "color": "red",
+                "value": 90
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 8,
+        "x": 0,
+        "y": 37
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": []
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "expr": "100 - max by (device) (smartctl_device_attribute{instance=~\"$host\", device=~\"$disk\", attribute_id=\"177\", attribute_value_type=\"value\"})",
+          "instant": true,
+          "legendFormat": "{{device}}",
+          "range": false,
+          "refId": ""
+        }
+      ],
+      "title": "SSD wear",
+      "transparent": false,
+      "type": "stat"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 8,
+        "x": 8,
+        "y": 37
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": []
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "expr": "max by (device) (smartctl_device_attribute{instance=~\"$host\", device=~\"$disk\", attribute_id=\"241\", attribute_value_type=\"raw\"} * on(instance, device) group_left() smartctl_device_block_size{instance=~\"$host\", device=~\"$disk\", blocks_type=\"logical\"}) unless on(device) smartctl_device_rotation_rate{instance=~\"$host\", device=~\"$disk\"}",
+          "instant": true,
+          "legendFormat": "{{device}}",
+          "range": false,
+          "refId": ""
+        }
+      ],
+      "title": "SSD data written",
+      "transparent": false,
+      "type": "stat"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "min": 0.0,
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 8,
+        "x": 16,
+        "y": 37
+      },
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "expr": "max by (device) (increase(smartctl_device_attribute{instance=~\"$host\", device=~\"$disk\", attribute_id=\"241\", attribute_value_type=\"raw\"}[1d]) * on(instance, device) group_left() smartctl_device_block_size{instance=~\"$host\", device=~\"$disk\", blocks_type=\"logical\"}) unless on(device) smartctl_device_rotation_rate{instance=~\"$host\", device=~\"$disk\"}",
+          "interval": "5m",
+          "legendFormat": "{{device}}",
+          "refId": ""
+        }
+      ],
+      "title": "SSD writes per day",
+      "transparent": false,
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 42
+      },
+      "id": 0,
+      "panels": [],
+      "title": "Attributes",
+      "type": "row"
+    },
+    {
+      "description": "Raw values of some attributes are packed by the vendor, Seagate read/seek error rates and temperature raw values are not plain counts",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "ID"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 60
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Disk"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 380
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 16,
+        "w": 24,
+        "x": 0,
+        "y": 43
+      },
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "reducer": [],
+          "show": false
+        },
+        "frameIndex": 0,
+        "showHeader": true,
+        "showTypeIcons": false,
+        "sortBy": [
+          {
+            "desc": false,
+            "displayName": "Disk"
+          }
+        ]
+      },
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "expr": "max without (attribute_value_type, attribute_flags_long) (smartctl_device_attribute{instance=~\"$host\", device=~\"$disk\", attribute_value_type=\"value\"})",
+          "format": "table",
+          "instant": true,
+          "range": false,
+          "refId": "A"
+        },
+        {
+          "expr": "max without (attribute_value_type, attribute_flags_long) (smartctl_device_attribute{instance=~\"$host\", device=~\"$disk\", attribute_value_type=\"worst\"})",
+          "format": "table",
+          "instant": true,
+          "range": false,
+          "refId": "B"
+        },
+        {
+          "expr": "max without (attribute_value_type, attribute_flags_long) (smartctl_device_attribute{instance=~\"$host\", device=~\"$disk\", attribute_value_type=\"thresh\"})",
+          "format": "table",
+          "instant": true,
+          "range": false,
+          "refId": "C"
+        },
+        {
+          "expr": "max without (attribute_value_type, attribute_flags_long) (smartctl_device_attribute{instance=~\"$host\", device=~\"$disk\", attribute_value_type=\"raw\"})",
+          "format": "table",
+          "instant": true,
+          "range": false,
+          "refId": "D"
+        }
+      ],
+      "title": "All attributes",
+      "transformations": [
+        {
+          "id": "merge",
+          "options": null
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "__name__": true,
+              "instance": true,
+              "job": true
+            },
+            "indexByName": {
+              "Value #A": 4,
+              "Value #B": 5,
+              "Value #C": 6,
+              "Value #D": 7,
+              "attribute_flags_short": 3,
+              "attribute_id": 1,
+              "attribute_name": 2,
+              "device": 0
+            },
+            "renameByName": {
+              "Value #A": "Value",
+              "Value #B": "Worst",
+              "Value #C": "Threshold",
+              "Value #D": "Raw",
+              "attribute_flags_short": "Flags",
+              "attribute_id": "ID",
+              "attribute_name": "Attribute",
+              "device": "Disk"
+            }
+          }
+        }
+      ],
+      "transparent": false,
+      "type": "table"
+    }
+  ],
+  "schemaVersion": 39,
+  "templating": {
+    "list": [
+      {
+        "allowCustomValue": true,
+        "auto": false,
+        "auto_count": 30,
+        "auto_min": "10s",
+        "includeAll": false,
+        "label": "host",
+        "multi": false,
+        "name": "host",
+        "query": "label_values(smartctl_device, instance)",
+        "refresh": 2,
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "allowCustomValue": true,
+        "auto": false,
+        "auto_count": 30,
+        "auto_min": "10s",
+        "current": {
+          "selected": true,
+          "text": "All",
+          "value": "$__all"
+        },
+        "includeAll": true,
+        "label": "disk",
+        "multi": true,
+        "name": "disk",
+        "query": "label_values(smartctl_device{instance=~\"$host\"}, device)",
+        "refresh": 2,
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      }
+    ]
+  },
+  "timezone": "browser",
+  "title": "SMART - nas",
+  "uid": "smart_nas"
+}

@@ -1,0 +1,363 @@
+{
+  "apiVersion": 1,
+  "groups": [
+    {
+      "folder": "NAS",
+      "interval": "1m",
+      "name": "SMART",
+      "orgId": 1,
+      "rules": [
+        {
+          "annotations": {
+            "description": "The disk predicts its own failure. Replace it and check the pool it belongs to.",
+            "summary": "{{ $labels.device }} on {{ $labels.instance }} failed its SMART health check"
+          },
+          "condition": "B",
+          "data": [
+            {
+              "datasourceUid": "Ao-uhfy7k",
+              "model": {
+                "expr": "smartctl_device_smart_status",
+                "instant": true,
+                "range": false,
+                "refId": "A"
+              },
+              "refId": "A",
+              "relativeTimeRange": {
+                "from": 600,
+                "to": 0
+              }
+            },
+            {
+              "datasourceUid": "__expr__",
+              "model": {
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "params": [
+                        1
+                      ],
+                      "type": "lt"
+                    }
+                  }
+                ],
+                "expression": "A",
+                "refId": "B",
+                "type": "threshold"
+              },
+              "refId": "B"
+            }
+          ],
+          "execErrState": "Error",
+          "for": "0m",
+          "labels": {
+            "severity": "critical"
+          },
+          "noDataState": "OK",
+          "title": "SMART health failed",
+          "uid": "smart_failed"
+        },
+        {
+          "annotations": {
+            "description": "{{ $values.A.Value }} sectors were remapped in the last day, the disk surface is degrading.",
+            "summary": "{{ $labels.device }} on {{ $labels.instance }} reallocated new sectors"
+          },
+          "condition": "B",
+          "data": [
+            {
+              "datasourceUid": "Ao-uhfy7k",
+              "model": {
+                "expr": "max by (instance, device) (smartctl_device_attribute{attribute_id=\"5\", attribute_value_type=\"raw\"}) - min_over_time((max by (instance, device) (smartctl_device_attribute{attribute_id=\"5\", attribute_value_type=\"raw\"}))[1d:])",
+                "instant": true,
+                "range": false,
+                "refId": "A"
+              },
+              "refId": "A",
+              "relativeTimeRange": {
+                "from": 600,
+                "to": 0
+              }
+            },
+            {
+              "datasourceUid": "__expr__",
+              "model": {
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "params": [
+                        0
+                      ],
+                      "type": "gt"
+                    }
+                  }
+                ],
+                "expression": "A",
+                "refId": "B",
+                "type": "threshold"
+              },
+              "refId": "B"
+            }
+          ],
+          "execErrState": "Error",
+          "for": "0m",
+          "labels": {
+            "severity": "critical"
+          },
+          "noDataState": "OK",
+          "title": "Reallocated sectors growing",
+          "uid": "smart_reallocated_growing"
+        },
+        {
+          "annotations": {
+            "description": "{{ $values.A.Value }} sectors could not be read. A ZFS scrub rewrites them from the mirror, but a disk that grows bad sectors usually keeps growing them.",
+            "summary": "{{ $labels.device }} on {{ $labels.instance }} has unreadable sectors"
+          },
+          "condition": "B",
+          "data": [
+            {
+              "datasourceUid": "Ao-uhfy7k",
+              "model": {
+                "expr": "max by (instance, device) (max by (instance, device) (smartctl_device_attribute{attribute_id=\"197\", attribute_value_type=\"raw\"}) or max by (instance, device) (smartctl_device_attribute{attribute_id=\"198\", attribute_value_type=\"raw\"}))",
+                "instant": true,
+                "range": false,
+                "refId": "A"
+              },
+              "refId": "A",
+              "relativeTimeRange": {
+                "from": 600,
+                "to": 0
+              }
+            },
+            {
+              "datasourceUid": "__expr__",
+              "model": {
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "params": [
+                        0
+                      ],
+                      "type": "gt"
+                    }
+                  }
+                ],
+                "expression": "A",
+                "refId": "B",
+                "type": "threshold"
+              },
+              "refId": "B"
+            }
+          ],
+          "execErrState": "Error",
+          "for": "0m",
+          "labels": {
+            "severity": "warning"
+          },
+          "noDataState": "OK",
+          "title": "Unreadable sectors",
+          "uid": "smart_unreadable_sectors"
+        },
+        {
+          "annotations": {
+            "description": "{{ $values.A.Value }} CRC errors in the last hour, check the cable, backplane slot and controller port.",
+            "summary": "{{ $labels.device }} on {{ $labels.instance }} has new SATA CRC errors"
+          },
+          "condition": "B",
+          "data": [
+            {
+              "datasourceUid": "Ao-uhfy7k",
+              "model": {
+                "expr": "max by (instance, device) (smartctl_device_attribute{attribute_id=\"199\", attribute_value_type=\"raw\"}) - min_over_time((max by (instance, device) (smartctl_device_attribute{attribute_id=\"199\", attribute_value_type=\"raw\"}))[1h:])",
+                "instant": true,
+                "range": false,
+                "refId": "A"
+              },
+              "refId": "A",
+              "relativeTimeRange": {
+                "from": 600,
+                "to": 0
+              }
+            },
+            {
+              "datasourceUid": "__expr__",
+              "model": {
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "params": [
+                        0
+                      ],
+                      "type": "gt"
+                    }
+                  }
+                ],
+                "expression": "A",
+                "refId": "B",
+                "type": "threshold"
+              },
+              "refId": "B"
+            }
+          ],
+          "execErrState": "Error",
+          "for": "0m",
+          "labels": {
+            "severity": "warning"
+          },
+          "noDataState": "OK",
+          "title": "Disk interface CRC errors",
+          "uid": "smart_crc_errors"
+        },
+        {
+          "annotations": {
+            "description": "Disk temperature is {{ $values.A.Value }}\u00b0C.",
+            "summary": "{{ $labels.device }} on {{ $labels.instance }} is above 50\u00b0C"
+          },
+          "condition": "B",
+          "data": [
+            {
+              "datasourceUid": "Ao-uhfy7k",
+              "model": {
+                "expr": "smartctl_device_temperature{temperature_type=\"current\"}",
+                "instant": true,
+                "range": false,
+                "refId": "A"
+              },
+              "refId": "A",
+              "relativeTimeRange": {
+                "from": 600,
+                "to": 0
+              }
+            },
+            {
+              "datasourceUid": "__expr__",
+              "model": {
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "params": [
+                        50
+                      ],
+                      "type": "gt"
+                    }
+                  }
+                ],
+                "expression": "A",
+                "refId": "B",
+                "type": "threshold"
+              },
+              "refId": "B"
+            }
+          ],
+          "execErrState": "Error",
+          "for": "15m",
+          "labels": {
+            "severity": "warning"
+          },
+          "noDataState": "OK",
+          "title": "Disk temperature high",
+          "uid": "smart_high_temperature"
+        },
+        {
+          "annotations": {
+            "description": "smartctl exit status bits 0-2 are set, the disk may be missing or not responding.",
+            "summary": "smartctl cannot read {{ $labels.device }} on {{ $labels.instance }}"
+          },
+          "condition": "B",
+          "data": [
+            {
+              "datasourceUid": "Ao-uhfy7k",
+              "model": {
+                "expr": "smartctl_device_smartctl_exit_status % 8",
+                "instant": true,
+                "range": false,
+                "refId": "A"
+              },
+              "refId": "A",
+              "relativeTimeRange": {
+                "from": 600,
+                "to": 0
+              }
+            },
+            {
+              "datasourceUid": "__expr__",
+              "model": {
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "params": [
+                        0
+                      ],
+                      "type": "gt"
+                    }
+                  }
+                ],
+                "expression": "A",
+                "refId": "B",
+                "type": "threshold"
+              },
+              "refId": "B"
+            }
+          ],
+          "execErrState": "Error",
+          "for": "15m",
+          "labels": {
+            "severity": "warning"
+          },
+          "noDataState": "OK",
+          "title": "Disk not readable by smartctl",
+          "uid": "smart_unreadable_disk"
+        },
+        {
+          "annotations": {
+            "description": "Wear is at {{ $values.A.Value }}%, plan a replacement.",
+            "summary": "{{ $labels.device }} on {{ $labels.instance }} used over 80% of its rated endurance"
+          },
+          "condition": "B",
+          "data": [
+            {
+              "datasourceUid": "Ao-uhfy7k",
+              "model": {
+                "expr": "100 - smartctl_device_attribute{attribute_id=\"177\", attribute_value_type=\"value\"}",
+                "instant": true,
+                "range": false,
+                "refId": "A"
+              },
+              "refId": "A",
+              "relativeTimeRange": {
+                "from": 600,
+                "to": 0
+              }
+            },
+            {
+              "datasourceUid": "__expr__",
+              "model": {
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "params": [
+                        80
+                      ],
+                      "type": "gt"
+                    }
+                  }
+                ],
+                "expression": "A",
+                "refId": "B",
+                "type": "threshold"
+              },
+              "refId": "B"
+            }
+          ],
+          "execErrState": "Error",
+          "for": "0m",
+          "labels": {
+            "severity": "warning"
+          },
+          "noDataState": "OK",
+          "title": "SSD wear high",
+          "uid": "smart_ssd_wear"
+        }
+      ]
+    }
+  ]
+}
