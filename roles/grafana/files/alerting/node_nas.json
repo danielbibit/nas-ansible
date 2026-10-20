@@ -1,5 +1,11 @@
 {
   "apiVersion": 1,
+  "deleteRules": [
+    {
+      "orgId": 1,
+      "uid": "node_filesystem_low"
+    }
+  ],
   "groups": [
     {
       "folder": "NAS",
@@ -156,56 +162,6 @@
           "noDataState": "OK",
           "title": "High memory usage",
           "uid": "node_high_memory"
-        },
-        {
-          "annotations": {
-            "description": "Only {{ printf \"%.1f\" $values.A.Value }}% free on {{ $labels.mountpoint }} ({{ $labels.device }}).",
-            "summary": "{{ $labels.mountpoint }} on {{ $labels.instance }} has less than 10% free"
-          },
-          "condition": "B",
-          "data": [
-            {
-              "datasourceUid": "Ao-uhfy7k",
-              "model": {
-                "expr": "100 * node_filesystem_avail_bytes{fstype!~\"tmpfs|ramfs|overlay|squashfs|nsfs|fuse.*\"} / node_filesystem_size_bytes{fstype!~\"tmpfs|ramfs|overlay|squashfs|nsfs|fuse.*\"}",
-                "instant": true,
-                "range": false,
-                "refId": "A"
-              },
-              "refId": "A",
-              "relativeTimeRange": {
-                "from": 600,
-                "to": 0
-              }
-            },
-            {
-              "datasourceUid": "__expr__",
-              "model": {
-                "conditions": [
-                  {
-                    "evaluator": {
-                      "params": [
-                        10
-                      ],
-                      "type": "lt"
-                    }
-                  }
-                ],
-                "expression": "A",
-                "refId": "B",
-                "type": "threshold"
-              },
-              "refId": "B"
-            }
-          ],
-          "execErrState": "Error",
-          "for": "10m",
-          "labels": {
-            "severity": "warning"
-          },
-          "noDataState": "OK",
-          "title": "Filesystem space low",
-          "uid": "node_filesystem_low"
         },
         {
           "annotations": {

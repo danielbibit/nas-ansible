@@ -1058,6 +1058,322 @@
       "type": "row"
     },
     {
+      "description": "Raw values of the attributes WD and Seagate disks have in common, the same set as the monthly email report. Empty cells are attributes the disk does not report.",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Disk"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 380
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Temp"
+            },
+            "properties": [
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "transparent",
+                      "value": 0
+                    },
+                    {
+                      "color": "yellow",
+                      "value": 45
+                    },
+                    {
+                      "color": "red",
+                      "value": 50
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "basic",
+                  "type": "color-background"
+                }
+              },
+              {
+                "id": "unit",
+                "value": "celsius"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Spin retry"
+            },
+            "properties": [
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "transparent",
+                      "value": 0
+                    },
+                    {
+                      "color": "yellow",
+                      "value": 1
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "basic",
+                  "type": "color-background"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Reallocated"
+            },
+            "properties": [
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "transparent",
+                      "value": 0
+                    },
+                    {
+                      "color": "red",
+                      "value": 1
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "basic",
+                  "type": "color-background"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Pending"
+            },
+            "properties": [
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "transparent",
+                      "value": 0
+                    },
+                    {
+                      "color": "red",
+                      "value": 1
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "basic",
+                  "type": "color-background"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Offline uncorrectable"
+            },
+            "properties": [
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "transparent",
+                      "value": 0
+                    },
+                    {
+                      "color": "red",
+                      "value": 1
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "basic",
+                  "type": "color-background"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "UDMA CRC"
+            },
+            "properties": [
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "transparent",
+                      "value": 0
+                    },
+                    {
+                      "color": "yellow",
+                      "value": 1
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "basic",
+                  "type": "color-background"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Load cycles"
+            },
+            "properties": [
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "transparent",
+                      "value": 0
+                    },
+                    {
+                      "color": "yellow",
+                      "value": 300000
+                    },
+                    {
+                      "color": "red",
+                      "value": 600000
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "basic",
+                  "type": "color-background"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 12,
+        "w": 24,
+        "x": 0,
+        "y": 43
+      },
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "reducer": [],
+          "show": false
+        },
+        "frameIndex": 0,
+        "showHeader": true,
+        "showTypeIcons": false,
+        "sortBy": [
+          {
+            "desc": false,
+            "displayName": "Disk"
+          }
+        ]
+      },
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "expr": "label_replace(max by (device) (smartctl_device_temperature{instance=~\"$host\", device=~\"$disk\", temperature_type=\"current\"}), \"attribute\", \"Temp\", \"\", \"\") or label_replace(max by (device) (smartctl_device_attribute{instance=~\"$host\", device=~\"$disk\", attribute_id=\"9\", attribute_value_type=\"raw\"}), \"attribute\", \"Power on hours\", \"\", \"\") or label_replace(max by (device) (smartctl_device_attribute{instance=~\"$host\", device=~\"$disk\", attribute_id=\"4\", attribute_value_type=\"raw\"}), \"attribute\", \"Start/stop\", \"\", \"\") or label_replace(max by (device) (smartctl_device_attribute{instance=~\"$host\", device=~\"$disk\", attribute_id=\"12\", attribute_value_type=\"raw\"}), \"attribute\", \"Power cycles\", \"\", \"\") or label_replace(max by (device) (smartctl_device_attribute{instance=~\"$host\", device=~\"$disk\", attribute_id=\"193\", attribute_value_type=\"raw\"}), \"attribute\", \"Load cycles\", \"\", \"\") or label_replace(max by (device) (smartctl_device_attribute{instance=~\"$host\", device=~\"$disk\", attribute_id=\"10\", attribute_value_type=\"raw\"}), \"attribute\", \"Spin retry\", \"\", \"\") or label_replace(max by (device) (smartctl_device_attribute{instance=~\"$host\", device=~\"$disk\", attribute_id=\"5\", attribute_value_type=\"raw\"}), \"attribute\", \"Reallocated\", \"\", \"\") or label_replace(max by (device) (smartctl_device_attribute{instance=~\"$host\", device=~\"$disk\", attribute_id=\"197\", attribute_value_type=\"raw\"}), \"attribute\", \"Pending\", \"\", \"\") or label_replace(max by (device) (smartctl_device_attribute{instance=~\"$host\", device=~\"$disk\", attribute_id=\"198\", attribute_value_type=\"raw\"}), \"attribute\", \"Offline uncorrectable\", \"\", \"\") or label_replace(max by (device) (smartctl_device_attribute{instance=~\"$host\", device=~\"$disk\", attribute_id=\"199\", attribute_value_type=\"raw\"}), \"attribute\", \"UDMA CRC\", \"\", \"\")",
+          "format": "table",
+          "instant": true,
+          "range": false,
+          "refId": ""
+        }
+      ],
+      "title": "Attributes by disk",
+      "transformations": [
+        {
+          "id": "groupingToMatrix",
+          "options": {
+            "columnField": "attribute",
+            "rowField": "device",
+            "valueField": "Value"
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "indexByName": {
+              "Load cycles": 5,
+              "Offline uncorrectable": 9,
+              "Pending": 8,
+              "Power cycles": 4,
+              "Power on hours": 2,
+              "Reallocated": 7,
+              "Spin retry": 6,
+              "Start/stop": 3,
+              "Temp": 1,
+              "UDMA CRC": 10,
+              "device\\attribute": 0
+            },
+            "renameByName": {
+              "device\\attribute": "Disk"
+            }
+          }
+        }
+      ],
+      "transparent": false,
+      "type": "table"
+    },
+    {
       "description": "Raw values of some attributes are packed by the vendor, Seagate read/seek error rates and temperature raw values are not plain counts",
       "fieldConfig": {
         "defaults": {},
@@ -1092,7 +1408,7 @@
         "h": 16,
         "w": 24,
         "x": 0,
-        "y": 43
+        "y": 55
       },
       "options": {
         "cellHeight": "sm",

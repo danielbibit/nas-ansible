@@ -46,18 +46,6 @@ rules = [
     ),
 
     prometheus_rule(
-        uid='node_filesystem_low',
-        title='Filesystem space low',
-        query=f'100 * node_filesystem_avail_bytes{{{FILESYSTEM_FILTER}}} / node_filesystem_size_bytes{{{FILESYSTEM_FILTER}}}',
-        operator='lt',
-        threshold=10,
-        for_='10m',
-        severity='warning',
-        summary='{{ $labels.mountpoint }} on {{ $labels.instance }} has less than 10% free',
-        description='Only {{ printf "%.1f" $values.A.Value }}% free on {{ $labels.mountpoint }} ({{ $labels.device }}).',
-    ),
-
-    prometheus_rule(
         uid='node_filesystem_critical',
         title='Filesystem almost full',
         query=f'100 * node_filesystem_avail_bytes{{{FILESYSTEM_FILTER}}} / node_filesystem_size_bytes{{{FILESYSTEM_FILTER}}}',
@@ -95,4 +83,5 @@ rules = [
 ]
 
 if __name__ == '__main__':
-    print(encode_group('Node', rules))
+    # Removed rules, the 5% critical rule is enough warning for a NAS
+    print(encode_group('Node', rules, deleted_uids=['node_filesystem_low']))

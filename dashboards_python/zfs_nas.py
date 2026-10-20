@@ -129,7 +129,7 @@ builder = (
         gauge.Panel()
         .title('Capacity')
         .with_target(per_pool(f'100 * zfs_zpool_allocated_bytes{{{POOL}}} / zfs_zpool_size_bytes{{{POOL}}}'))
-        .thresholds(thresholds((0, 'green'), (80, 'yellow'), (90, 'red')))
+        .thresholds(thresholds((0, 'green'), (90, 'yellow'), (95, 'red')))
         .unit('percent')
         .min(0.0)
         .max(100.0)

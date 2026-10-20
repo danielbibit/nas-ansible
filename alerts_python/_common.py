@@ -72,15 +72,18 @@ def prometheus_rule(
     )
 
 
-def encode_group(name: str, rules: list[alerting.Rule]) -> str:
-    """Encode rules as a Grafana alerting provisioning file"""
+def encode_group(name: str, rules: list[alerting.Rule], deleted_uids: list[str] = ()) -> str:
+    """Encode rules as a Grafana alerting provisioning file
+
+    Grafana keeps provisioned rules that disappear from the file, list their uids in deleted_uids to remove them
+    """
     encoder = JSONEncoder(sort_keys=True, indent=2)
     built_rules = []
     for rule in rules:
         rule_json = encoder.default(rule.build())
         built_rules.append({k: v for k, v in rule_json.items() if k in PROVISIONING_RULE_KEYS})
 
-    return encoder.encode({
+    provisioning = {
         'apiVersion': 1,
         'groups': [{
             'orgId': 1,
@@ -89,4 +92,7 @@ def encode_group(name: str, rules: list[alerting.Rule]) -> str:
             'interval': EVALUATION_INTERVAL,
             'rules': built_rules,
         }]
-    })
+    }
+    if deleted_uids:
+        provisioning['deleteRules'] = [{'orgId': 1, 'uid': uid} for uid in deleted_uids]
+    return encoder.encode(provisioning)
