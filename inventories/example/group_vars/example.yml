@@ -43,9 +43,6 @@ cloudflare_ddns_api_key: token
 cloudflare_ddns_zone: domain
 cloudflare_ddns_subdomain: subdomain
 
-# === dex ===
-dex_enabled: true
-
 # === Monitoring ===
 grafana_enabled: true
 grafana_alerts_enabled: true
@@ -102,6 +99,9 @@ traefik_rules:
 tailscale_enabled: false
 tailscale_authkey:
 tailscale_routes:
+
+# Tailscale installed on the host (kernel mode) instead of, or next to, the container
+tailscale_native_enabled: false
 
 # === cloudflared ===
 cloudflared_enabled: false

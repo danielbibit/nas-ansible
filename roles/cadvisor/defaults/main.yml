@@ -1,4 +1,7 @@
 ---
 cadvisor_enabled: false
+
+# Pinned, runs privileged with the host root mounted. Images moved from gcr.io to ghcr.io in v0.53.0
+cadvisor_version: "v0.60.6"
 cadvisor_port: 8080
 cadvisor_public: false

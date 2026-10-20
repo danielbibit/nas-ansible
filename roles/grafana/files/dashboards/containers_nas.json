@@ -79,16 +79,9 @@
       "repeatDirection": "h",
       "targets": [
         {
-          "expr": "100 * sum(rate(container_cpu_system_seconds_total{name=~\"$container\"}[$__rate_interval])) by (name)",
-          "hide": true,
+          "expr": "100 * sum(rate(container_cpu_usage_seconds_total{name=~\"$container\"}[$__rate_interval])) by (name)",
           "interval": "1m",
           "legendFormat": "{{name}}",
-          "refId": ""
-        },
-        {
-          "expr": "100 * sum(rate(dex_cpu_utilization_seconds_total{container_name=~\"$container\"}[$__rate_interval])) by (container_name)",
-          "interval": "1m",
-          "legendFormat": "{{container_name}}",
           "refId": ""
         }
       ],

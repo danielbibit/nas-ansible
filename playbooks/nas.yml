@@ -139,6 +139,11 @@
         - networking
         - docker
 
+    - role: tailscale_native
+      tags:
+        - tailscale_native
+        - networking
+
     - role: qbittorrent
       tags:
         - qbittorrent
@@ -162,12 +167,6 @@
     - role: arr_stack
       tags:
         - arr_stack
-        - docker
-
-    - role: dex
-      tags:
-        - dex
-        - monitoring
         - docker
 
     - role: jellyfin

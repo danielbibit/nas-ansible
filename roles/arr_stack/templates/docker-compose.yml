@@ -1,12 +1,16 @@
 ---
 services:
   sonarr:
-    image: ghcr.io/linuxserver/sonarr:latest
+    image: "ghcr.io/linuxserver/sonarr:{{ arr_stack_sonarr_version }}"
     container_name: sonarr
     environment:
       - PUID={{ arr_stack_puid }}
       - PGID={{ arr_stack_pgid }}
       - TZ={{ arr_stack_timezone }}
+{% if arr_stack_disable_auth %}
+      - SONARR__AUTH__METHOD=External
+      - SONARR__AUTH__REQUIRED=Enabled
+{% endif %}
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - '{{ arr_stack_sonarr_config_dir }}:/config'
@@ -18,12 +22,16 @@ services:
     restart: unless-stopped
 
   radarr:
-    image: ghcr.io/linuxserver/radarr:latest
+    image: "ghcr.io/linuxserver/radarr:{{ arr_stack_radarr_version }}"
     container_name: radarr
     environment:
       - PUID={{ arr_stack_puid }}
       - PGID={{ arr_stack_pgid }}
       - TZ={{ arr_stack_timezone }}
+{% if arr_stack_disable_auth %}
+      - RADARR__AUTH__METHOD=External
+      - RADARR__AUTH__REQUIRED=Enabled
+{% endif %}
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - '{{ arr_stack_radarr_config_dir }}:/config'

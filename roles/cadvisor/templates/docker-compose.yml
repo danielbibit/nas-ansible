@@ -1,7 +1,7 @@
 ---
 services:
   cadvisor:
-    image: gcr.io/cadvisor/cadvisor:latest
+    image: "ghcr.io/google/cadvisor:{{ cadvisor_version }}"
     privileged: true
     container_name: cadvisor
     ports:
@@ -13,7 +13,7 @@ services:
       - /var/lib/docker/:/var/lib/docker:ro
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
     command:
-      - '-housekeeping_interval=10s'
+      - '-housekeeping_interval=30s'
       # Need to expose cpu metrics, not working on cgroups v2
       - '-enable_load_reader=false'
     restart: "always"
