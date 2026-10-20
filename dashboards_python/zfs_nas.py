@@ -64,7 +64,7 @@ def color_background():
     )
 
 
-def organize(rename, exclude=('Time', '__name__', 'instance', 'job', 'leaf')):
+def organize(rename, exclude=('Time', '__name__', 'instance', 'job', 'collector', 'leaf')):
     return dashboard_model.DataTransformerConfig(
         id_val='organize',
         options={
@@ -73,6 +73,21 @@ def organize(rename, exclude=('Time', '__name__', 'instance', 'job', 'leaf')):
         }
     )
 
+
+# One query with a column label per metric, pivoted into a table by groupingToMatrix,
+# merging one query per metric left each dataset split over several rows
+DATASET_COLUMNS = {
+    'Used': 'zfs_dataset_used_bytes',
+    'Referenced': 'zfs_dataset_referenced_bytes',
+    'Available': 'zfs_dataset_available_bytes',
+    'Snapshots size': 'zfs_dataset_used_by_snapshots_bytes',
+    'Snapshots': 'zfs_dataset_snapshots',
+    'Compression': 'zfs_dataset_compress_ratio',
+}
+DATASET_TABLE = ' or '.join(
+    f'label_replace(max by (dataset) ({metric}{{{POOL}}}), "column", "{name}", "", "")'
+    for name, metric in DATASET_COLUMNS.items()
+)
 
 builder = (
     dashboard.Dashboard('ZFS - nas')
@@ -231,13 +246,13 @@ builder = (
         .description('Error counters are cumulative since the last zpool clear')
         .with_target(instant_table(
             f'zfs_vdev_read_errors{{{LEAF}}} * on(instance, zpool, vdev) group_left(state) zfs_vdev_state{{{LEAF}}}'
-        ))
+        ).ref_id('A'))
         .with_target(instant_table(
             f'zfs_vdev_write_errors{{{LEAF}}} * on(instance, zpool, vdev) group_left(state) zfs_vdev_state{{{LEAF}}}'
-        ))
+        ).ref_id('B'))
         .with_target(instant_table(
             f'zfs_vdev_checksum_errors{{{LEAF}}} * on(instance, zpool, vdev) group_left(state) zfs_vdev_state{{{LEAF}}}'
-        ))
+        ).ref_id('C'))
         .with_transformation(dashboard_model.DataTransformerConfig(id_val='merge'))
         .with_transformation(organize({
             'zpool': 'Pool',
@@ -284,23 +299,18 @@ builder = (
         table.Panel()
         .title('Datasets')
         .description('Used includes children and snapshots, referenced is the data of the dataset itself')
-        .with_target(instant_table(f'zfs_dataset_used_bytes{{{POOL}}}'))
-        .with_target(instant_table(f'zfs_dataset_referenced_bytes{{{POOL}}}'))
-        .with_target(instant_table(f'zfs_dataset_available_bytes{{{POOL}}}'))
-        .with_target(instant_table(f'zfs_dataset_used_by_snapshots_bytes{{{POOL}}}'))
-        .with_target(instant_table(f'zfs_dataset_snapshots{{{POOL}}}'))
-        .with_target(instant_table(f'zfs_dataset_compress_ratio{{{POOL}}}'))
-        .with_transformation(dashboard_model.DataTransformerConfig(id_val='merge'))
-        .with_transformation(organize({
-            'zpool': 'Pool',
-            'dataset': 'Dataset',
-            'Value #A': 'Used',
-            'Value #B': 'Referenced',
-            'Value #C': 'Available',
-            'Value #D': 'Snapshots size',
-            'Value #E': 'Snapshots',
-            'Value #F': 'Compression',
-        }))
+        .with_target(instant_table(DATASET_TABLE).ref_id('A'))
+        .with_transformation(dashboard_model.DataTransformerConfig(
+            id_val='groupingToMatrix',
+            options={'rowField': 'dataset', 'columnField': 'column', 'valueField': 'Value'},
+        ))
+        .with_transformation(dashboard_model.DataTransformerConfig(
+            id_val='organize',
+            options={
+                'renameByName': {'dataset\\column': 'Dataset'},
+                'indexByName': {name: i for i, name in enumerate(['dataset\\column', *DATASET_COLUMNS])},
+            },
+        ))
         .unit('bytes')
         .override_by_name('Snapshots', [dashboard_model.DynamicConfigValue(id_val='unit', value='none')])
         .override_by_name('Compression', [

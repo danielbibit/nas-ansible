@@ -621,21 +621,21 @@
           "format": "table",
           "instant": true,
           "range": false,
-          "refId": ""
+          "refId": "A"
         },
         {
           "expr": "zfs_vdev_write_errors{instance=~\"$host\", zpool=~\"$pool\", leaf=\"true\"} * on(instance, zpool, vdev) group_left(state) zfs_vdev_state{instance=~\"$host\", zpool=~\"$pool\", leaf=\"true\"}",
           "format": "table",
           "instant": true,
           "range": false,
-          "refId": ""
+          "refId": "B"
         },
         {
           "expr": "zfs_vdev_checksum_errors{instance=~\"$host\", zpool=~\"$pool\", leaf=\"true\"} * on(instance, zpool, vdev) group_left(state) zfs_vdev_state{instance=~\"$host\", zpool=~\"$pool\", leaf=\"true\"}",
           "format": "table",
           "instant": true,
           "range": false,
-          "refId": ""
+          "refId": "C"
         }
       ],
       "title": "Devices",
@@ -650,6 +650,7 @@
             "excludeByName": {
               "Time": true,
               "__name__": true,
+              "collector": true,
               "instance": true,
               "job": true,
               "leaf": true
@@ -765,73 +766,37 @@
       "repeatDirection": "h",
       "targets": [
         {
-          "expr": "zfs_dataset_used_bytes{instance=~\"$host\", zpool=~\"$pool\"}",
+          "expr": "label_replace(max by (dataset) (zfs_dataset_used_bytes{instance=~\"$host\", zpool=~\"$pool\"}), \"column\", \"Used\", \"\", \"\") or label_replace(max by (dataset) (zfs_dataset_referenced_bytes{instance=~\"$host\", zpool=~\"$pool\"}), \"column\", \"Referenced\", \"\", \"\") or label_replace(max by (dataset) (zfs_dataset_available_bytes{instance=~\"$host\", zpool=~\"$pool\"}), \"column\", \"Available\", \"\", \"\") or label_replace(max by (dataset) (zfs_dataset_used_by_snapshots_bytes{instance=~\"$host\", zpool=~\"$pool\"}), \"column\", \"Snapshots size\", \"\", \"\") or label_replace(max by (dataset) (zfs_dataset_snapshots{instance=~\"$host\", zpool=~\"$pool\"}), \"column\", \"Snapshots\", \"\", \"\") or label_replace(max by (dataset) (zfs_dataset_compress_ratio{instance=~\"$host\", zpool=~\"$pool\"}), \"column\", \"Compression\", \"\", \"\")",
           "format": "table",
           "instant": true,
           "range": false,
-          "refId": ""
-        },
-        {
-          "expr": "zfs_dataset_referenced_bytes{instance=~\"$host\", zpool=~\"$pool\"}",
-          "format": "table",
-          "instant": true,
-          "range": false,
-          "refId": ""
-        },
-        {
-          "expr": "zfs_dataset_available_bytes{instance=~\"$host\", zpool=~\"$pool\"}",
-          "format": "table",
-          "instant": true,
-          "range": false,
-          "refId": ""
-        },
-        {
-          "expr": "zfs_dataset_used_by_snapshots_bytes{instance=~\"$host\", zpool=~\"$pool\"}",
-          "format": "table",
-          "instant": true,
-          "range": false,
-          "refId": ""
-        },
-        {
-          "expr": "zfs_dataset_snapshots{instance=~\"$host\", zpool=~\"$pool\"}",
-          "format": "table",
-          "instant": true,
-          "range": false,
-          "refId": ""
-        },
-        {
-          "expr": "zfs_dataset_compress_ratio{instance=~\"$host\", zpool=~\"$pool\"}",
-          "format": "table",
-          "instant": true,
-          "range": false,
-          "refId": ""
+          "refId": "A"
         }
       ],
       "title": "Datasets",
       "transformations": [
         {
-          "id": "merge",
-          "options": null
+          "id": "groupingToMatrix",
+          "options": {
+            "columnField": "column",
+            "rowField": "dataset",
+            "valueField": "Value"
+          }
         },
         {
           "id": "organize",
           "options": {
-            "excludeByName": {
-              "Time": true,
-              "__name__": true,
-              "instance": true,
-              "job": true,
-              "leaf": true
+            "indexByName": {
+              "Available": 3,
+              "Compression": 6,
+              "Referenced": 2,
+              "Snapshots": 5,
+              "Snapshots size": 4,
+              "Used": 1,
+              "dataset\\column": 0
             },
             "renameByName": {
-              "Value #A": "Used",
-              "Value #B": "Referenced",
-              "Value #C": "Available",
-              "Value #D": "Snapshots size",
-              "Value #E": "Snapshots",
-              "Value #F": "Compression",
-              "dataset": "Dataset",
-              "zpool": "Pool"
+              "dataset\\column": "Dataset"
             }
           }
         }
