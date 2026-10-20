@@ -25,3 +25,11 @@ scrape_configs:
     scheme: https
     static_configs:
       - targets: ['{{ prometheus_hass_target }}']
+{% if smartctl_exporter_enabled | default(false) %}
+
+  - job_name: 'nas_smartctl'
+    static_configs:
+      - targets: ['smartctl_exporter:9633']
+        labels:
+          instance: 'nas'
+{% endif %}

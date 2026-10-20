@@ -52,6 +52,7 @@ grafana_alerts_enabled: true
 node_exporter_enabled: true
 prometheus_enabled: true
 cadvisor_enabled: true
+smartctl_exporter_enabled: true
 
 # === alloy ===
 # Ships logs to Loki, set alloy_metrics_enabled and alloy_prometheus_url to push metrics too

@@ -1,0 +1,23 @@
+---
+services:
+  smartctl_exporter:
+    image: "prometheuscommunity/smartctl-exporter:{{ smartctl_exporter_version }}"
+    container_name: smartctl_exporter
+    # smartctl needs root and raw device access, ATA commands are blocked otherwise
+    privileged: true
+    user: root
+    volumes:
+      # by-id symlinks are created by udev on the host, not inside the container
+      - /dev/disk:/dev/disk:ro
+    command:
+      - "--smartctl.interval={{ smartctl_exporter_interval }}"
+      # Stable names that match the ZFS vdev names, sdX changes between boots
+      - "--smartctl.scan-device-type=by-id"
+      # Do not wake disks in standby
+      - "--smartctl.powermode-check=standby"
+    restart: "unless-stopped"
+
+networks:
+  default:
+    name: nas
+    external: true

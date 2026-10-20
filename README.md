@@ -62,10 +62,11 @@ The following are backed up:
 #### NAS
 * Smartmon disk monitoring with daily tests and monthly email report
 * ZFS monitoring - Pool, disk, scrub and dataset metrics
+* smartctl_exporter - SMART metrics for every disk, scraped by Prometheus
 * Prometheus - Receives the metrics pushed by Alloy
 * Loki - Receives the logs pushed by Alloy
-* Grafana - Dashboards for nodes, containers and ZFS
-* Grafana - Email alerts for nodes and containers
+* Grafana - Dashboards for nodes, containers, ZFS and SMART
+* Grafana - Email alerts for nodes, containers and SMART
 
 Dashboards and alerts are written in Python with the
 [Grafana Foundation SDK](https://github.com/grafana/grafana-foundation-sdk),
