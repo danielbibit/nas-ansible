@@ -118,6 +118,29 @@ HDD = f'smartctl_device_rotation_rate{{{DEV}}}'
 # Sectors the disk could not read (pending, offline uncorrectable) or had to remap (reallocated)
 BAD_SECTORS = f'sum by (instance, device) ({attribute(5)} or {attribute(197)} or {attribute(198)})'
 
+# Columns of the attributes by disk table, keyed by attribute id because vendors name some
+# attributes differently (Samsung calls 199 CRC_Error_Count, WD and Seagate UDMA_CRC_Error_Count)
+COMMON_IDS = {
+    'Power on hours': 9,
+    'Start/stop': 4,
+    'Power cycles': 12,
+    'Load cycles': 193,
+    'Spin retry': 10,
+    'Reallocated': 5,
+    'Pending': 197,
+    'Offline uncorrectable': 198,
+    'UDMA CRC': 199,
+}
+COMMON_COLUMNS = ['Temp', *COMMON_IDS]
+# Seagate packs extra values into the raw temperature attribute, the exporter's temperature is clean
+COMMON_ATTRIBUTES = ' or '.join(
+    f'label_replace(max by (device) ({expr}), "attribute", "{name}", "", "")'
+    for name, expr in [
+        ('Temp', f'smartctl_device_temperature{{{DEV}, temperature_type="current"}}'),
+        *((name, attribute(attribute_id)) for name, attribute_id in COMMON_IDS.items()),
+    ]
+)
+
 builder = (
     dashboard.Dashboard('SMART - nas')
     .uid('smart_nas')
@@ -381,6 +404,38 @@ builder = (
 
     # === Attributes ===
     .with_row(dashboard.Row('Attributes'))
+
+    .with_panel(
+        table.Panel()
+        .title('Attributes by disk')
+        .description(
+            'Raw values of the attributes WD and Seagate disks have in common, the same set as the monthly email report. '
+            'Empty cells are attributes the disk does not report.'
+        )
+        .with_target(instant_table(COMMON_ATTRIBUTES))
+        .with_transformation(dashboard_model.DataTransformerConfig(
+            id_val='groupingToMatrix',
+            options={'rowField': 'device', 'columnField': 'attribute', 'valueField': 'Value'},
+        ))
+        .with_transformation(dashboard_model.DataTransformerConfig(
+            id_val='organize',
+            options={
+                'renameByName': {'device\\attribute': 'Disk'},
+                'indexByName': {name: i for i, name in enumerate(['device\\attribute', *COMMON_COLUMNS])},
+            },
+        ))
+        .override_by_name('Disk', [dashboard_model.DynamicConfigValue(id_val='custom.width', value=380)])
+        .override_by_name('Temp', column((0, 'transparent'), (45, 'yellow'), (50, 'red'), unit='celsius'))
+        .override_by_name('Spin retry', column((0, 'transparent'), (1, 'yellow')))
+        .override_by_name('Reallocated', column(*ERRORS))
+        .override_by_name('Pending', column(*ERRORS))
+        .override_by_name('Offline uncorrectable', column(*ERRORS))
+        .override_by_name('UDMA CRC', column((0, 'transparent'), (1, 'yellow')))
+        .override_by_name('Load cycles', column((0, 'transparent'), (300000, 'yellow'), (600000, 'red')))
+        .sort_by([common_builder.TableSortByFieldState().display_name('Disk').desc(False)])
+        .height(12)
+        .span(24)
+    )
 
     .with_panel(
         table.Panel()
