@@ -25,6 +25,13 @@ APPS_MEMORY = f'(node_memory_MemTotal_bytes{{{HOST}}} - node_memory_MemAvailable
 DISKS = f'{HOST}, device=~"sd.*|nvme.*|vd.*|hd.*"'
 DISK_SERIAL = f'* on(instance, device) group_left(serial) node_disk_info{{{HOST}}}'
 FILESYSTEMS = f'{HOST}, fstype!~"tmpfs|ramfs|overlay|squashfs|nsfs|zfs|fuse.*", device!="tmpfs"'
+# 1 for virtual machines, which report their hypervisor in the firmware tables, 0 for physical machines.
+# Hyper-V reports Microsoft as vendor like Surface laptops do, so it is matched by product name.
+IS_VM = (
+    f'count(node_dmi_info{{{HOST}, system_vendor=~"QEMU|VMware.*|innotek GmbH|Xen|Amazon EC2|Parallels.*"}}'
+    f' or node_dmi_info{{{HOST}, product_name="Virtual Machine"}})'
+    f' or count(node_dmi_info{{{HOST}}}) * 0'
+)
 PHYSICAL_NICS = f'{HOST}, device!~"lo|veth.*|docker.*|br.*|virbr.*|vmbr.*|tailscale.*|tap.*|fw.*"'
 
 
@@ -77,6 +84,19 @@ builder = (
 
     .with_panel(
         stat.Panel()
+        .title('Platform')
+        .with_target(instant(IS_VM))
+        .mappings([dashboard_model.ValueMap(options={
+            '0': dashboard_model.ValueMappingResult(text='Physical', color='green', index=0),
+            '1': dashboard_model.ValueMappingResult(text='Virtual machine', color='blue', index=1),
+        })])
+        .graph_mode(common.BigValueGraphMode.NONE)
+        .height(4)
+        .span(3)
+    )
+
+    .with_panel(
+        stat.Panel()
         .title('Uptime')
         .with_target(instant(f'time() - node_boot_time_seconds{{{HOST}}}'))
         .graph_mode(common.BigValueGraphMode.NONE)
@@ -87,7 +107,7 @@ builder = (
         )
         .unit('dtdhms')
         .height(4)
-        .span(4)
+        .span(3)
     )
 
     .with_panel(
@@ -127,7 +147,7 @@ builder = (
         .text_mode(common.BigValueTextMode.VALUE_AND_NAME)
         .graph_mode(common.BigValueGraphMode.NONE)
         .height(4)
-        .span(4)
+        .span(3)
     )
 
     .with_panel(
@@ -138,7 +158,7 @@ builder = (
         .unit('bytes')
         .graph_mode(common.BigValueGraphMode.NONE)
         .height(4)
-        .span(4)
+        .span(3)
     )
 
     .with_panel(

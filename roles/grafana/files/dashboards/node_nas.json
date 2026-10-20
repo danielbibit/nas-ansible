@@ -20,6 +20,61 @@
     {
       "fieldConfig": {
         "defaults": {
+          "mappings": [
+            {
+              "options": {
+                "0": {
+                  "color": "green",
+                  "index": 0,
+                  "text": "Physical"
+                },
+                "1": {
+                  "color": "blue",
+                  "index": 1,
+                  "text": "Virtual machine"
+                }
+              },
+              "type": "value"
+            }
+          ]
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 3,
+        "x": 0,
+        "y": 1
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": []
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "expr": "count(node_dmi_info{instance=~\"$host\", system_vendor=~\"QEMU|VMware.*|innotek GmbH|Xen|Amazon EC2|Parallels.*\"} or node_dmi_info{instance=~\"$host\", product_name=\"Virtual Machine\"}) or count(node_dmi_info{instance=~\"$host\"}) * 0",
+          "instant": true,
+          "range": false,
+          "refId": ""
+        }
+      ],
+      "title": "Platform",
+      "transparent": false,
+      "type": "stat"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
           "color": {
             "fixedColor": "green",
             "mode": "fixed"
@@ -30,8 +85,8 @@
       },
       "gridPos": {
         "h": 4,
-        "w": 4,
-        "x": 0,
+        "w": 3,
+        "x": 3,
         "y": 1
       },
       "options": {
@@ -89,7 +144,7 @@
       "gridPos": {
         "h": 4,
         "w": 4,
-        "x": 4,
+        "x": 6,
         "y": 1
       },
       "repeatDirection": "h",
@@ -135,7 +190,7 @@
       "gridPos": {
         "h": 4,
         "w": 4,
-        "x": 8,
+        "x": 10,
         "y": 1
       },
       "repeatDirection": "h",
@@ -178,8 +233,8 @@
       },
       "gridPos": {
         "h": 4,
-        "w": 4,
-        "x": 12,
+        "w": 3,
+        "x": 14,
         "y": 1
       },
       "options": {
@@ -249,8 +304,8 @@
       },
       "gridPos": {
         "h": 4,
-        "w": 4,
-        "x": 16,
+        "w": 3,
+        "x": 17,
         "y": 1
       },
       "options": {
